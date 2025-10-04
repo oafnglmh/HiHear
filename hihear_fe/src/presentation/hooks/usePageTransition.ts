@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-export function usePageTransition(duration = 1000) {
+export function usePageTransition(duration = 3000) {
   const [isTransitioning, setIsTransitioning] = useState(true);
   const location = useLocation();
 

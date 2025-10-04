@@ -3,7 +3,7 @@ import Splash from "../components/Splash";
 import { usePageTransition } from "../hooks/usePageTransition";
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isTransitioning } = usePageTransition(800); // 0.8s transition
+  const { isTransitioning } = usePageTransition(600);
 
   return (
     <>
