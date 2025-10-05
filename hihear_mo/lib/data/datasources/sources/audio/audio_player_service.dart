@@ -5,7 +5,7 @@ class AudioPlayerService {
   final AudioPlayer _player = AudioPlayer();
 
   Future<void> playSplashMusic() async {
-    await _player.setReleaseMode(ReleaseMode.loop);
+    await _player.setReleaseMode(ReleaseMode.stop);
     await _player.play(AssetSource(AppAudio.backgroundMusic));
   }
 

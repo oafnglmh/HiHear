@@ -157,6 +157,7 @@ class _StudyTimePageState extends State<StudyTimePage> {
                     child: Text(
                       l10n.nextButton,
                       style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

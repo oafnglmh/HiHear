@@ -65,7 +65,7 @@ class _StartPageState extends State<StartPage> {
                     ),
 
                     const SizedBox(height: 24),
-                    Image.asset(AppAssets.hearuHi, height: 120),
+                    Image.asset(AppAssets.welcome, height: 120),
                   ],
                 ),
 
@@ -73,7 +73,9 @@ class _StartPageState extends State<StartPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       padding: const EdgeInsets.symmetric(vertical: 16),
