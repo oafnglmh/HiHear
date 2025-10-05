@@ -76,7 +76,9 @@ class _LoginPageState extends State<LoginPage>
                 width: 280,
                 height: 60,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('/goalSelector');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
