@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hihear_mo/data/datasources/sources/audio/audio_player_service.dart';
+import 'package:hihear_mo/domain/usecases/play_splash_music_usecase.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
@@ -19,10 +21,14 @@ class _SplashPageState extends State<SplashPage>
   late Animation<double> _fadeAnimation;
   late Animation<double> _rotateAnimation;
   late Animation<double> _glowAnimation;
-
+  late final AudioPlayerService _audioService;
+  late final PlaySplashMusicUseCase _playMusicUseCase;
   @override
   void initState() {
     super.initState();
+    _audioService = AudioPlayerService();
+    _playMusicUseCase = PlaySplashMusicUseCase(_audioService);
+    _playMusicUseCase();
 
     _controller = AnimationController(
       vsync: this,
@@ -51,11 +57,14 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(AppRouter.login);
-      }
-    });
+    Timer(const Duration(seconds: 3), _navigateToLogin);
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      _audioService.stop();
+      Navigator.of(context).pushReplacementNamed(AppRouter.login);
+    }
   }
 
   @override
