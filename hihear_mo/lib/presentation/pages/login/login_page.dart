@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,6 +38,7 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -57,10 +59,10 @@ class _LoginPageState extends State<LoginPage>
               ),
               const SizedBox(height: 30),
               Text(
-                "Chào mừng!",
+                l10n.translWelcome,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 32,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   shadows: [
                     Shadow(
@@ -88,9 +90,12 @@ class _LoginPageState extends State<LoginPage>
                     elevation: 6,
                   ),
                   icon: Image.asset(AppAssets.iconGG, height: 30, width: 30),
-                  label: const Text(
-                    'Đăng nhập với Google',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  label: Text(
+                    l10n.translLoginGg,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -109,9 +114,12 @@ class _LoginPageState extends State<LoginPage>
                     elevation: 6,
                   ),
                   icon: Icon(Icons.facebook, size: 30),
-                  label: const Text(
-                    'Đăng nhập với Facebook',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  label: Text(
+                    l10n.translLoginFb,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

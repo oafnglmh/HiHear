@@ -1,5 +1,18 @@
 {
   "@@locale": "vi",
   "appName": "HiHear",
-  "splashTagline": "AI hỗ trợ học ngoại ngữ cá nhân hóa"
+  "splashTagline": "AI hỗ trợ học ngoại ngữ cá nhân hóa",
+  "translLoginGg": "Đăng nhập với Google",
+  "translLoginFb": "Đăng nhập với Facebook",
+  "translWelcome": "Chào mừng bạn đến với HiHear",
+  "dailyGoalQuestion": "Mục tiêu hằng ngày của bạn là gì nhỉ?",
+  "minuteLabel": "Phút",
+  "dayLabel": "Ngày",
+  "difficultyEasy": "Dễ",
+  "difficultyMedium": "Vừa",
+  "difficultyHard": "Khó",
+  "difficultyVeryHard": "Siêu khó",
+  "nextButton": "Tiếp theo",
+  "startButton": "Bắt đầu",
+  "journeyStartMessage": "Cùng bắt đầu hành trình học tập của bạn nào!"
 }

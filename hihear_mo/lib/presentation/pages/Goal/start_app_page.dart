@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -12,6 +13,7 @@ class StartPage extends StatefulWidget {
 class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -50,7 +52,7 @@ class _StartPageState extends State<StartPage> {
                         child: AnimatedTextKit(
                           animatedTexts: [
                             TypewriterAnimatedText(
-                              'Cùng bắt đầu hành trình học tập của bạn nào!',
+                              l10n.journeyStartMessage,
                               speed: const Duration(milliseconds: 70),
                             ),
                           ],
@@ -82,6 +84,7 @@ class _StartPageState extends State<StartPage> {
                     child: const Text(
                       'Bắt đầu',
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

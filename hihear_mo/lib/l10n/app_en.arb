@@ -1,5 +1,18 @@
 {
   "@@locale": "en",
   "appName": "HiHear",
-  "splashTagline": "AI-powered personalized language learning"
+  "splashTagline": "AI-powered personalized language learning",
+  "translLoginGg": "Sign in with Google",
+  "translLoginFb": "Sign in with Facebook",
+  "translWelcome": "Welcome to HiHear",
+  "dailyGoalQuestion": "What's your daily goal?",
+  "minuteLabel": "Minute",
+  "dayLabel": "Day",
+  "difficultyEasy": "Easy",
+  "difficultyMedium": "Medium",
+  "difficultyHard": "Hard",
+  "difficultyVeryHard": "Very Hard",
+  "nextButton": "Next",
+  "startButton": "Start",
+  "journeyStartMessage": "Let's start your learning journey!"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import '../../../../core/constants/app_assets.dart';
 
 class StudyTimePage extends StatefulWidget {
@@ -14,6 +15,7 @@ class _StudyTimePageState extends State<StudyTimePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -54,7 +56,7 @@ class _StudyTimePageState extends State<StudyTimePage> {
                           child: AnimatedTextKit(
                             animatedTexts: [
                               TypewriterAnimatedText(
-                                'Mục tiêu hằng ngày của bạn là gì nhỉ?',
+                                l10n.dailyGoalQuestion,
                                 speed: const Duration(milliseconds: 70),
                               ),
                             ],
@@ -74,10 +76,10 @@ class _StudyTimePageState extends State<StudyTimePage> {
                   runSpacing: 16,
                   children:
                       [
-                        {'time': 3, 'level': 'Dễ'},
-                        {'time': 10, 'level': 'Vừa'},
-                        {'time': 15, 'level': 'Khó'},
-                        {'time': 30, 'level': 'Siêu khó'},
+                        {'time': 3, 'level': l10n.difficultyEasy},
+                        {'time': 10, 'level': l10n.difficultyMedium},
+                        {'time': 15, 'level': l10n.difficultyHard},
+                        {'time': 30, 'level': l10n.difficultyVeryHard},
                       ].map((item) {
                         final int time = item['time'] as int;
                         final String level = item['level'] as String;
@@ -90,9 +92,6 @@ class _StudyTimePageState extends State<StudyTimePage> {
                               setState(() {
                                 selectedTime = time;
                               });
-                              Navigator.of(
-                                context,
-                              ).pushReplacementNamed('/start');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isSelected
@@ -114,7 +113,7 @@ class _StudyTimePageState extends State<StudyTimePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '$time phút / ngày',
+                                  '$time ${l10n.minuteLabel} / ${l10n.dayLabel}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -141,7 +140,13 @@ class _StudyTimePageState extends State<StudyTimePage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: selectedTime != null ? () {} : null,
+                    onPressed: selectedTime != null
+                        ? () {
+                            Navigator.of(
+                              context,
+                            ).pushReplacementNamed('/start');
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -149,9 +154,9 @@ class _StudyTimePageState extends State<StudyTimePage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Tiếp theo',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.nextButton,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
