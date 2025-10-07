@@ -184,6 +184,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Let\'s start your learning journey!'**
   String get journeyStartMessage;
+
+  /// No description provided for @seriesOfDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Chuỗi ngày'**
+  String get seriesOfDays;
+
+  /// No description provided for @level.
+  ///
+  /// In en, this message translates to:
+  /// **'Cấp độ'**
+  String get level;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

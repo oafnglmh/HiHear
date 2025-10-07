@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
@@ -135,20 +137,20 @@ class _HomePageState extends State<HomePage> {
 
 class _HomeContent extends StatelessWidget {
   const _HomeContent();
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 20),
-        _buildProgressHeader(),
+        _buildProgressHeader(context),
         const SizedBox(height: 30),
-        _buildLessonCard(),
+        _buildLessonCard(context),
       ],
     );
   }
 
-  Widget _buildProgressHeader() {
+  Widget _buildProgressHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Stack(
@@ -185,7 +187,7 @@ class _HomeContent extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  "CHUỖI NGÀY",
+                  l10n.seriesOfDays,
                   style: AppTextStyles.subtitle.copyWith(fontSize: 12),
                 ),
               ],
@@ -200,7 +202,7 @@ class _HomeContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            "Cấp độ 1",
+            "${l10n.level} 1",
             style: AppTextStyles.subtitle.copyWith(color: AppColors.white),
           ),
         ),
@@ -208,7 +210,8 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonCard() {
+  Widget _buildLessonCard(context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: Center(
         child: Stack(
@@ -244,9 +247,12 @@ class _HomeContent extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text("Bắt đầu", style: AppTextStyles.button),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
+                  child: Text(l10n.startButton, style: AppTextStyles.button),
                 ),
               ),
             ),

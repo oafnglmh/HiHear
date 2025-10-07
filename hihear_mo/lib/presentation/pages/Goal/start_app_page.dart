@@ -83,9 +83,9 @@ class _StartPageState extends State<StartPage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Bắt đầu',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.startButton,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

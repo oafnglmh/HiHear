@@ -52,4 +52,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get journeyStartMessage => 'Cùng bắt đầu hành trình học tập của bạn nào!';
+
+  @override
+  String get seriesOfDays => 'Chuỗi ngày';
+
+  @override
+  String get level => 'Cấp độ';
 }
