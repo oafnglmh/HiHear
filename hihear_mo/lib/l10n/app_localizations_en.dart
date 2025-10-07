@@ -52,4 +52,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get journeyStartMessage => 'Let\'s start your learning journey!';
+
+  @override
+  String get seriesOfDays => 'Chuỗi ngày';
+
+  @override
+  String get level => 'Cấp độ';
 }

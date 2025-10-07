@@ -14,5 +14,7 @@
   "difficultyVeryHard": "Siêu khó",
   "nextButton": "Tiếp theo",
   "startButton": "Bắt đầu",
-  "journeyStartMessage": "Cùng bắt đầu hành trình học tập của bạn nào!"
+  "journeyStartMessage": "Cùng bắt đầu hành trình học tập của bạn nào!",
+  "seriesOfDays": "Chuỗi ngày",
+  "level": "Cấp độ"
 }
