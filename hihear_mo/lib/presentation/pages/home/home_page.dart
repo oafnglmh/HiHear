@@ -88,10 +88,10 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home, 0),
-                _buildNavItem(Icons.access_alarm, 1),
-                _buildNavItem(Icons.menu_book, 2),
-                _buildNavItem(Icons.settings, 3),
+                _buildNavItem(AppAssets.iconHome, 0),
+                _buildNavItem(AppAssets.iconSpeak, 1),
+                _buildNavItem(AppAssets.iconBook, 2),
+                _buildNavItem(AppAssets.iconSetting, 3),
               ],
             ),
           ),
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, int index) {
+  Widget _buildNavItem(String iconPath, int index) {
     final bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () {
@@ -124,11 +124,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Transform.scale(
           scale: isSelected ? 1.2 : 1.0,
-          child: Icon(
-            icon,
-            size: 30,
-            color: isSelected ? Colors.white : Colors.white70,
-          ),
+          child: Image.asset(iconPath, width: 28, height: 28),
         ),
       ),
     );
@@ -143,9 +139,25 @@ class _HomeContent extends StatelessWidget {
       children: [
         const SizedBox(height: 20),
         _buildProgressHeader(context),
-        const SizedBox(height: 30),
-        _buildLessonCard(context),
+        const SizedBox(height: 150),
+        SizedBox(height: 350, child: _buildLessonList(context)),
       ],
+    );
+  }
+
+  Widget _buildLessonList(BuildContext context) {
+    final lessonCount = 5;
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: lessonCount,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _buildLessonCard(context, index + 1),
+        );
+      },
     );
   }
 
@@ -210,55 +222,48 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonCard(context) {
+  Widget _buildLessonCard(BuildContext context, int lessonId) {
     final l10n = AppLocalizations.of(context)!;
-    return Expanded(
-      child: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 300,
-              height: 300,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFFFFE082), Color(0xFFFFC107)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 300,
+          height: 300,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFE082), Color(0xFFFFC107)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            ClipOval(
-              child: Image.asset(
-                AppAssets.bgen,
-                width: 270,
-                height: 270,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              bottom: 50,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                  child: Text(l10n.startButton, style: AppTextStyles.button),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        ClipOval(
+          child: Image.asset(
+            AppAssets.bgen,
+            width: 270,
+            height: 270,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          bottom: 60,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.gold,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text("${l10n.startButton}", style: AppTextStyles.button),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
