@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
+import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -49,7 +50,12 @@ class SettingPage extends StatelessWidget {
               _buildSettingItem(
                 icon: Icons.info_outline,
                 title: "Giới thiệu ứng dụng",
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AboutPage()),
+                  );
+                },
               ),
             ],
           ),
