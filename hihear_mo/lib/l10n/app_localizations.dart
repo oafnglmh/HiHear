@@ -188,14 +188,260 @@ abstract class AppLocalizations {
   /// No description provided for @seriesOfDays.
   ///
   /// In en, this message translates to:
-  /// **'Chuỗi ngày'**
+  /// **'Series of days'**
   String get seriesOfDays;
 
   /// No description provided for @level.
   ///
   /// In en, this message translates to:
-  /// **'Cấp độ'**
+  /// **'Level'**
   String get level;
+
+  /// No description provided for @settingAccountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingAccountSection;
+
+  /// No description provided for @settingPersonalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get settingPersonalInfo;
+
+  /// No description provided for @settingLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get settingLogout;
+
+  /// No description provided for @settingAppSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get settingAppSection;
+
+  /// No description provided for @settingLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingLanguage;
+
+  /// No description provided for @settingNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingNotification;
+
+  /// No description provided for @settingOtherSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get settingOtherSection;
+
+  /// No description provided for @settingHelpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get settingHelpSupport;
+
+  /// No description provided for @settingAboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About Application'**
+  String get settingAboutApp;
+
+  /// No description provided for @languageSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get languageSelectTitle;
+
+  /// No description provided for @languageVietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese'**
+  String get languageVietnamese;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpTitle;
+
+  /// No description provided for @helpUsageGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'User Guide'**
+  String get helpUsageGuide;
+
+  /// No description provided for @helpStartLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Started with HiHear'**
+  String get helpStartLearning;
+
+  /// No description provided for @helpStartLearningDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the \'Study\' section on the home page to start lessons suitable for your level. The app will automatically analyze your voice and provide feedback to improve your skills.'**
+  String get helpStartLearningDesc;
+
+  /// No description provided for @helpVocabManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocabulary Management'**
+  String get helpVocabManage;
+
+  /// No description provided for @helpVocabManageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When you encounter a new word, you can save it in the \'Vocabulary\' section for review later. Here you can listen to pronunciation, see meanings, and real examples.'**
+  String get helpVocabManageDesc;
+
+  /// No description provided for @helpSpeakAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking Practice & AI Feedback'**
+  String get helpSpeakAI;
+
+  /// No description provided for @helpSpeakAIDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the microphone icon to record your voice. AI will analyze your pronunciation and score it immediately.'**
+  String get helpSpeakAIDesc;
+
+  /// No description provided for @helpFAQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions (FAQ)'**
+  String get helpFAQ;
+
+  /// No description provided for @helpFAQInternetQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Do I need an Internet connection to use HiHear?'**
+  String get helpFAQInternetQ;
+
+  /// No description provided for @helpFAQInternetA.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. HiHear uses AI models on the server, so an internet connection is required to process audio and sync learning data.'**
+  String get helpFAQInternetA;
+
+  /// No description provided for @helpFAQProgressQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Does the app save my learning progress?'**
+  String get helpFAQProgressQ;
+
+  /// No description provided for @helpFAQProgressA.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Learning progress, vocabulary, and listening results are automatically saved to your cloud account.'**
+  String get helpFAQProgressA;
+
+  /// No description provided for @helpContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get helpContact;
+
+  /// No description provided for @helpContactEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Email'**
+  String get helpContactEmail;
+
+  /// No description provided for @helpContactWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get helpContactWebsite;
+
+  /// No description provided for @helpContactHotline.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotline'**
+  String get helpContactHotline;
+
+  /// No description provided for @helpSupportNote.
+  ///
+  /// In en, this message translates to:
+  /// **'We’re always ready to assist you 24/7'**
+  String get helpSupportNote;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About the App'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'HiHear'**
+  String get aboutAppName;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0.0'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'HiHear is an intelligent English listening, vocabulary, and grammar learning app. It combines artificial intelligence to help users enhance listening comprehension through interactive lessons and voice analysis.'**
+  String get aboutDescription;
+
+  /// No description provided for @aboutDeveloper.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get aboutDeveloper;
+
+  /// No description provided for @aboutDeveloperValue.
+  ///
+  /// In en, this message translates to:
+  /// **'HiHear Team'**
+  String get aboutDeveloperValue;
+
+  /// No description provided for @aboutEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Email'**
+  String get aboutEmail;
+
+  /// No description provided for @aboutEmailValue.
+  ///
+  /// In en, this message translates to:
+  /// **'hcassano.dev@gmail.com'**
+  String get aboutEmailValue;
+
+  /// No description provided for @aboutWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get aboutWebsite;
+
+  /// No description provided for @aboutWebsiteValue.
+  ///
+  /// In en, this message translates to:
+  /// **'hihear.com'**
+  String get aboutWebsiteValue;
+
+  /// No description provided for @aboutCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2025 HiHear. All rights reserved.'**
+  String get aboutCopyright;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

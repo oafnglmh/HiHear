@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import 'core/constants/app_colors.dart';
 
@@ -13,23 +15,31 @@ class HiHearApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "HiHear",
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.background,
-      ),
-      initialRoute: AppRouter.splash,
-      onGenerateRoute: AppRouter.generateRoute,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+    return BlocProvider(
+      create: (_) => LanguageBloc(),
+      child: BlocBuilder<LanguageBloc, LanguageState>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: "HiHear",
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              useMaterial3: true,
+              scaffoldBackgroundColor: AppColors.background,
+            ),
+            initialRoute: AppRouter.splash,
+            onGenerateRoute: AppRouter.generateRoute,
+            locale: state.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
 
-      supportedLocales: const [Locale('en'), Locale('vi')],
+            supportedLocales: const [Locale('en'), Locale('vi')],
+          );
+        },
+      ),
     );
   }
 }

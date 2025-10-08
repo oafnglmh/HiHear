@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -15,41 +20,53 @@ class SettingPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle("Tài khoản"),
+              _buildSectionTitle(loc.settingAccountSection),
               _buildSettingItem(
                 icon: Icons.person_outline,
-                title: "Thông tin cá nhân",
+                title: loc.settingPersonalInfo,
                 onTap: () {},
               ),
               _buildSettingItem(
                 icon: Icons.logout,
-                title: "Đăng xuất",
+                title: loc.settingLogout,
                 onTap: () {},
               ),
               const SizedBox(height: 20),
 
-              _buildSectionTitle("Ứng dụng"),
+              _buildSectionTitle(loc.settingAppSection),
               _buildSettingItem(
                 icon: Icons.language,
-                title: "Ngôn ngữ",
-                onTap: () {},
+                title: loc.settingLanguage,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const LanguageSettingPage(),
+                    ),
+                  );
+                },
               ),
               _buildSettingItem(
                 icon: Icons.notifications_outlined,
-                title: "Thông báo",
+                title: loc.settingNotification,
                 onTap: () {},
               ),
               const SizedBox(height: 20),
 
-              _buildSectionTitle("Khác"),
+              _buildSectionTitle(loc.settingOtherSection),
               _buildSettingItem(
                 icon: Icons.help_outline,
-                title: "Trợ giúp & Hỗ trợ",
-                onTap: () {},
+                title: loc.settingHelpSupport,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HelpPage()),
+                  );
+                },
               ),
               _buildSettingItem(
                 icon: Icons.info_outline,
-                title: "Giới thiệu ứng dụng",
+                title: loc.settingAboutApp,
                 onTap: () {
                   Navigator.push(
                     context,
