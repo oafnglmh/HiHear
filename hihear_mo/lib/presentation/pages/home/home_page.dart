@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     const _HomeContent(),
     Container(),
     Container(),
-    Container(),
+    SettingPage(),
   ];
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);

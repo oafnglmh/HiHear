@@ -17,4 +17,9 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: Color.fromARGB(255, 0, 0, 0),
   );
+
+  static const TextStyle body = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+  );
 }
