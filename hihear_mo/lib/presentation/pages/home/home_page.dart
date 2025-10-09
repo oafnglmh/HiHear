@@ -40,11 +40,13 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              AppAssets.bgHome,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-            ),
+            child: _selectedIndex == 3
+                ? Container(color: Colors.white)
+                : Image.asset(
+                    AppAssets.bgHome,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                  ),
           ),
 
           SafeArea(

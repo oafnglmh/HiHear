@@ -11,12 +11,13 @@ class HelpPage extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           loc.helpTitle,
-          style: const TextStyle(color: Color.fromARGB(255, 250, 114, 2)),
+          style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         centerTitle: true,
         elevation: 0,
       ),
@@ -78,7 +79,7 @@ class HelpPage extends StatelessWidget {
             Center(
               child: Text(
                 loc.helpSupportNote,
-                style: AppTextStyles.body.copyWith(color: Colors.white70),
+                style: AppTextStyles.body.copyWith(color: AppColors.background),
               ),
             ),
           ],
@@ -93,7 +94,7 @@ class HelpPage extends StatelessWidget {
       child: Text(
         title,
         style: AppTextStyles.title.copyWith(
-          color: Colors.white,
+          color: AppColors.background,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -110,7 +111,7 @@ class HelpPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white24),
       ),
@@ -151,7 +152,7 @@ class HelpPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white24),
       ),
@@ -191,7 +192,7 @@ class HelpPage extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white24),
         ),

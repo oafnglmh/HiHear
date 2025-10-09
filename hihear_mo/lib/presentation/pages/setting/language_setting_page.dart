@@ -20,12 +20,13 @@ class LanguageSettingPage extends StatelessWidget {
     };
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         title: Text(
           loc.languageSelectTitle,
           style: const TextStyle(
-            color: Color.fromARGB(255, 255, 104, 4),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -34,21 +35,32 @@ class LanguageSettingPage extends StatelessWidget {
       body: ListView(
         children: LanguageType.values.map((lang) {
           final isSelected = currentLocale.languageCode == lang.code;
-          return ListTile(
-            leading: Icon(
-              lang == LanguageType.english ? Icons.language : Icons.flag,
-              color: Colors.white,
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.background
+                  : AppColors.gold.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
             ),
-            title: Text(
-              languages[lang]!,
-              style: AppTextStyles.title.copyWith(color: Colors.white),
+            child: ListTile(
+              leading: Icon(
+                lang == LanguageType.english ? Icons.language : Icons.flag,
+                color: isSelected ? AppColors.gold : AppColors.white,
+              ),
+              title: Text(
+                languages[lang]!,
+                style: AppTextStyles.title.copyWith(
+                  color: isSelected ? AppColors.white : AppColors.gold,
+                ),
+              ),
+              trailing: isSelected
+                  ? const Icon(Icons.check_circle, color: Colors.greenAccent)
+                  : const SizedBox(),
+              onTap: () {
+                context.read<LanguageBloc>().add(ChangeLanguageEvent(lang));
+              },
             ),
-            trailing: isSelected
-                ? const Icon(Icons.check_circle, color: Colors.greenAccent)
-                : const SizedBox(),
-            onTap: () {
-              context.read<LanguageBloc>().add(ChangeLanguageEvent(lang));
-            },
           );
         }).toList(),
       ),

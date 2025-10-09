@@ -15,6 +15,7 @@ class SettingPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -87,7 +88,7 @@ class SettingPage extends StatelessWidget {
       child: Text(
         text,
         style: AppTextStyles.title.copyWith(
-          color: Colors.white,
+          color: const Color.fromARGB(255, 255, 116, 2),
           fontWeight: FontWeight.bold,
           fontSize: 18,
         ),
@@ -107,7 +108,7 @@ class SettingPage extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: const Color.fromARGB(240, 250, 101, 2),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white24, width: 1),
         ),

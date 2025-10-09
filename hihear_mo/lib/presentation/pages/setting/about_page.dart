@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 
@@ -11,12 +12,13 @@ class AboutPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         title: Text(
           l10n.aboutTitle,
           style: const TextStyle(
-            color: Color.fromARGB(255, 255, 125, 3),
+            color: Color.fromARGB(255, 255, 255, 255),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -44,7 +46,7 @@ class AboutPage extends StatelessWidget {
             Text(
               l10n.aboutAppName,
               style: AppTextStyles.title.copyWith(
-                color: Colors.white,
+                color: AppColors.background,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -60,7 +62,7 @@ class AboutPage extends StatelessWidget {
             Text(
               l10n.aboutDescription,
               style: AppTextStyles.body.copyWith(
-                color: Colors.white,
+                color: AppColors.background,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -94,13 +96,13 @@ class AboutPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 190),
-            Divider(color: Colors.white24),
+            Divider(color: const Color.fromARGB(255, 248, 178, 113)),
             const SizedBox(height: 8),
 
             Text(
               l10n.aboutCopyright,
               style: AppTextStyles.body.copyWith(
-                color: Colors.white54,
+                color: AppColors.background,
                 fontSize: 12,
               ),
             ),
@@ -113,7 +115,7 @@ class AboutPage extends StatelessWidget {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white, size: 20),
+        Icon(icon, color: AppColors.background, size: 20),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -122,14 +124,14 @@ class AboutPage extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyles.body.copyWith(
-                  color: Colors.white70,
+                  color: AppColors.background,
                   fontSize: 13,
                 ),
               ),
               Text(
                 value,
                 style: AppTextStyles.body.copyWith(
-                  color: Colors.white,
+                  color: AppColors.background,
                   fontWeight: FontWeight.bold,
                 ),
               ),
