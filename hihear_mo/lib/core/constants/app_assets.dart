@@ -9,6 +9,7 @@ class AppAssets {
   static const String welcome = "$link/wc.png";
   static const String bgen = "$link/en.jpeg";
   static const String bgHome = "$link/bg_home.png";
+  static const String avtHearu = "$link/HearuSmile.png";
 
   //---------------------ICON--------------------------//
 
@@ -17,4 +18,5 @@ class AppAssets {
   static const String iconSpeak = "$link/speaking.png";
   static const String iconSetting = "$link/gear.png";
   static const String iconBook = "$link/book.png";
+  static const String iconUser = "$link/user.png";
 }

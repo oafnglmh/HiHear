@@ -5,6 +5,7 @@ import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/routes/app_routes.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -21,30 +22,12 @@ class SettingPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle(loc.settingAccountSection),
-              _buildSettingItem(
-                icon: Icons.person_outline,
-                title: loc.settingPersonalInfo,
-                onTap: () {},
-              ),
-              _buildSettingItem(
-                icon: Icons.logout,
-                title: loc.settingLogout,
-                onTap: () {},
-              ),
-              const SizedBox(height: 20),
-
               _buildSectionTitle(loc.settingAppSection),
               _buildSettingItem(
                 icon: Icons.language,
                 title: loc.settingLanguage,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const LanguageSettingPage(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AppRouter.languagePage);
                 },
               ),
               _buildSettingItem(
@@ -59,20 +42,14 @@ class SettingPage extends StatelessWidget {
                 icon: Icons.help_outline,
                 title: loc.settingHelpSupport,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HelpPage()),
-                  );
+                  Navigator.pushNamed(context, AppRouter.helpPage);
                 },
               ),
               _buildSettingItem(
                 icon: Icons.info_outline,
                 title: loc.settingAboutApp,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AboutPage()),
-                  );
+                  Navigator.pushNamed(context, AppRouter.aboutPage);
                 },
               ),
             ],

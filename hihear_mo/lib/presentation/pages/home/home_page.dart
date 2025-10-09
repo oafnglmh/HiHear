@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -22,6 +23,7 @@ class _HomePageState extends State<HomePage> {
     const _HomeContent(),
     Container(),
     Container(),
+    ProfilePage(),
     SettingPage(),
   ];
   void _onItemTapped(int index) {
@@ -40,13 +42,11 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: _selectedIndex == 3
-                ? Container(color: Colors.white)
-                : Image.asset(
-                    AppAssets.bgHome,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                  ),
+            child: Image.asset(
+              AppAssets.bgHome,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+            ),
           ),
 
           SafeArea(
@@ -94,7 +94,8 @@ class _HomePageState extends State<HomePage> {
                 _buildNavItem(AppAssets.iconHome, 0),
                 _buildNavItem(AppAssets.iconSpeak, 1),
                 _buildNavItem(AppAssets.iconBook, 2),
-                _buildNavItem(AppAssets.iconSetting, 3),
+                _buildNavItem(AppAssets.iconUser, 3),
+                _buildNavItem(AppAssets.iconSetting, 4),
               ],
             ),
           ),
