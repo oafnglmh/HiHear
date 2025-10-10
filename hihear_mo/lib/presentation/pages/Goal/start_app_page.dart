@@ -65,7 +65,12 @@ class _StartPageState extends State<StartPage> {
                     ),
 
                     const SizedBox(height: 24),
-                    Image.asset(AppAssets.welcome, height: 120),
+                    Image.asset(
+                      AppAssets.gifWelcome,
+                      height: 150,
+                      width: 200,
+                      fit: BoxFit.contain,
+                    ),
                   ],
                 ),
 
