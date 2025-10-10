@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/pages/lession/vocab_lesson_1_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -254,7 +255,12 @@ class _HomeContent extends StatelessWidget {
         Positioned(
           bottom: 60,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VocabLesson1Page()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.gold,
               shape: RoundedRectangleBorder(
