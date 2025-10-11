@@ -4,6 +4,7 @@ import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
+import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import '../pages/home/home_page.dart';
 import '../pages/splash/splash_page.dart';
 import '../pages/login/login_page.dart';
@@ -20,6 +21,7 @@ class AppRouter {
   static const String languagePage = '/languagePage';
   static const String profile = '/profile';
   static const String setting = '/setting';
+  static const String speak = '/speak';
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
@@ -40,7 +42,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const LanguageSettingPage());
       case setting:
         return MaterialPageRoute(builder: (_) => const SettingPage());
-
+      case speak:
+        return MaterialPageRoute(builder: (_) => const SpeakPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>
