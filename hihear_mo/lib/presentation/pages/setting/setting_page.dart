@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
@@ -16,7 +17,7 @@ class SettingPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(0, 22, 20, 29),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -65,7 +66,7 @@ class SettingPage extends StatelessWidget {
       child: Text(
         text,
         style: AppTextStyles.title.copyWith(
-          color: const Color.fromARGB(255, 255, 116, 2),
+          color: AppColors.textWhite,
           fontWeight: FontWeight.bold,
           fontSize: 18,
         ),

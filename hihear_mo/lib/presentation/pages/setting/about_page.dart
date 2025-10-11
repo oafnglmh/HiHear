@@ -12,13 +12,13 @@ class AboutPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: AppColors.bgWhiteCustom,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: Text(
           l10n.aboutTitle,
           style: const TextStyle(
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: AppColors.textWhite,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -26,48 +26,58 @@ class AboutPage extends StatelessWidget {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: 110,
+              height: 110,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
                   image: AssetImage(AppAssets.logo),
                   fit: BoxFit.cover,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
 
             Text(
               l10n.aboutAppName,
               style: AppTextStyles.title.copyWith(
                 color: AppColors.background,
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
             Text(
               l10n.aboutVersion,
-              style: AppTextStyles.body.copyWith(color: Colors.white70),
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 24),
 
             Text(
               l10n.aboutDescription,
               style: AppTextStyles.body.copyWith(
-                color: AppColors.background,
-                height: 1.5,
+                color: AppColors.textPrimary,
+                fontSize: 15,
+                height: 1.6,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 36),
 
             Align(
               alignment: Alignment.centerLeft,
@@ -75,19 +85,19 @@ class AboutPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildInfoRow(
-                    Icons.developer_mode,
+                    Icons.developer_mode_rounded,
                     l10n.aboutDeveloper,
                     l10n.aboutDeveloperValue,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   _buildInfoRow(
                     Icons.email_outlined,
                     l10n.aboutEmail,
                     l10n.aboutEmailValue,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   _buildInfoRow(
-                    Icons.public,
+                    Icons.public_rounded,
                     l10n.aboutWebsite,
                     l10n.aboutWebsiteValue,
                   ),
@@ -95,17 +105,19 @@ class AboutPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 190),
-            Divider(color: const Color.fromARGB(255, 248, 178, 113)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 130),
+            Divider(color: AppColors.grayLight, thickness: 1),
+            const SizedBox(height: 10),
 
             Text(
               l10n.aboutCopyright,
               style: AppTextStyles.body.copyWith(
-                color: AppColors.background,
+                color: AppColors.textSecondary,
                 fontSize: 12,
               ),
+              textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -114,9 +126,10 @@ class AboutPage extends StatelessWidget {
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.background, size: 20),
-        const SizedBox(width: 10),
+        Icon(icon, color: AppColors.background, size: 22),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,15 +137,16 @@ class AboutPage extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyles.body.copyWith(
-                  color: AppColors.background,
+                  color: AppColors.textSecondary,
                   fontSize: 13,
                 ),
               ),
               Text(
                 value,
                 style: AppTextStyles.body.copyWith(
-                  color: AppColors.background,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.bold,
+                  fontSize: 14,
                 ),
               ),
             ],

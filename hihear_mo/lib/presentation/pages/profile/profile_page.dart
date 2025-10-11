@@ -16,137 +16,139 @@ class ProfilePage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: size.height * 0.3,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(AppAssets.hearuHi),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: -50,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: CircleAvatar(
-                      radius: 55,
-                      backgroundColor: AppColors.gold,
-                      child: const CircleAvatar(
-                        radius: 52,
-                        backgroundImage: AssetImage(AppAssets.hearuAvatar),
+      backgroundColor: const Color.fromARGB(0, 22, 20, 29),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    height: size.height * 0.3,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(AppAssets.hearuHi),
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 70),
-            Text(
-              "Hoàng",
-              style: AppTextStyles.title.copyWith(
-                fontSize: 24,
-                color: AppColors.textWhite,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              "hcassano.dev@gmail.com",
-              style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  _buildInfoCard(
-                    context,
-                    icon: Icons.local_fire_department,
-                    title: l10n.seriesOfDays,
-                    value: "7 ${l10n.dayLabel}",
-                    color: Colors.orangeAccent,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoCard(
-                    context,
-                    icon: Icons.star,
-                    title: l10n.level,
-                    value: "Cấp 1",
-                    color: AppColors.gold,
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BlocProvider(
-                            create: (_) => ProfileBloc(),
-                            child: const EditProfilePage(),
-                          ),
+                  Positioned(
+                    bottom: -50,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: AppColors.gold,
+                        child: const CircleAvatar(
+                          radius: 52,
+                          backgroundImage: AssetImage(AppAssets.hearuAvatar),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.gold,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
                       ),
-                      padding: const EdgeInsets.all(12),
-                      minimumSize: const Size(50, 50),
-                    ),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 253, 0, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      minimumSize: const Size(50, 50),
-                    ),
-                    child: const Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                      size: 20,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+
+              const SizedBox(height: 70),
+              Text(
+                "Hoàng",
+                style: AppTextStyles.title.copyWith(
+                  fontSize: 24,
+                  color: AppColors.textWhite,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                "hcassano.dev@gmail.com",
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildInfoCard(
+                      context,
+                      icon: Icons.local_fire_department,
+                      title: l10n.seriesOfDays,
+                      value: "7 ${l10n.dayLabel}",
+                      color: Colors.orangeAccent,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(
+                      context,
+                      icon: Icons.star,
+                      title: l10n.level,
+                      value: "Cấp 1",
+                      color: AppColors.gold,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider(
+                              create: (_) => ProfileBloc(),
+                              child: const EditProfilePage(),
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.gold,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        minimumSize: const Size(50, 50),
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 253, 0, 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        minimumSize: const Size(50, 50),
+                      ),
+                      child: const Icon(
+                        Icons.logout,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -61,7 +61,7 @@ class _SavedVocabPageState extends State<SavedVocabPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color.fromARGB(0, 22, 20, 29),
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,

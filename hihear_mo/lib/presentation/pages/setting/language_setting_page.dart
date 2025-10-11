@@ -20,49 +20,88 @@ class LanguageSettingPage extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgWhiteCustom,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: Text(
           loc.languageSelectTitle,
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.textWhite,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
+        elevation: 0,
       ),
-      body: ListView(
-        children: LanguageType.values.map((lang) {
-          final isSelected = currentLocale.languageCode == lang.code;
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.background
-                  : AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              leading: Icon(
-                lang == LanguageType.english ? Icons.language : Icons.flag,
-                color: isSelected ? AppColors.gold : AppColors.textWhite,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: ListView(
+          children: LanguageType.values.map((lang) {
+            final isSelected = currentLocale.languageCode == lang.code;
+
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.background.withOpacity(0.9)
+                    : AppColors.cardBg,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: AppColors.background.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                ],
               ),
-              title: Text(
-                languages[lang]!,
-                style: AppTextStyles.title.copyWith(
-                  color: isSelected ? AppColors.textWhite : AppColors.gold,
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: isSelected
+                      ? AppColors.textWhite.withOpacity(0.2)
+                      : AppColors.background.withOpacity(0.1),
+                  child: Icon(
+                    lang == LanguageType.english
+                        ? Icons.language
+                        : Icons.flag_rounded,
+                    color: isSelected
+                        ? AppColors.textWhite
+                        : AppColors.background,
+                    size: 20,
+                  ),
                 ),
+                title: Text(
+                  languages[lang]!,
+                  style: AppTextStyles.title.copyWith(
+                    color: isSelected
+                        ? AppColors.textWhite
+                        : AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  ),
+                ),
+                trailing: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          key: ValueKey(true),
+                          color: Colors.white,
+                        )
+                      : const SizedBox(key: ValueKey(false)),
+                ),
+                onTap: () {
+                  context.read<LanguageBloc>().add(ChangeLanguageEvent(lang));
+                },
               ),
-              trailing: isSelected
-                  ? const Icon(Icons.check_circle, color: Colors.greenAccent)
-                  : const SizedBox(),
-              onTap: () {
-                context.read<LanguageBloc>().add(ChangeLanguageEvent(lang));
-              },
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

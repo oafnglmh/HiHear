@@ -11,7 +11,7 @@ class HelpPage extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgWhite,
       appBar: AppBar(
         title: Text(
           loc.helpTitle,
