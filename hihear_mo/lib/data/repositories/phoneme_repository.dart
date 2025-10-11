@@ -10,7 +10,7 @@ class PhonemeRepository {
     Phoneme(symbol: 'eɪ', example: 'say', tts: 'ay'),
     Phoneme(symbol: 'ɜ', example: 'bird', tts: 'er'),
     Phoneme(symbol: 'ɪ', example: 'ship', tts: 'i'),
-    Phoneme(symbol: 'i', example: 'sheep', tts: 'ee'),
+    Phoneme(symbol: 'i', example: 'sheep', tts: 'e'),
     Phoneme(symbol: 'ə', example: 'about', tts: 'uh'),
     Phoneme(symbol: 'oʊ', example: 'boat', tts: 'oh'),
     Phoneme(symbol: 'ʊ', example: 'foot', tts: 'oo'),

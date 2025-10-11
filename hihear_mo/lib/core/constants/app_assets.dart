@@ -7,7 +7,7 @@ class AppAssets {
   // --------------------- IMAGES -------------------- //
   static const String logo = "$imagesPath/logo.png";
   static const String background = "$imagesPath/bg.png";
-  static const String hearuHi = "$imagesPath/hearuHi.png";
+  static const String hearuHi = "$imagesPath/HearuHi.png";
   static const String welcomeImage = "$imagesPath/wc.png";
   static const String englishBg = "$imagesPath/en.jpeg";
   static const String homeBackground = "$imagesPath/bg_home.png";
@@ -26,4 +26,6 @@ class AppAssets {
 
   // --------------------- GIFS ---------------------- //
   static const String welcomeGif = "$gifsPath/wc.gif";
+  static const String graduateGif = "$gifsPath/graduate.gif";
+  static const String celebrationGif = "$gifsPath/celebration.gif";
 }
