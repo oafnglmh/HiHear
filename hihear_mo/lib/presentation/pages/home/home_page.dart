@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/pages/lession/vocab_lesson_1_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
+import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const _HomeContent(),
     SpeakPage(),
-    Container(),
+    SavedVocabPage(),
     ProfilePage(),
     SettingPage(),
   ];

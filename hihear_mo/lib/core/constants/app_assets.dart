@@ -11,7 +11,7 @@ class AppAssets {
   static const String welcomeImage = "$imagesPath/wc.png";
   static const String englishBg = "$imagesPath/en.jpeg";
   static const String homeBackground = "$imagesPath/bg_home.png";
-  static const String hearuAvatar = "$imagesPath/hearuSmile.png";
+  static const String hearuAvatar = "$imagesPath/HearuSmile.png";
 
   // --------------------- ICONS --------------------- //
   static const String googleIcon = "$imagesPath/google.png";
