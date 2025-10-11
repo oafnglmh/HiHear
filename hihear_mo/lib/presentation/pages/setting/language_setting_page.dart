@@ -46,12 +46,12 @@ class LanguageSettingPage extends StatelessWidget {
             child: ListTile(
               leading: Icon(
                 lang == LanguageType.english ? Icons.language : Icons.flag,
-                color: isSelected ? AppColors.gold : AppColors.white,
+                color: isSelected ? AppColors.gold : AppColors.textWhite,
               ),
               title: Text(
                 languages[lang]!,
                 style: AppTextStyles.title.copyWith(
-                  color: isSelected ? AppColors.white : AppColors.gold,
+                  color: isSelected ? AppColors.textWhite : AppColors.gold,
                 ),
               ),
               trailing: isSelected

@@ -18,7 +18,7 @@ class _StartPageState extends State<StartPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(AppAssets.bg, fit: BoxFit.cover),
+          Image.asset(AppAssets.background, fit: BoxFit.cover),
           Container(color: Colors.black.withOpacity(0.2)),
 
           Padding(
@@ -66,7 +66,7 @@ class _StartPageState extends State<StartPage> {
 
                     const SizedBox(height: 24),
                     Image.asset(
-                      AppAssets.gifWelcome,
+                      AppAssets.welcomeGif,
                       height: 150,
                       width: 200,
                       fit: BoxFit.contain,

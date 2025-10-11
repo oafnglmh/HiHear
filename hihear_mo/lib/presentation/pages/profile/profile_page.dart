@@ -43,7 +43,7 @@ class ProfilePage extends StatelessWidget {
                       backgroundColor: AppColors.gold,
                       child: const CircleAvatar(
                         radius: 52,
-                        backgroundImage: AssetImage(AppAssets.avtHearu),
+                        backgroundImage: AssetImage(AppAssets.hearuAvatar),
                       ),
                     ),
                   ),
@@ -56,14 +56,14 @@ class ProfilePage extends StatelessWidget {
               "Hoàng",
               style: AppTextStyles.title.copyWith(
                 fontSize: 24,
-                color: AppColors.white,
+                color: AppColors.textWhite,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               "hcassano.dev@gmail.com",
               style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.gray,
+                color: AppColors.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -162,7 +162,7 @@ class ProfilePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.darkGray.withOpacity(0.8),
+        color: AppColors.bgDark.withOpacity(0.8),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -186,7 +186,9 @@ class ProfilePage extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: AppTextStyles.subtitle.copyWith(color: AppColors.white),
+              style: AppTextStyles.subtitle.copyWith(
+                color: AppColors.textWhite,
+              ),
             ),
           ),
           Text(

@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              AppAssets.bgHome,
+              AppAssets.homeBackground,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
             ),
@@ -93,11 +93,11 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(AppAssets.iconHome, 0),
-                _buildNavItem(AppAssets.iconSpeak, 1),
-                _buildNavItem(AppAssets.iconBook, 2),
-                _buildNavItem(AppAssets.iconUser, 3),
-                _buildNavItem(AppAssets.iconSetting, 4),
+                _buildNavItem(AppAssets.homeIcon, 0),
+                _buildNavItem(AppAssets.speakIcon, 1),
+                _buildNavItem(AppAssets.bookIcon, 2),
+                _buildNavItem(AppAssets.userIcon, 3),
+                _buildNavItem(AppAssets.settingsIcon, 4),
               ],
             ),
           ),
@@ -181,7 +181,7 @@ class _HomeContent extends StatelessWidget {
                 value: 0.1,
                 strokeWidth: 8,
                 color: AppColors.gold,
-                backgroundColor: AppColors.gray,
+                backgroundColor: AppColors.grayDark,
               ),
             ),
             Column(
@@ -216,12 +216,12 @@ class _HomeContent extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.gray,
+            color: AppColors.grayDark,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             "${l10n.level} 1",
-            style: AppTextStyles.subtitle.copyWith(color: AppColors.white),
+            style: AppTextStyles.subtitle.copyWith(color: AppColors.textWhite),
           ),
         ),
       ],
@@ -247,7 +247,7 @@ class _HomeContent extends StatelessWidget {
         ),
         ClipOval(
           child: Image.asset(
-            AppAssets.bgen,
+            AppAssets.englishBg,
             width: 270,
             height: 270,
             fit: BoxFit.cover,

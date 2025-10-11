@@ -25,7 +25,7 @@ class _VocabLesson1View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.bgWhite,
       body: SafeArea(
         child: BlocBuilder<VocabBloc, VocabState>(
           builder: (context, state) {
@@ -97,7 +97,7 @@ class _VocabLesson1View extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.gray,
+                              backgroundColor: AppColors.grayDark,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 80,
                                 vertical: 16,
@@ -183,7 +183,7 @@ class _VocabLesson1View extends StatelessWidget {
                       const SizedBox(height: 40),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.green,
+                          backgroundColor: AppColors.success,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 50,
                             vertical: 14,

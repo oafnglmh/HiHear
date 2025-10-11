@@ -34,7 +34,7 @@ class _VocabLesson2ViewState extends State<_VocabLesson2View> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.bgWhite,
       body: SafeArea(
         child: BlocBuilder<VocabBloc, VocabState>(
           builder: (context, state) {
@@ -210,7 +210,7 @@ class _VocabLesson2ViewState extends State<_VocabLesson2View> {
                         ),
                         child: const Text(
                           "Tiếp tục",
-                          style: TextStyle(color: AppColors.white),
+                          style: TextStyle(color: AppColors.textWhite),
                         ),
                       ),
                     ),

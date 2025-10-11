@@ -1,30 +1,29 @@
 class AppAssets {
-  static const String link = "assets/images";
-  static const String linkVideo = "assets/video";
-  static const String linkGif = "assets/gif";
-  //---------------------IMAGE--------------------------//
+  // --------------------- PATHS --------------------- //
+  static const String imagesPath = "assets/images";
+  static const String videosPath = "assets/video";
+  static const String gifsPath = "assets/gif";
 
-  static const String logo = "$link/logo.png";
-  static const String bg = "$link/bg.png";
-  static const String hearuHi = "$link/HearuHi.png";
-  static const String welcome = "$link/wc.png";
-  static const String bgen = "$link/en.jpeg";
-  static const String bgHome = "$link/bg_home.png";
-  static const String avtHearu = "$link/HearuSmile.png";
+  // --------------------- IMAGES -------------------- //
+  static const String logo = "$imagesPath/logo.png";
+  static const String background = "$imagesPath/bg.png";
+  static const String hearuHi = "$imagesPath/hearuHi.png";
+  static const String welcomeImage = "$imagesPath/wc.png";
+  static const String englishBg = "$imagesPath/en.jpeg";
+  static const String homeBackground = "$imagesPath/bg_home.png";
+  static const String hearuAvatar = "$imagesPath/hearuSmile.png";
 
-  //---------------------ICON--------------------------//
+  // --------------------- ICONS --------------------- //
+  static const String googleIcon = "$imagesPath/google.png";
+  static const String homeIcon = "$imagesPath/house.png";
+  static const String speakIcon = "$imagesPath/speaking.png";
+  static const String settingsIcon = "$imagesPath/gear.png";
+  static const String bookIcon = "$imagesPath/book.png";
+  static const String userIcon = "$imagesPath/user.png";
 
-  static const String iconGG = "$link/google.png";
-  static const String iconHome = "$link/house.png";
-  static const String iconSpeak = "$link/speaking.png";
-  static const String iconSetting = "$link/gear.png";
-  static const String iconBook = "$link/book.png";
-  static const String iconUser = "$link/user.png";
+  // --------------------- VIDEOS -------------------- //
+  static const String welcomeVideo = "$videosPath/wc.mp4";
 
-  //-------------------Video-------------------------//
-  static const String videoWelcome = "$linkVideo/wc.mp4";
-
-  //-------------------GIF-------------------------//
-
-  static const String gifWelcome = "$linkGif/wc.gif";
+  // --------------------- GIFS ---------------------- //
+  static const String welcomeGif = "$gifsPath/wc.gif";
 }

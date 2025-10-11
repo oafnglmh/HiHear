@@ -24,7 +24,7 @@ class _VocabLesson3View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.bgWhite,
       body: SafeArea(
         child: BlocBuilder<VocabBloc, VocabState>(
           builder: (context, state) {
