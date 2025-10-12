@@ -63,7 +63,6 @@ class VocabBloc extends Bloc<VocabEvent, VocabState> {
   }
 
   void _onUpdateInput(UpdateInput event, Emitter<VocabState> emit) {
-    // User nhập mới -> thoát chế độ hiển thị kết quả (gán null)
     emit(state.copyWith(currentInput: event.input, inputCorrect: null));
   }
 

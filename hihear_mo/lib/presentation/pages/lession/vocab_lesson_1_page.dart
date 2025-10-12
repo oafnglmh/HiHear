@@ -47,7 +47,6 @@ class _VocabLesson1View extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 16),
-                    // Thanh tiến trình
                     LinearProgressIndicator(
                       value: (state.currentIndex + 1) / state.vocabList.length,
                       backgroundColor: Colors.grey[200],
@@ -55,14 +54,15 @@ class _VocabLesson1View extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Câu hỏi
                     Text(
-                      "Chọn bản dịch",
-                      style: AppTextStyles.title.copyWith(fontSize: 22),
+                      "Chọn từ đúng",
+                      style: AppTextStyles.title.copyWith(
+                        fontSize: 22,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 12),
 
-                    // Từ cần dịch
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -83,14 +83,12 @@ class _VocabLesson1View extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Ảnh minh họa
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(current["image"], height: 180),
                     ),
                     const SizedBox(height: 30),
 
-                    // Nếu chưa chọn thì hiện options
                     if (isCorrect == null)
                       ...List.generate(current["options"].length, (index) {
                         return Padding(
@@ -114,7 +112,6 @@ class _VocabLesson1View extends StatelessWidget {
                         );
                       }),
 
-                    // Nếu đã chọn thì hiển thị kết quả
                     if (isCorrect != null) ...[
                       const SizedBox(height: 30),
                       Container(

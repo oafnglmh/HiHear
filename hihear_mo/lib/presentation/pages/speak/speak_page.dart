@@ -102,7 +102,9 @@ class _SpeakPageState extends State<SpeakPage> {
               const SizedBox(height: 8),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/speaking');
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 120,

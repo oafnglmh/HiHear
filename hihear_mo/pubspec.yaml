@@ -21,6 +21,7 @@ dependencies:
   flutter_tts: ^4.2.3
   video_player: ^2.6.1
   flip_card: ^0.7.0
+  speech_to_text: ^7.3.0
 
 dev_dependencies:
   flutter_test:
