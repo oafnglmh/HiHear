@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
+import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/vocab/vocab_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
@@ -16,10 +19,12 @@ class HiHearApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authRepository = AuthRepositoryImpl(AuthRemoteDataSource());
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => LanguageBloc()),
         BlocProvider(create: (_) => VocabBloc()),
+        BlocProvider(create: (_) => AuthBloc(authRepository))
       ],
       child: BlocBuilder<LanguageBloc, LanguageState>(
         builder: (context, state) {

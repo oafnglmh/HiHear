@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,8 +25,8 @@ class _LoginPageState extends State<LoginPage>
     );
 
     _logoAnimation = Tween<Alignment>(
-      begin: Alignment(-1.5, -0.5),
-      end: Alignment(0, -0.5),
+      begin: const Alignment(-1.5, -0.5),
+      end: const Alignment(0, -0.5),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
@@ -39,98 +41,136 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(AppAssets.background, fit: BoxFit.cover),
-          Container(color: Colors.black.withOpacity(0.2)),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          error: (message) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          ),
+          authenticated: (_) =>
+              Navigator.of(context).pushReplacementNamed('/goalSelector'),
+        );
+      },
+      builder: (context, state) {
+        final isLoading = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
+
+        return Scaffold(
+          body: Stack(
+            fit: StackFit.expand,
             children: [
-              AnimatedBuilder(
-                animation: _logoAnimation,
-                builder: (context, child) {
-                  return Align(
-                    alignment: _logoAnimation.value,
-                    child: Image.asset(AppAssets.logo, height: 180, width: 180),
-                  );
-                },
-              ),
-              const SizedBox(height: 30),
-              Text(
-                l10n.translWelcome,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 6,
-                      color: Colors.black26,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 50),
-              SizedBox(
-                width: 280,
-                height: 60,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed('/goalSelector');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    elevation: 6,
+              Image.asset(AppAssets.background, fit: BoxFit.cover),
+              Container(color: Colors.black.withOpacity(0.2)),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedBuilder(
+                    animation: _logoAnimation,
+                    builder: (context, child) {
+                      return Align(
+                        alignment: _logoAnimation.value,
+                        child:
+                            Image.asset(AppAssets.logo, height: 180, width: 180),
+                      );
+                    },
                   ),
-                  icon: Image.asset(
-                    AppAssets.googleIcon,
-                    height: 30,
-                    width: 30,
-                  ),
-                  label: Text(
-                    l10n.translLoginGg,
+                  const SizedBox(height: 30),
+                  Text(
+                    l10n.translWelcome,
                     style: const TextStyle(
-                      fontSize: 18,
+                      color: Colors.white,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 6,
+                          color: Colors.black26,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 280,
-                height: 60,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF1877F2),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
+                  const SizedBox(height: 50),
+
+                  SizedBox(
+                    width: 280,
+                    height: 60,
+                    child: ElevatedButton.icon(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              context
+                                  .read<AuthBloc>()
+                                  .add(const AuthEvent.loginWithGoogle());
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        elevation: 6,
+                      ),
+                      icon: Image.asset(
+                        AppAssets.googleIcon,
+                        height: 30,
+                        width: 30,
+                      ),
+                      label: Text(
+                        l10n.translLoginGg,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    elevation: 6,
                   ),
-                  icon: Icon(Icons.facebook, size: 30),
-                  label: Text(
-                    l10n.translLoginFb,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: 280,
+                    height: 60,
+                    child: ElevatedButton.icon(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              context
+                                  .read<AuthBloc>()
+                                  .add(const AuthEvent.loginWithFacebook());
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1877F2),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        elevation: 6,
+                      ),
+                      icon: const Icon(Icons.facebook, size: 30),
+                      label: Text(
+                        l10n.translLoginFb,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 30),
+                      child: CircularProgressIndicator(color: Colors.white),
+                    ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
