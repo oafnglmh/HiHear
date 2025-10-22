@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Google Login</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #g_id_signin {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Login with Google</h1>
+  <div id="g_id_signin"></div>
+
+  <script>
+    const clientId = '300784897831-d4r7eiaeo9ffj6v7o36f0ruvj8s0vdid.apps.googleusercontent.com';
+    const backendUrl = 'http://localhost:3000/api/v1/auths/google';
+
+    function handleCredentialResponse(response) {
+      console.log("ID Token:", response.credential);
+
+      fetch(backendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: response.credential })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("Response from backend:", data);
+        alert("Check console for backend response!");
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        alert("Login failed! Check console.");
+      });
+    }
+
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleCredentialResponse,
+        ux_mode: 'popup' // quan trọng: bật popup, tránh FedCM
+      });
+
+      // Render nút login Google
+      google.accounts.id.renderButton(
+        document.getElementById("g_id_signin"),
+        { theme: "outline", size: "large" }  // tuỳ chỉnh giao diện nút
+      );
+    };
+  </script>
+</body>
+</html>
