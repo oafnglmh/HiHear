@@ -91,7 +91,7 @@ class _SplashPageState extends State<SplashPage>
                   width: 140,
                   height: 140,
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.bgWhite,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(

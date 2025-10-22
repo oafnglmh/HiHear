@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(AppAssets.bg, fit: BoxFit.cover),
+          Image.asset(AppAssets.background, fit: BoxFit.cover),
           Container(color: Colors.black.withOpacity(0.2)),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +89,11 @@ class _LoginPageState extends State<LoginPage>
                     ),
                     elevation: 6,
                   ),
-                  icon: Image.asset(AppAssets.iconGG, height: 30, width: 30),
+                  icon: Image.asset(
+                    AppAssets.googleIcon,
+                    height: 30,
+                    width: 30,
+                  ),
                   label: Text(
                     l10n.translLoginGg,
                     style: const TextStyle(

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
+import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
+import 'package:hihear_mo/presentation/pages/speak/speaking_lesson_page.dart';
 import '../pages/home/home_page.dart';
 import '../pages/splash/splash_page.dart';
 import '../pages/login/login_page.dart';
@@ -11,6 +17,13 @@ class AppRouter {
   static const String login = '/login';
   static const String goalSelector = '/goalSelector';
   static const String start = '/start';
+  static const String aboutPage = '/aboutPage';
+  static const String helpPage = '/helpPage';
+  static const String languagePage = '/languagePage';
+  static const String profile = '/profile';
+  static const String setting = '/setting';
+  static const String speak = '/speak';
+  static const String speaking = '/speaking';
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
@@ -23,6 +36,18 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const StudyTimePage());
       case start:
         return MaterialPageRoute(builder: (_) => const StartPage());
+      case aboutPage:
+        return MaterialPageRoute(builder: (_) => const AboutPage());
+      case helpPage:
+        return MaterialPageRoute(builder: (_) => const HelpPage());
+      case languagePage:
+        return MaterialPageRoute(builder: (_) => const LanguageSettingPage());
+      case setting:
+        return MaterialPageRoute(builder: (_) => const SettingPage());
+      case speak:
+        return MaterialPageRoute(builder: (_) => const SpeakPage());
+      case speaking:
+        return MaterialPageRoute(builder: (_) => const SpeakingLessonPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>

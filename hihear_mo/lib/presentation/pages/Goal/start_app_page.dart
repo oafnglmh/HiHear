@@ -18,7 +18,7 @@ class _StartPageState extends State<StartPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(AppAssets.bg, fit: BoxFit.cover),
+          Image.asset(AppAssets.background, fit: BoxFit.cover),
           Container(color: Colors.black.withOpacity(0.2)),
 
           Padding(
@@ -65,7 +65,12 @@ class _StartPageState extends State<StartPage> {
                     ),
 
                     const SizedBox(height: 24),
-                    Image.asset(AppAssets.welcome, height: 120),
+                    Image.asset(
+                      AppAssets.welcomeGif,
+                      height: 150,
+                      width: 200,
+                      fit: BoxFit.contain,
+                    ),
                   ],
                 ),
 
@@ -83,9 +88,9 @@ class _StartPageState extends State<StartPage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Bắt đầu',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.startButton,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

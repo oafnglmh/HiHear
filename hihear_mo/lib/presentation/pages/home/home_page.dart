@@ -1,5 +1,12 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/pages/lession/vocab_lesson_1_page.dart';
+import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
+import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
+import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
+import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
@@ -17,9 +24,10 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const _HomeContent(),
-    Container(),
-    Container(),
-    Container(),
+    SpeakPage(),
+    SavedVocabPage(),
+    ProfilePage(),
+    SettingPage(),
   ];
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
@@ -38,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              AppAssets.bgHome,
+              AppAssets.homeBackground,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
             ),
@@ -86,10 +94,11 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home, 0),
-                _buildNavItem(Icons.access_alarm, 1),
-                _buildNavItem(Icons.menu_book, 2),
-                _buildNavItem(Icons.settings, 3),
+                _buildNavItem(AppAssets.homeIcon, 0),
+                _buildNavItem(AppAssets.speakIcon, 1),
+                _buildNavItem(AppAssets.bookIcon, 2),
+                _buildNavItem(AppAssets.userIcon, 3),
+                _buildNavItem(AppAssets.settingsIcon, 4),
               ],
             ),
           ),
@@ -98,7 +107,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, int index) {
+  Widget _buildNavItem(String iconPath, int index) {
     final bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () {
@@ -122,11 +131,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Transform.scale(
           scale: isSelected ? 1.2 : 1.0,
-          child: Icon(
-            icon,
-            size: 30,
-            color: isSelected ? Colors.white : Colors.white70,
-          ),
+          child: Image.asset(iconPath, width: 28, height: 28),
         ),
       ),
     );
@@ -135,20 +140,36 @@ class _HomePageState extends State<HomePage> {
 
 class _HomeContent extends StatelessWidget {
   const _HomeContent();
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 20),
-        _buildProgressHeader(),
-        const SizedBox(height: 30),
-        _buildLessonCard(),
+        _buildProgressHeader(context),
+        const SizedBox(height: 150),
+        SizedBox(height: 350, child: _buildLessonList(context)),
       ],
     );
   }
 
-  Widget _buildProgressHeader() {
+  Widget _buildLessonList(BuildContext context) {
+    final lessonCount = 5;
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: lessonCount,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _buildLessonCard(context, index + 1),
+        );
+      },
+    );
+  }
+
+  Widget _buildProgressHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Stack(
@@ -161,7 +182,7 @@ class _HomeContent extends StatelessWidget {
                 value: 0.1,
                 strokeWidth: 8,
                 color: AppColors.gold,
-                backgroundColor: AppColors.gray,
+                backgroundColor: AppColors.grayDark,
               ),
             ),
             Column(
@@ -185,7 +206,7 @@ class _HomeContent extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  "CHUỖI NGÀY",
+                  l10n.seriesOfDays,
                   style: AppTextStyles.subtitle.copyWith(fontSize: 12),
                 ),
               ],
@@ -196,63 +217,65 @@ class _HomeContent extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.gray,
+            color: AppColors.grayDark,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            "Cấp độ 1",
-            style: AppTextStyles.subtitle.copyWith(color: AppColors.white),
+            "${l10n.level} 1",
+            style: AppTextStyles.subtitle.copyWith(color: AppColors.textWhite),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLessonCard() {
-    return Expanded(
-      child: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 300,
-              height: 300,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFFFFE082), Color(0xFFFFC107)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+  Widget _buildLessonCard(BuildContext context, int lessonId) {
+    final l10n = AppLocalizations.of(context)!;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 300,
+          height: 300,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFE082), Color(0xFFFFC107)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            ClipOval(
-              child: Image.asset(
-                AppAssets.bgen,
-                width: 270,
-                height: 270,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              bottom: 50,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text("Bắt đầu", style: AppTextStyles.button),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        ClipOval(
+          child: Image.asset(
+            AppAssets.englishBg,
+            width: 270,
+            height: 270,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          bottom: 60,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VocabLesson1Page()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.gold,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text("${l10n.startButton}", style: AppTextStyles.button),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

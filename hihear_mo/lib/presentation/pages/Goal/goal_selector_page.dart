@@ -20,7 +20,7 @@ class _StudyTimePageState extends State<StudyTimePage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(AppAssets.bg, fit: BoxFit.cover),
+          Image.asset(AppAssets.background, fit: BoxFit.cover),
           Container(color: Colors.black.withOpacity(0.2)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
