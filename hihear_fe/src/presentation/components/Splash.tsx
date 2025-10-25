@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AppAssets } from "../../Core/AppAssets";
+import { AppAssets } from "../../Core/constant/AppAssets";
 
 interface SplashProps {
   isVisible: boolean;

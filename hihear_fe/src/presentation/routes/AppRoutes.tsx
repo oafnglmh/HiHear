@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageWrapper from "../layouts/PageWrapper";
-import HomePage from "../pages/HomePage";
+import HomePage from "../pages/Home/HomePage";
+import LoginPage from "../pages/auth/pages/LoginPage";
 
 const AppRoutes: React.FC = () => (
   <BrowserRouter>
@@ -11,6 +12,14 @@ const AppRoutes: React.FC = () => (
         element={
           <PageWrapper>
             <HomePage />
+          </PageWrapper>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <PageWrapper>
+            <LoginPage />
           </PageWrapper>
         }
       />

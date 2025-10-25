@@ -14,12 +14,9 @@ import {
   CheckCircle,
   ClipboardList,
 } from "lucide-react";
-import { AppAssets } from "../../Core/AppAssets";
-import { FadeInWhenVisible } from "../components/FadeInWhenVisible";
+import { AppAssets } from "../../../Core/constant/AppAssets";
+import { FadeInWhenVisible } from "../../components/FadeInWhenVisible";
 
-/* -------------------------
-  TypingText: chữ "Better!" gõ & xoá lặp vô hạn
-------------------------- */
 const TypingText: React.FC = () => {
   const text = "Better!";
   const [displayText, setDisplayText] = useState("");
@@ -134,8 +131,8 @@ const HomePage: React.FC = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          <button className="text-sm font-medium text-gray-600 hover:text-orange-500">Đăng nhập</button>
-          <Link to="/register" className="bg-orange-500 text-white px-4 py-2 rounded-full font-bold shadow hover:bg-orange-600 transition">
+          <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-orange-500">Đăng nhập</Link>
+          <Link to="/login" className="bg-orange-500 text-white px-4 py-2 rounded-full font-bold shadow hover:bg-orange-600 transition">
             Đăng ký
           </Link>
         </div>
