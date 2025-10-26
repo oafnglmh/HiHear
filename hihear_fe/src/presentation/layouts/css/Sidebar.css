@@ -1,0 +1,213 @@
+/* ==================== */
+/* Màu pastel tươi sáng */
+/* ==================== */
+:root {
+  --primary: #a78bfa; /* tím nhạt */
+  --secondary: #f9a8d4; /* hồng baby */
+  --accent: #7dd3fc; /* xanh trời */
+  --bg: #fafafa;
+  --text: #374151;
+}
+
+/* Sidebar tổng thể */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(180deg, var(--secondary), var(--accent));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  transition: width 0.4s ease;
+  overflow: hidden;
+  animation: slideIn 0.8s ease-out;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Logo & header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  animation: fadeIn 1.2s ease;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.logo-icon {
+  animation: spinStar 4s linear infinite;
+  color: #fff;
+}
+
+@keyframes spinStar {
+  0% {
+    transform: rotate(0deg);
+    color: #fff;
+  }
+  50% {
+    color: #fde68a;
+  }
+  100% {
+    transform: rotate(360deg);
+    color: #fff;
+  }
+}
+
+/* Nút toggle */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.sidebar-toggle:hover {
+  transform: rotate(90deg);
+}
+
+/* Navigation links */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  animation: fadeUp 1s ease;
+}
+
+.sidebar-link {
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 12px;
+  margin: 4px 12px;
+  position: relative;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(5px);
+}
+
+.sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  transform: scale(1.02);
+}
+
+/* Icon màu động */
+.icon {
+  color: #fff;
+  transition: color 0.3s, transform 0.3s;
+}
+.sidebar-link:hover .icon {
+  color: #fde68a;
+  transform: rotate(10deg);
+}
+
+/* Ẩn chữ khi thu nhỏ */
+.sidebar.collapsed .sidebar-link span {
+  display: none;
+}
+
+/* Footer */
+.sidebar-footer {
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 16px;
+  text-align: center;
+  animation: fadeIn 1.2s ease;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #f87171;
+  transform: scale(1.05);
+}
+
+/* Keyframes */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 1000;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    animation: slideIn 0.6s ease;
+  }
+
+  .sidebar-toggle {
+    position: absolute;
+    right: -45px;
+    top: 15px;
+    background: var(--primary);
+    border-radius: 50%;
+    padding: 8px;
+    color: white;
+  }
+}

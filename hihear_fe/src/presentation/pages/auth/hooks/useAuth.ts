@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { authService } from "../service/authService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 export const useAuth =()=>{
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const loginWithGoogle = async() =>{
     try{
@@ -15,6 +17,7 @@ export const useAuth =()=>{
       console.log("Google login success:", err);
     } finally {
       setLoading(false);
+      navigate("/admin/dashboard");
     }
   }
   const loginWithFacebook = async() =>{

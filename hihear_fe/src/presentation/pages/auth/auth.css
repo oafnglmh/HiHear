@@ -6,23 +6,11 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #fffaf0, #fef3c7);
-  color: #333;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-x: hidden;
-}
-
 .login-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90%;
-  max-width: 1100px;
+  width: 100%;
   background: #fff;
   border-radius: 25px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);

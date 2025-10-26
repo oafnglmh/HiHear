@@ -3,10 +3,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageWrapper from "../layouts/PageWrapper";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/auth/pages/LoginPage";
+import Dashboard from "../pages/admin/Dashboard";
+import Users from "../pages/admin/Users";
+import AdminLayout from "../layouts/AdminLayout";
+import Lession from "../pages/admin/lessions/Lessons";
 
-const AppRoutes: React.FC = () => (
+const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
+      {/* Public routes */}
       <Route
         path="/"
         element={
@@ -21,6 +26,20 @@ const AppRoutes: React.FC = () => (
           <PageWrapper>
             <LoginPage />
           </PageWrapper>
+        }
+      />
+
+      {/* Admin routes */}
+      <Route
+        path="/admin/*"
+        element={
+          <AdminLayout>
+            <Routes>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="users" element={<Users />} />
+              <Route path="lession" element={<Lession />} />
+            </Routes>
+          </AdminLayout>
         }
       />
     </Routes>
