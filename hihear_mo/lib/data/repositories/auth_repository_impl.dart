@@ -19,7 +19,7 @@ class AuthRepositoryImpl implements AuthRepository{
   @override
   Future<Either<Failure, dynamic>> loginWithGoogle() async {
     try {
-      final data = await dataSource.loginWithFacebook();
+      final data = await dataSource.loginWithGoogle();
       return Right(data);
     } catch (e) {
       return Left(Failure(e.toString()));

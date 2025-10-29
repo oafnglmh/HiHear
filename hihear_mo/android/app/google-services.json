@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "495791136012",
+    "project_id": "hihear-6d7d5",
+    "storage_bucket": "hihear-6d7d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495791136012:android:be3e08c2351c1047ebfd29",
+        "android_client_info": {
+          "package_name": "com.example.hihear_mo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495791136012-tt27j6vvmrmnasnhiolkbt4g608sqe5c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hihear_mo",
+            "certificate_hash": "bfa845572c00f8faf28dee99493a7fc56d93f1fa"
+          }
+        },
+        {
+          "client_id": "495791136012-1jmsqr1eon062483ia16cgetsri510h5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Gn1MKZL_cp1mvmsStbHKZRRZVDOtzDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495791136012-1jmsqr1eon062483ia16cgetsri510h5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "495791136012-q3c1iuic0e8hl22tm6b1sk0k541773cr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hihearMo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495791136012:android:2bf983ab4ec10684ebfd29",
+        "android_client_info": {
+          "package_name": "com.hihear"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495791136012-iihu9f2dfo3p1or0hhcjq3jukipdq1t3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hihear",
+            "certificate_hash": "bfa845572c00f8faf28dee99493a7fc56d93f1fa"
+          }
+        },
+        {
+          "client_id": "495791136012-1jmsqr1eon062483ia16cgetsri510h5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Gn1MKZL_cp1mvmsStbHKZRRZVDOtzDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495791136012-1jmsqr1eon062483ia16cgetsri510h5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "495791136012-q3c1iuic0e8hl22tm6b1sk0k541773cr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hihearMo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

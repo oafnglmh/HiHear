@@ -9,8 +9,14 @@ import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/vocab/vocab_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import 'core/constants/app_colors.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+   await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-void main() {
   runApp(const HiHearApp());
 }
 
