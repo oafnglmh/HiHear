@@ -22,7 +22,6 @@ class AuthRemoteDataSource {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      print('token: ${googleAuth.idToken}');
       final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCred.user;
       if (user == null) throw Exception('Không thể xác thực người dùng.');
@@ -37,14 +36,12 @@ class AuthRemoteDataSource {
         throw Exception('Backend trả về lỗi: ${response.statusCode}');
       }
 
-
-
         print('Backend response: ${response.data}');
       } catch (e) {
         print('Lỗi gọi backend: $e');
         throw Exception('Lỗi đăng nhập Google: $e');
       }
-
+      print('Đăng nhập Google thành công: ${user}');
       return UserEntity(
         id: user.uid,
         name: user.displayName ?? '',

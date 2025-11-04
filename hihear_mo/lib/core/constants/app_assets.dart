@@ -12,7 +12,7 @@ class AppAssets {
   static const String englishBg = "$imagesPath/en.jpeg";
   static const String homeBackground = "$imagesPath/bg_home.png";
   static const String hearuAvatar = "$imagesPath/HearuSmile.png";
-
+  static const String coverPhoto = "$imagesPath/anhbia.jpg";
   // --------------------- ICONS --------------------- //
   static const String googleIcon = "$imagesPath/google.png";
   static const String homeIcon = "$imagesPath/house.png";
@@ -20,6 +20,7 @@ class AppAssets {
   static const String settingsIcon = "$imagesPath/gear.png";
   static const String bookIcon = "$imagesPath/book.png";
   static const String userIcon = "$imagesPath/user.png";
+  static const String premiumIcon = "$imagesPath/premium.png";
 
   // --------------------- VIDEOS -------------------- //
   static const String welcomeVideo = "$videosPath/wc.mp4";

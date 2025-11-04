@@ -44,7 +44,6 @@ class _HomePageState extends State<HomePage> {
 
           ProfilePage(),
 
-          SettingPage(),
         ];
 
         return Scaffold(
@@ -107,7 +106,6 @@ class _HomePageState extends State<HomePage> {
                 _buildNavItem(AppAssets.speakIcon, 1),
                 _buildNavItem(AppAssets.bookIcon, 2),
                 _buildNavItem(AppAssets.userIcon, 3),
-                _buildNavItem(AppAssets.settingsIcon, 4),
               ],
             ),
           ),

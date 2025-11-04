@@ -55,13 +55,14 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoginWithGoogle value)?  loginWithGoogle,TResult Function( _LoginWithFacebook value)?  loginWithFacebook,TResult Function( _Logout value)?  logout,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoginWithGoogle value)?  loginWithGoogle,TResult Function( _LoginWithFacebook value)?  loginWithFacebook,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle(_that);case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook(_that);case _Logout() when logout != null:
-return logout(_that);case _:
+return logout(_that);case _LoadUser() when loadUser != null:
+return loadUser(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return logout(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoginWithGoogle value)  loginWithGoogle,required TResult Function( _LoginWithFacebook value)  loginWithFacebook,required TResult Function( _Logout value)  logout,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoginWithGoogle value)  loginWithGoogle,required TResult Function( _LoginWithFacebook value)  loginWithFacebook,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle():
 return loginWithGoogle(_that);case _LoginWithFacebook():
 return loginWithFacebook(_that);case _Logout():
-return logout(_that);case _:
+return logout(_that);case _LoadUser():
+return loadUser(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +104,14 @@ return logout(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoginWithGoogle value)?  loginWithGoogle,TResult? Function( _LoginWithFacebook value)?  loginWithFacebook,TResult? Function( _Logout value)?  logout,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoginWithGoogle value)?  loginWithGoogle,TResult? Function( _LoginWithFacebook value)?  loginWithFacebook,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle(_that);case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook(_that);case _Logout() when logout != null:
-return logout(_that);case _:
+return logout(_that);case _LoadUser() when loadUser != null:
+return loadUser(_that);case _:
   return null;
 
 }
@@ -125,12 +128,13 @@ return logout(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loginWithGoogle,TResult Function()?  loginWithFacebook,TResult Function()?  logout,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loginWithGoogle,TResult Function()?  loginWithFacebook,TResult Function()?  logout,TResult Function()?  loadUser,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle();case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook();case _Logout() when logout != null:
-return logout();case _:
+return logout();case _LoadUser() when loadUser != null:
+return loadUser();case _:
   return orElse();
 
 }
@@ -148,12 +152,13 @@ return logout();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loginWithGoogle,required TResult Function()  loginWithFacebook,required TResult Function()  logout,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loginWithGoogle,required TResult Function()  loginWithFacebook,required TResult Function()  logout,required TResult Function()  loadUser,}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle():
 return loginWithGoogle();case _LoginWithFacebook():
 return loginWithFacebook();case _Logout():
-return logout();case _:
+return logout();case _LoadUser():
+return loadUser();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +175,13 @@ return logout();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loginWithGoogle,TResult? Function()?  loginWithFacebook,TResult? Function()?  logout,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loginWithGoogle,TResult? Function()?  loginWithFacebook,TResult? Function()?  logout,TResult? Function()?  loadUser,}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle();case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook();case _Logout() when logout != null:
-return logout();case _:
+return logout();case _LoadUser() when loadUser != null:
+return loadUser();case _:
   return null;
 
 }
@@ -271,6 +277,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'AuthEvent.logout()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _LoadUser implements AuthEvent {
+  const _LoadUser();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadUser);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthEvent.loadUser()';
 }
 
 
@@ -448,7 +486,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( UserEntity user)?  authenticated,TResult? Function()?  loggedOut,TResult? Function( String message)?  error}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( UserEntity user)?  authenticated,TResult? Function()?  loggedOut,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:

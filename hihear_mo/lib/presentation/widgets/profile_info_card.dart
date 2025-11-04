@@ -7,13 +7,18 @@ class ProfileInfoCard extends StatelessWidget {
   final String title;
   final String value;
   final Color color;
-
+  final Color? textColor;
+  final Color? valueColor;
+  final Color? backgroundColor;
   const ProfileInfoCard({
     super.key,
     required this.icon,
     required this.title,
     required this.value,
     required this.color,
+    this.textColor,
+    this.valueColor,
+    this.backgroundColor,
   });
 
   @override
@@ -21,7 +26,7 @@ class ProfileInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.bgDark.withOpacity(0.8),
+        color: backgroundColor ?? AppColors.bgDark.withOpacity(0.8),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -46,14 +51,14 @@ class ProfileInfoCard extends StatelessWidget {
             child: Text(
               title,
               style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.textWhite,
+                color: textColor ?? AppColors.textWhite,
               ),
             ),
           ),
           Text(
             value,
             style: AppTextStyles.title.copyWith(
-              color: AppColors.gold,
+              color: valueColor ?? AppColors.gold,
               fontSize: 16,
             ),
           ),

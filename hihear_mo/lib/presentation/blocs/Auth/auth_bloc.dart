@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hihear_mo/domain/entities/user_entity.dart';
 import 'package:hihear_mo/domain/repositories/auth_repository.dart';
@@ -14,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_LoginWithGoogle>(_onLoginWithGoogle);
     on<_LoginWithFacebook>(_onLoginWithFacebook);
     on<_Logout>(_onLogout);
+    on<_LoadUser>(_onLoadUser);
   }
 
   Future<void> _onLoginWithGoogle(
@@ -57,6 +59,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e, s) {
       emit(AuthState.error('Logout failed: $e'));
       addError(e, s);
+    }
+  }
+  Future<void> _onLoadUser(_LoadUser event, Emitter<AuthState> emit) async {
+    final fbUser = FirebaseAuth.instance.currentUser;
+    if (fbUser != null) {
+      emit(AuthState.authenticated(
+        UserEntity(
+          id: fbUser.uid,
+          name: fbUser.displayName ?? "",
+          email: fbUser.email ?? "",
+          photoUrl: fbUser.photoURL ?? "",
+        ),
+      ));
+    } else {
+      emit(const AuthState.loggedOut());
     }
   }
 }
