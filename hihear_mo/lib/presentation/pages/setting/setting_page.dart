@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
@@ -28,7 +29,7 @@ class SettingPage extends StatelessWidget {
                 icon: Icons.language,
                 title: loc.settingLanguage,
                 onTap: () {
-                  Navigator.pushNamed(context, AppRouter.languagePage);
+                  context.go('/languagePage');
                 },
               ),
               _buildSettingItem(
@@ -43,14 +44,14 @@ class SettingPage extends StatelessWidget {
                 icon: Icons.help_outline,
                 title: loc.settingHelpSupport,
                 onTap: () {
-                  Navigator.pushNamed(context, AppRouter.helpPage);
+                  context.go('/helpPage');
                 },
               ),
               _buildSettingItem(
                 icon: Icons.info_outline,
                 title: loc.settingAboutApp,
                 onTap: () {
-                  Navigator.pushNamed(context, AppRouter.aboutPage);
+                  context.go('/aboutPage');
                 },
               ),
             ],

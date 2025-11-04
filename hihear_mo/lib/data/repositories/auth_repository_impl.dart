@@ -1,29 +1,40 @@
 import 'package:dartz/dartz.dart';
-import '../../domain/repositories/auth_repository.dart';
+import 'package:hihear_mo/core/error/failures.dart';
+import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 
-class AuthRepositoryImpl implements AuthRepository{
+class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource dataSource;
-
   AuthRepositoryImpl(this.dataSource);
-  @override
-  Future<Either<Failure, dynamic>> loginWithFacebook() async {
-    try{
-      final data = await dataSource.loginWithFacebook();
-      return Right(data);
-    }catch(e){
-      return Left(Failure(e.toString()));
-    }
-  }
 
   @override
-  Future<Either<Failure, dynamic>> loginWithGoogle() async {
+  Future<Either<Failure, UserEntity>> loginWithGoogle() async {
     try {
-      final data = await dataSource.loginWithGoogle();
-      return Right(data);
+      final user = await dataSource.loginWithGoogle();
+      return Right(user);
     } catch (e) {
-      return Left(Failure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
+  @override
+  Future<Either<Failure, UserEntity>> loginWithFacebook() async {
+    try {
+      final user = await dataSource.loginWithFacebook();
+      return Right(user);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> logout() async {
+    try {
+      await dataSource.logout();
+      return const Right(unit);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

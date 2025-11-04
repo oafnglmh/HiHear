@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -64,7 +65,7 @@ class VocabCompletePage extends StatelessWidget {
 
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRouter.home);
+                        context.go('/home');
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 6,

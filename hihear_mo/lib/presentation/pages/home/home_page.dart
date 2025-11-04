@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
 import 'package:hihear_mo/presentation/pages/lession/vocab_lesson_1_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
@@ -22,13 +24,6 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const _HomeContent(),
-    SpeakPage(),
-    SavedVocabPage(),
-    ProfilePage(),
-    SettingPage(),
-  ];
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
     _pageController.animateToPage(
@@ -40,30 +35,44 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              AppAssets.homeBackground,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-            ),
-          ),
+    return Builder(
+      builder: (context) {
+        final pages = [
+          const _HomeContent(),
+          SpeakPage(),
+          SavedVocabPage(),
 
-          SafeArea(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() => _selectedIndex = index);
-              },
-              children: _pages,
-            ),
+          ProfilePage(),
+
+          SettingPage(),
+        ];
+
+        return Scaffold(
+          extendBody: true,
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  AppAssets.homeBackground,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
+              ),
+
+              SafeArea(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() => _selectedIndex = index);
+                  },
+                  children: pages,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      bottomNavigationBar: _buildFloatingNavBar(),
+          bottomNavigationBar: _buildFloatingNavBar(),
+        );
+      },
     );
   }
 

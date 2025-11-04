@@ -1,58 +1,113 @@
+// app_router.dart
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
+import 'package:hihear_mo/presentation/pages/Goal/start_app_page.dart';
+import 'package:hihear_mo/presentation/pages/home/home_page.dart';
+import 'package:hihear_mo/presentation/pages/login/login_page.dart';
+import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speaking_lesson_page.dart';
-import '../pages/home/home_page.dart';
-import '../pages/splash/splash_page.dart';
-import '../pages/login/login_page.dart';
-import '../pages/Goal/start_app_page.dart';
+import 'package:hihear_mo/presentation/pages/splash/splash_page.dart';
+
+class AppRoutes {
+  static const splash = '/';
+  static const login = '/login';
+  static const home = '/home';
+  static const goalSelector = '/goalSelector';
+  static const start = '/start';
+  static const about = '/about';
+  static const help = '/help';
+  static const language = '/language';
+  static const setting = '/setting';
+  static const speak = '/speak';
+  static const speaking = '/speaking';
+  static const profile = '/profile';
+}
 
 class AppRouter {
-  static const String splash = '/';
-  static const String home = '/home';
-  static const String login = '/login';
-  static const String goalSelector = '/goalSelector';
-  static const String start = '/start';
-  static const String aboutPage = '/aboutPage';
-  static const String helpPage = '/helpPage';
-  static const String languagePage = '/languagePage';
-  static const String profile = '/profile';
-  static const String setting = '/setting';
-  static const String speak = '/speak';
-  static const String speaking = '/speaking';
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case splash:
-        return MaterialPageRoute(builder: (_) => const SplashPage());
-      case login:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
-      case home:
-        return MaterialPageRoute(builder: (_) => const HomePage());
-      case goalSelector:
-        return MaterialPageRoute(builder: (_) => const StudyTimePage());
-      case start:
-        return MaterialPageRoute(builder: (_) => const StartPage());
-      case aboutPage:
-        return MaterialPageRoute(builder: (_) => const AboutPage());
-      case helpPage:
-        return MaterialPageRoute(builder: (_) => const HelpPage());
-      case languagePage:
-        return MaterialPageRoute(builder: (_) => const LanguageSettingPage());
-      case setting:
-        return MaterialPageRoute(builder: (_) => const SettingPage());
-      case speak:
-        return MaterialPageRoute(builder: (_) => const SpeakPage());
-      case speaking:
-        return MaterialPageRoute(builder: (_) => const SpeakingLessonPage());
-      default:
-        return MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text("404 - Page Not Found"))),
-        );
-    }
+  static GoRouter createRouter() {
+    return GoRouter(
+      initialLocation: AppRoutes.splash,
+      debugLogDiagnostics: true,
+      redirect: (context, state) {
+        final user = FirebaseAuth.instance.currentUser;
+        final loggingIn = state.matchedLocation == AppRoutes.login;
+
+        if (user == null && !loggingIn) {
+          return AppRoutes.login;
+        } else if (user != null && loggingIn) {
+          return AppRoutes.home;
+        }
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.splash,
+          name: 'splash',
+          builder: (context, state) => const SplashPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          name: 'login',
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.home,
+          name: 'home',
+          builder: (context, state) => const HomePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.goalSelector,
+          name: 'goalSelector',
+          builder: (context, state) => const StudyTimePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.start,
+          name: 'start',
+          builder: (context, state) => const StartPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.about,
+          name: 'about',
+          builder: (context, state) => const AboutPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.help,
+          name: 'help',
+          builder: (context, state) => const HelpPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.language,
+          name: 'language',
+          builder: (context, state) => const LanguageSettingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.setting,
+          name: 'setting',
+          builder: (context, state) => const SettingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.speak,
+          name: 'speak',
+          builder: (context, state) => const SpeakPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.speaking,
+          name: 'speaking',
+          builder: (context, state) => const SpeakingLessonPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.profile,
+          name: 'profile',
+          builder: (context, state) => const ProfilePage(),
+        ),
+      ],
+    );
   }
 }

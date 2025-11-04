@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-abstract class AuthRepository{
-  Future<Either<Failure,dynamic>> loginWithGoogle();
-  Future<Either<Failure, dynamic>> loginWithFacebook();
-}
-class Failure {
-  final String message;
-  Failure(this.message);
+import 'package:hihear_mo/core/error/failures.dart';
+import 'package:hihear_mo/domain/entities/user_entity.dart';
+
+abstract class AuthRepository {
+  Future<Either<Failure, UserEntity>> loginWithGoogle();
+  Future<Either<Failure, UserEntity>> loginWithFacebook();
+  Future<Either<Failure, Unit>> logout();
 }

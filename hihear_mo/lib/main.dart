@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
@@ -9,15 +11,31 @@ import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/vocab/vocab_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import 'core/constants/app_colors.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const HiHearApp());
+  final authRepository = AuthRepositoryImpl(AuthRemoteDataSource());
+
+  runApp(
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthRepositoryImpl>.value(value: authRepository),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => LanguageBloc()),
+          BlocProvider(create: (_) => VocabBloc()),
+          BlocProvider(create: (context) => AuthBloc(authRepository)),
+        ],
+        child: const HiHearApp(),
+      ),
+    ),
+  );
 }
 
 class HiHearApp extends StatelessWidget {
@@ -25,35 +43,31 @@ class HiHearApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = AuthRepositoryImpl(AuthRemoteDataSource());
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => LanguageBloc()),
-        BlocProvider(create: (_) => VocabBloc()),
-        BlocProvider(create: (_) => AuthBloc(authRepository))
-      ],
-      child: BlocBuilder<LanguageBloc, LanguageState>(
-        builder: (context, state) {
-          return MaterialApp(
-            title: "HiHear",
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              useMaterial3: true,
-              scaffoldBackgroundColor: AppColors.background,
-            ),
-            initialRoute: AppRouter.splash,
-            onGenerateRoute: AppRouter.generateRoute,
-            locale: state.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en'), Locale('vi')],
-          );
-        },
-      ),
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, state) {
+        final router = AppRouter.createRouter();
+
+        return MaterialApp.router(
+          title: 'HiHear',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            useMaterial3: true,
+            scaffoldBackgroundColor: AppColors.background,
+          ),
+          routerConfig: router,
+          locale: state.locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('vi'),
+          ],
+        );
+      },
     );
   }
 }

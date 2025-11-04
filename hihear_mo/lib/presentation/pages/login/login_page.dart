@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
+import 'package:hihear_mo/presentation/routes/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,6 +21,7 @@ class _LoginPageState extends State<LoginPage>
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -27,7 +30,9 @@ class _LoginPageState extends State<LoginPage>
     _logoAnimation = Tween<Alignment>(
       begin: const Alignment(-1.5, -0.5),
       end: const Alignment(0, -0.5),
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
 
     _controller.forward();
   }
@@ -45,11 +50,9 @@ class _LoginPageState extends State<LoginPage>
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          error: (message) => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          ),
-          authenticated: (_) =>
-              Navigator.of(context).pushReplacementNamed('/goalSelector'),
+          authenticated: (_) => context.go(AppRoutes.home),
+          error: (message) => ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(message))),
         );
       },
       builder: (context, state) {
@@ -62,8 +65,11 @@ class _LoginPageState extends State<LoginPage>
           body: Stack(
             fit: StackFit.expand,
             children: [
+              // Background
               Image.asset(AppAssets.background, fit: BoxFit.cover),
               Container(color: Colors.black.withOpacity(0.2)),
+
+              // Main content
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -72,8 +78,7 @@ class _LoginPageState extends State<LoginPage>
                     builder: (context, child) {
                       return Align(
                         alignment: _logoAnimation.value,
-                        child:
-                            Image.asset(AppAssets.logo, height: 180, width: 180),
+                        child: Image.asset(AppAssets.logo, height: 180, width: 180),
                       );
                     },
                   ),
@@ -95,6 +100,7 @@ class _LoginPageState extends State<LoginPage>
                   ),
                   const SizedBox(height: 50),
 
+                  // Google login button
                   SizedBox(
                     width: 280,
                     height: 60,
@@ -130,6 +136,7 @@ class _LoginPageState extends State<LoginPage>
                   ),
                   const SizedBox(height: 20),
 
+                  // Facebook login button
                   SizedBox(
                     width: 280,
                     height: 60,
@@ -160,6 +167,7 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ),
 
+                  // Loading indicator
                   if (isLoading)
                     const Padding(
                       padding: EdgeInsets.only(top: 30),

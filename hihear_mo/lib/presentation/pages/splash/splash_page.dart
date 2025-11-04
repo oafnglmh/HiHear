@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/data/datasources/sources/audio/audio_player_service.dart';
 import 'package:hihear_mo/domain/usecases/play_splash_music_usecase.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
@@ -63,7 +64,7 @@ class _SplashPageState extends State<SplashPage>
   void _navigateToLogin() {
     if (mounted) {
       _audioService.stop();
-      Navigator.of(context).pushReplacementNamed(AppRouter.login);
+      context.go('/login');
     }
   }
 
