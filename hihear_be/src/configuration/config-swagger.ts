@@ -9,8 +9,8 @@ export function configureSwagger(
 ) {
   if (configService.enableSwagger) {
     const config = new DocumentBuilder()
-      .setTitle('Smart Event')
-      .setDescription('SmartEvent API')
+      .setTitle('Hihear')
+      .setDescription('Hihear API')
       .setVersion('1.0')
       .addTag('api')
       .addBearerAuth()
