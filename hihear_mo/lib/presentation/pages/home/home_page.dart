@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,98 +13,167 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool isPremium;
+  
+  const HomePage({
+    super.key,
+    this.isPremium = true,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
+  late AnimationController _navBarController;
+  late AnimationController _shimmerController;
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOut,
+  @override
+  void initState() {
+    super.initState();
+    
+    _navBarController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
     );
+
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _navBarController.dispose();
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    if (_selectedIndex != index) {
+      setState(() => _selectedIndex = index);
+      _navBarController.forward(from: 0);
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOutCubic,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        final pages = [
-          const _HomeContent(),
-          SpeakPage(),
-          SavedVocabPage(),
+    final pages = [
+      _HomeContent(isPremium: widget.isPremium),
+      SpeakPage(isPremium: widget.isPremium),
+      SavedVocabPage(isPremium: widget.isPremium),
+      ProfilePage(),
+    ];
 
-          ProfilePage(),
-
-        ];
-
-        return Scaffold(
-          extendBody: true,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  AppAssets.homeBackground,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                ),
-              ),
-
-              SafeArea(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() => _selectedIndex = index);
-                  },
-                  children: pages,
-                ),
-              ),
-            ],
+    return Scaffold(
+      extendBody: true,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: widget.isPremium
+                ? Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF1a1a2e),
+                          Color(0xFF16213e),
+                          Color(0xFF0f3460),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFFFF9F66),
+                          Color(0xFFFF8C50),
+                          Color(0xFFFFA976),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
-          bottomNavigationBar: _buildFloatingNavBar(),
-        );
-      },
+          SafeArea(
+            child: PageView(
+              controller: _pageController,
+              physics: const BouncingScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() => _selectedIndex = index);
+              },
+              children: pages,
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 12,
+            child: _buildFloatingNavBar(),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildFloatingNavBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
+            color: widget.isPremium
+                ? const Color(0xFFFFD700).withOpacity(0.3)
+                : Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              gradient: widget.isPremium
+                  ? LinearGradient(
+                      colors: [
+                        const Color(0xFFFFD700).withOpacity(0.15),
+                        const Color(0xFFFFA500).withOpacity(0.1),
+                      ],
+                    )
+                  : null,
+              color: widget.isPremium ? null : Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: widget.isPremium
+                    ? const Color(0xFFFFD700).withOpacity(0.3)
+                    : Colors.white.withOpacity(0.5),
+                width: 1.5,
+              ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(AppAssets.homeIcon, 0),
-                _buildNavItem(AppAssets.speakIcon, 1),
-                _buildNavItem(AppAssets.bookIcon, 2),
-                _buildNavItem(AppAssets.userIcon, 3),
+                _buildNavItem(Icons.home_rounded, 0),
+                _buildNavItem(Icons.mic_rounded, 1),
+                _buildNavItem(Icons.bookmark_rounded, 2),
+                _buildNavItem(Icons.person_rounded, 3),
               ],
             ),
           ),
@@ -114,175 +182,587 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavItem(String iconPath, int index) {
+  Widget _buildNavItem(IconData icon, int index) {
     final bool isSelected = _selectedIndex == index;
+    
     return GestureDetector(
-      onTap: () {
-        _onItemTapped(index);
-      },
+      onTap: () => _onItemTapped(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.all(10),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
+        padding: EdgeInsets.all(isSelected ? 14 : 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.gold : Colors.transparent,
+          gradient: isSelected && widget.isPremium
+              ? const LinearGradient(
+                  colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                )
+              : null,
+          color: isSelected && !widget.isPremium 
+              ? const Color(0xFFFF8C50)
+              : Colors.transparent,
           shape: BoxShape.circle,
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.gold.withOpacity(0.5),
+                    color: (widget.isPremium
+                            ? const Color(0xFFFFD700)
+                            : const Color(0xFFFF8C50))
+                        .withOpacity(0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [],
         ),
-        child: Transform.scale(
-          scale: isSelected ? 1.2 : 1.0,
-          child: Image.asset(iconPath, width: 28, height: 28),
+        child: Icon(
+          icon,
+          color: isSelected
+              ? Colors.white
+              : (widget.isPremium
+                  ? Colors.white.withOpacity(0.6)
+                  : const Color(0xFF666666)),
+          size: 24,
         ),
       ),
     );
   }
 }
 
-class _HomeContent extends StatelessWidget {
-  const _HomeContent();
+class _HomeContent extends StatefulWidget {
+  final bool isPremium;
+  
+  const _HomeContent({this.isPremium = false});
+
+  @override
+  State<_HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<_HomeContent>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _headerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _headerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _headerController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 20),
-        _buildProgressHeader(context),
-        const SizedBox(height: 150),
-        SizedBox(height: 350, child: _buildLessonList(context)),
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _buildHeader(context),
+              const SizedBox(height: 24),
+              _buildProgressCard(context),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: _buildLessonGrid(context),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 100),
+        ),
       ],
     );
   }
 
-  Widget _buildLessonList(BuildContext context) {
-    final lessonCount = 5;
-
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: lessonCount,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _buildLessonCard(context, index + 1),
-        );
-      },
+  Widget _buildHeader(BuildContext context) {
+    return FadeTransition(
+      opacity: _headerController,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(widget.isPremium ? 0.2 : 0.95),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: widget.isPremium
+                    ? []
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+              ),
+              child: Icon(
+                Icons.school_rounded,
+                color: widget.isPremium ? Colors.white : const Color(0xFFFF8C50),
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Xin chào! 👋",
+                    style: TextStyle(
+                      color: widget.isPremium ? Colors.white : Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Sẵn sàng học hôm nay?",
+                    style: TextStyle(
+                      color: widget.isPremium
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (widget.isPremium) _buildPremiumBadge(),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildProgressHeader(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              height: 100,
-              width: 100,
-              child: CircularProgressIndicator(
-                value: 0.1,
-                strokeWidth: 8,
-                color: AppColors.gold,
-                backgroundColor: AppColors.grayDark,
-              ),
+  Widget _buildPremiumBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFD700).withOpacity(0.5),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.workspace_premium, color: Colors.white, size: 16),
+          SizedBox(width: 4),
+          Text(
+            "PRO",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
             ),
-            Column(
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: widget.isPremium
+              ? Colors.white.withOpacity(0.1)
+              : Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(24),
+          border: widget.isPremium
+              ? Border.all(
+                  color: const Color(0xFFFFD700).withOpacity(0.3),
+                )
+              : null,
+          boxShadow: widget.isPremium
+              ? []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                // Circular Progress
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    const Icon(
-                      Icons.local_fire_department,
-                      color: Color.fromARGB(255, 255, 251, 5),
-                    ),
-                    const SizedBox(width: 3),
-                    const Text(
-                      "1",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    SizedBox(
+                      height: 90,
+                      width: 90,
+                      child: CircularProgressIndicator(
+                        value: 0.1,
+                        strokeWidth: 8,
+                        color: widget.isPremium
+                            ? const Color(0xFFFFD700)
+                            : const Color(0xFFFF8C50),
+                        backgroundColor: widget.isPremium
+                            ? Colors.white.withOpacity(0.2)
+                            : const Color(0xFFFFE0D0),
                       ),
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.local_fire_department,
+                              color: widget.isPremium
+                                  ? const Color(0xFFFFD700)
+                                  : const Color(0xFFFF6B35),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "1",
+                              style: TextStyle(
+                                color: widget.isPremium
+                                    ? Colors.white
+                                    : const Color(0xFF333333),
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "ngày",
+                          style: TextStyle(
+                            color: widget.isPremium
+                                ? Colors.white.withOpacity(0.7)
+                                : const Color(0xFF999999),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Text(
-                  l10n.seriesOfDays,
-                  style: AppTextStyles.subtitle.copyWith(fontSize: 12),
+                
+                const SizedBox(width: 20),
+                
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Streak hiện tại",
+                        style: TextStyle(
+                          color: widget.isPremium
+                              ? Colors.white.withOpacity(0.8)
+                              : const Color(0xFF666666),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Tuyệt vời!",
+                        style: TextStyle(
+                          color: widget.isPremium
+                              ? const Color(0xFFFFD700)
+                              : const Color(0xFFFF8C50),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Tiếp tục duy trì nhé!",
+                        style: TextStyle(
+                          color: widget.isPremium
+                              ? Colors.white.withOpacity(0.7)
+                              : const Color(0xFF999999),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+            
+            const SizedBox(height: 20),
+            
+            // Level Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: widget.isPremium
+                    ? LinearGradient(
+                        colors: [
+                          const Color(0xFFFFD700).withOpacity(0.3),
+                          const Color(0xFFFFA500).withOpacity(0.2),
+                        ],
+                      )
+                    : const LinearGradient(
+                        colors: [Color(0xFFFFE5D0), Color(0xFFFFF0E5)],
+                      ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.emoji_events,
+                    color: widget.isPremium
+                        ? const Color(0xFFFFD700)
+                        : const Color(0xFFFF8C50),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "${l10n.level} 1",
+                    style: TextStyle(
+                      color: widget.isPremium
+                          ? Colors.white
+                          : const Color(0xFF333333),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.grayDark,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            "${l10n.level} 1",
-            style: AppTextStyles.subtitle.copyWith(color: AppColors.textWhite),
-          ),
-        ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildLessonGrid(BuildContext context) {
+    return SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.85,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return TweenAnimationBuilder<double>(
+            duration: Duration(milliseconds: 400 + (index * 100)),
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: 0.8 + (value * 0.2),
+                child: Opacity(
+                  opacity: value,
+                  child: _buildLessonCard(context, index + 1),
+                ),
+              );
+            },
+          );
+        },
+        childCount: 4,
+      ),
     );
   }
 
   Widget _buildLessonCard(BuildContext context, int lessonId) {
     final l10n = AppLocalizations.of(context)!;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: 300,
-          height: 300,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [Color(0xFFFFE082), Color(0xFFFFC107)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+    final colors = _getLessonColors(lessonId);
+    
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VocabLesson1Page()),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: widget.isPremium
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: colors,
+                )
+              : null,
+          color: widget.isPremium ? null : Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(24),
+          border: widget.isPremium
+              ? Border.all(
+                  color: colors[0].withOpacity(0.5),
+                )
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: widget.isPremium
+                  ? colors[0].withOpacity(0.3)
+                  : Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
+          ],
         ),
-        ClipOval(
-          child: Image.asset(
-            AppAssets.englishBg,
-            width: 270,
-            height: 270,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Positioned(
-          bottom: 60,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const VocabLesson1Page()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.gold,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              // Background Image/Pattern
+              if (!widget.isPremium)
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.05,
+                    child: Image.asset(
+                      AppAssets.englishBg,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Lesson badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: widget.isPremium
+                            ? Colors.white.withOpacity(0.2)
+                            : colors[0].withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        "Bài $lessonId",
+                        style: TextStyle(
+                          color: widget.isPremium ? Colors.white : colors[0],
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    
+                    const Spacer(),
+                    
+                    // Title
+                    Text(
+                      "Từ vựng cơ bản",
+                      style: TextStyle(
+                        color: widget.isPremium ? Colors.white : const Color(0xFF333333),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.article_outlined,
+                          size: 14,
+                          color: widget.isPremium
+                              ? Colors.white.withOpacity(0.8)
+                              : const Color(0xFF999999),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "20 từ mới",
+                          style: TextStyle(
+                            color: widget.isPremium
+                                ? Colors.white.withOpacity(0.8)
+                                : const Color(0xFF999999),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Start button
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: widget.isPremium
+                            ? null
+                            : LinearGradient(
+                                colors: [colors[0], colors[1]],
+                              ),
+                        color: widget.isPremium ? Colors.white : null,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (widget.isPremium ? Colors.white : colors[0])
+                                .withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.startButton,
+                            style: TextStyle(
+                              color: widget.isPremium ? colors[0] : Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            color: widget.isPremium ? colors[0] : Colors.white,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text("${l10n.startButton}", style: AppTextStyles.button),
-            ),
+            ],
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  List<Color> _getLessonColors(int lessonId) {
+    final colorSets = [
+      [const Color(0xFF667eea), const Color(0xFF764ba2)],
+      [const Color(0xFFf093fb), const Color(0xFFf5576c)],
+      [const Color(0xFF4facfe), const Color(0xFF00f2fe)],
+      [const Color(0xFF43e97b), const Color(0xFF38f9d7)],
+    ];
+    return colorSets[(lessonId - 1) % colorSets.length];
   }
 }

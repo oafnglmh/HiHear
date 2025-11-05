@@ -309,7 +309,6 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
                   children: [
                     const SizedBox(height: 20),
                     
-                    // Stats Section
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -346,7 +345,6 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
 
                     const SizedBox(height: 24),
 
-                    // Achievement Section
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Container(
@@ -391,7 +389,7 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "Keep up the great work! 🎉",
+                                    "Keep up the great work!",
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.9),
                                       fontSize: 14,
