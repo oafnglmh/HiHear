@@ -24,6 +24,7 @@ class AuthRemoteDataSource {
       );
       final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCred.user;
+      String? national;
       if (user == null) throw Exception('Không thể xác thực người dùng.');
       try {
         final response = await _dio.post(
@@ -37,6 +38,7 @@ class AuthRemoteDataSource {
       }
 
         print('Backend response: ${response.data}');
+        national = null;
       } catch (e) {
         print('Lỗi gọi backend: $e');
         throw Exception('Lỗi đăng nhập Google: $e');
@@ -47,6 +49,7 @@ class AuthRemoteDataSource {
         name: user.displayName ?? '',
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
+        national: national,
       );
     } catch (e) {
       throw Exception('Lỗi đăng nhập Google: $e');
@@ -61,6 +64,7 @@ class AuthRemoteDataSource {
         name: response.data['name'] ?? 'User',
         email: response.data['email'] ?? 'unknown@email.com',
         photoUrl: response.data['avatar'] ?? '',
+        national: response.data['avatar'] ?? '',
       );
     } catch (e) {
       throw Exception('Lỗi đăng nhập Facebook: $e');

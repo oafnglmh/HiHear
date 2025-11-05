@@ -30,9 +30,7 @@ class _LoginPageState extends State<LoginPage>
     _logoAnimation = Tween<Alignment>(
       begin: const Alignment(-1.5, -0.5),
       end: const Alignment(0, -0.5),
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
   }
@@ -50,11 +48,19 @@ class _LoginPageState extends State<LoginPage>
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          authenticated: (_) => context.go(AppRoutes.home),
-          error: (message) => ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(message))),
+          authenticated: (user) {
+            if (user.national == null) {
+              context.go('/languageCountry');
+            } else {
+              context.go('/home');
+            }
+          },
+          error: (message) => ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message))),
         );
       },
+
       builder: (context, state) {
         final isLoading = state.maybeWhen(
           loading: () => true,
@@ -78,7 +84,11 @@ class _LoginPageState extends State<LoginPage>
                     builder: (context, child) {
                       return Align(
                         alignment: _logoAnimation.value,
-                        child: Image.asset(AppAssets.logo, height: 180, width: 180),
+                        child: Image.asset(
+                          AppAssets.logo,
+                          height: 180,
+                          width: 180,
+                        ),
                       );
                     },
                   ),
@@ -108,9 +118,9 @@ class _LoginPageState extends State<LoginPage>
                       onPressed: isLoading
                           ? null
                           : () {
-                              context
-                                  .read<AuthBloc>()
-                                  .add(const AuthEvent.loginWithGoogle());
+                              context.read<AuthBloc>().add(
+                                const AuthEvent.loginWithGoogle(),
+                              );
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -144,9 +154,9 @@ class _LoginPageState extends State<LoginPage>
                       onPressed: isLoading
                           ? null
                           : () {
-                              context
-                                  .read<AuthBloc>()
-                                  .add(const AuthEvent.loginWithFacebook());
+                              context.read<AuthBloc>().add(
+                                const AuthEvent.loginWithFacebook(),
+                              );
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1877F2),

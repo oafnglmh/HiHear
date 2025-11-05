@@ -7,11 +7,8 @@ import 'package:hihear_mo/data/repositories/phoneme_repository.dart';
 
 class SpeakPage extends StatefulWidget {
   final bool isPremium;
-  
-  const SpeakPage({
-    super.key,
-    this.isPremium = true,
-  });
+
+  const SpeakPage({super.key, this.isPremium = true});
 
   @override
   State<SpeakPage> createState() => _SpeakPageState();
@@ -22,14 +19,14 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
   late AnimationController _headerController;
   late AnimationController _shimmerController;
   late AnimationController _pulseController;
-  
+
   String? _currentPlayingSymbol;
   bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    
+
     _headerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -61,12 +58,11 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       _isPlaying = true;
     });
 
-    await flutterTts.setLanguage("en-US");
+    await flutterTts.setLanguage("vi-VN");
     await flutterTts.setPitch(1.0);
     await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak(phoneme.tts);
-    await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak(phoneme.example);
+    String textToSpeak = "${phoneme.tts}, ví dụ: ${phoneme.example}";
+    await flutterTts.speak(textToSpeak);
 
     setState(() {
       _currentPlayingSymbol = null;
@@ -106,6 +102,14 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                       _buildStatsCards(),
                       const SizedBox(height: 32),
                       _buildSectionHeader(
+                        "Dấu Thanh",
+                        Icons.record_voice_over,
+                        PhonemeRepository.tones.length,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPhonemeGrid(PhonemeRepository.tones),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader(
                         "Nguyên âm",
                         Icons.record_voice_over,
                         PhonemeRepository.vowels.length,
@@ -120,6 +124,14 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                       ),
                       const SizedBox(height: 16),
                       _buildPhonemeGrid(PhonemeRepository.consonants),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader(
+                        "Nguyên âm đôi",
+                        Icons.mic,
+                        PhonemeRepository.diphthongs.length,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPhonemeGrid(PhonemeRepository.diphthongs),
                       const SizedBox(height: 24),
                     ],
                   ),
@@ -137,13 +149,16 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       child: FadeTransition(
         opacity: _headerController,
         child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, -0.3),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: _headerController,
-            curve: Curves.easeOut,
-          )),
+          position:
+              Tween<Offset>(
+                begin: const Offset(0, -0.3),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: _headerController,
+                  curve: Curves.easeOut,
+                ),
+              ),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -175,15 +190,19 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                                 colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
                               )
                             : null,
-                        color: widget.isPremium ? null : const Color(0xFFF8B271),
+                        color: widget.isPremium
+                            ? null
+                            : const Color(0xFFF8B271),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: widget.isPremium
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFFFFD700).withOpacity(0.4),
+                                  color: const Color(
+                                    0xFFFFD700,
+                                  ).withOpacity(0.4),
                                   blurRadius: 16,
                                   spreadRadius: 2,
-                                )
+                                ),
                               ]
                             : null,
                       ),
@@ -318,7 +337,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                         color: const Color(0xFFFFD700).withOpacity(0.3),
                         blurRadius: 20 + (_pulseController.value * 10),
                         spreadRadius: 2,
-                      )
+                      ),
                     ]
                   : null,
             ),
@@ -363,24 +382,50 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
   }
 
   Widget _buildStatsCards() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _buildStatCard(
-            icon: Icons.music_note,
-            title: "Nguyên âm",
-            value: "${PhonemeRepository.vowels.length}",
-            color: const Color(0xFF667eea),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.music_note,
+                title: "Nguyên âm",
+                value: "${PhonemeRepository.vowels.length}",
+                color: const Color(0xFF667EEA),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.speaker_notes,
+                title: "Phụ âm",
+                value: "${PhonemeRepository.consonants.length}",
+                color: const Color(0xFFF093FB),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildStatCard(
-            icon: Icons.speaker_notes,
-            title: "Phụ âm",
-            value: "${PhonemeRepository.consonants.length}",
-            color: const Color(0xFFf093fb),
-          ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.record_voice_over,
+                title: "Nguyên âm đôi",
+                value: "${PhonemeRepository.diphthongs.length}",
+                color: const Color(0xFF43E97B),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.text_fields,
+                title: "Dấu thanh",
+                value: "${PhonemeRepository.tones.length}",
+                color: const Color(0xFFFFD700),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -397,10 +442,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         gradient: widget.isPremium
             ? LinearGradient(
-                colors: [
-                  color.withOpacity(0.3),
-                  color.withOpacity(0.1),
-                ],
+                colors: [color.withOpacity(0.3), color.withOpacity(0.1)],
               )
             : null,
         color: widget.isPremium ? null : Colors.white.withOpacity(0.05),
@@ -475,9 +517,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.2)),
           ),
           child: Text(
             "$count âm",
@@ -506,7 +546,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       itemBuilder: (context, index) {
         final phoneme = phonemes[index];
         final isPlaying = _currentPlayingSymbol == phoneme.symbol;
-        
+
         return TweenAnimationBuilder<double>(
           duration: Duration(milliseconds: 300 + (index * 30)),
           tween: Tween(begin: 0.0, end: 1.0),
@@ -526,7 +566,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
 
   Widget _buildPhonemeCard(Phoneme phoneme, bool isPlaying, int index) {
     final colors = _getCardColors(index);
-    
+
     return GestureDetector(
       onTap: () => _speak(phoneme),
       child: AnimatedContainer(
@@ -537,10 +577,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: isPlaying
-                      ? [
-                          const Color(0xFFFFD700),
-                          const Color(0xFFFFA500),
-                        ]
+                      ? [const Color(0xFFFFD700), const Color(0xFFFFA500)]
                       : [
                           colors[0].withOpacity(0.8),
                           colors[1].withOpacity(0.8),
@@ -549,14 +586,16 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
               : null,
           color: widget.isPremium
               ? null
-              : (isPlaying ? const Color(0xFFFFD700) : Colors.white.withOpacity(0.95)),
+              : (isPlaying
+                    ? const Color(0xFFFFD700)
+                    : Colors.white.withOpacity(0.95)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isPlaying
                 ? Colors.white.withOpacity(0.5)
                 : (widget.isPremium
-                    ? colors[0].withOpacity(0.3)
-                    : const Color(0xFFF8B271).withOpacity(0.5)),
+                      ? colors[0].withOpacity(0.3)
+                      : const Color(0xFFF8B271).withOpacity(0.5)),
             width: isPlaying ? 2 : 1,
           ),
           boxShadow: widget.isPremium
@@ -591,7 +630,9 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3 * (1 - _pulseController.value)),
+                          color: Colors.white.withOpacity(
+                            0.3 * (1 - _pulseController.value),
+                          ),
                           width: 2 + (_pulseController.value * 4),
                         ),
                       ),
@@ -599,7 +640,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                   );
                 },
               ),
-            
+
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -618,12 +659,14 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                   else
                     Icon(
                       Icons.play_circle_outline,
-                      color: widget.isPremium ? Colors.white.withOpacity(0.8) : Colors.black54,
+                      color: widget.isPremium
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.black54,
                       size: 20,
                     ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     phoneme.symbol,
                     style: TextStyle(
@@ -632,9 +675,9 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                       fontSize: 24,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 6),
-                  
+
                   Text(
                     phoneme.example,
                     style: TextStyle(

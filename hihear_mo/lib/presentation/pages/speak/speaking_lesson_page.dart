@@ -12,7 +12,7 @@ class SpeakingLessonPage extends StatefulWidget {
   
   const SpeakingLessonPage({
     super.key,
-    this.isPremium = false,
+    this.isPremium = true,
   });
 
   @override

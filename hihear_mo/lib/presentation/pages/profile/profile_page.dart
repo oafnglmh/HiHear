@@ -180,7 +180,7 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          loggedOut: () => Navigator.of(context).pushReplacementNamed(AppRoutes.login),
+          loggedOut: () => context.go('/login'),
           error: (message) => ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message)),
           ),

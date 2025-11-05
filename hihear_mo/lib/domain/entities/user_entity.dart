@@ -10,6 +10,7 @@ abstract class UserEntity with _$UserEntity {
     required String name,
     required String email,
     String? photoUrl,
+    String? national,
   }) = _UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>

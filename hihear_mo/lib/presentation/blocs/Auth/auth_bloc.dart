@@ -70,6 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: fbUser.displayName ?? "",
           email: fbUser.email ?? "",
           photoUrl: fbUser.photoURL ?? "",
+          national: "",
         ),
       ));
     } else {

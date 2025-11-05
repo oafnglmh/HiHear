@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
 import 'package:hihear_mo/presentation/pages/Goal/start_app_page.dart';
+import 'package:hihear_mo/presentation/pages/country/country_selection_page.dart';
 import 'package:hihear_mo/presentation/pages/home/home_page.dart';
 import 'package:hihear_mo/presentation/pages/login/login_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const speak = '/speak';
   static const speaking = '/speaking';
   static const profile = '/profile';
+  static const languageCountry = '/languageCountry';
 }
 
 class AppRouter {
@@ -106,6 +108,11 @@ class AppRouter {
           path: AppRoutes.profile,
           name: 'profile',
           builder: (context, state) => const ProfilePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.languageCountry,
+          name: 'languageCountry',
+          builder: (context, state) => const CountrySelectionPage(),
         ),
       ],
     );

@@ -5,8 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
+import 'package:hihear_mo/data/repositories/country_repository_impl.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
+import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/vocab/vocab_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
@@ -20,7 +22,7 @@ Future<void> main() async {
   );
 
   final authRepository = AuthRepositoryImpl(AuthRemoteDataSource());
-
+  final countryRepository = CountryRepositoryImpl();
   runApp(
     MultiRepositoryProvider(
       providers: [
@@ -31,6 +33,9 @@ Future<void> main() async {
           BlocProvider(create: (_) => LanguageBloc()),
           BlocProvider(create: (_) => VocabBloc()),
           BlocProvider(create: (context) => AuthBloc(authRepository)),
+          BlocProvider(
+          create: (_) => CountryBloc(countryRepository),
+        ),
         ],
         child: const HiHearApp(),
       ),
