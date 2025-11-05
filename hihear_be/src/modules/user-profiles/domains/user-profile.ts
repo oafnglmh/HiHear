@@ -11,11 +11,13 @@ export class UserProfile {
 
   lastName: string;
 
-  avatarUrl: string;
+  avatarUrl: string | null;
 
-  xpPoints: number;
+  xpPoints: number | null;
 
-  streakDays: number;
+  streakDays: number | null;
+
+  level: string | null;
 
   createdAt: Date;
 
@@ -29,6 +31,7 @@ export class UserProfile {
       avatarUrl: userProfileEntity.avatarUrl,
       xpPoints: userProfileEntity.xpPoints,
       streakDays: userProfileEntity.streakDays,
+      level: userProfileEntity.level,
       createdAt: userProfileEntity.createdAt,
       updatedAt: userProfileEntity.updatedAt,
     };

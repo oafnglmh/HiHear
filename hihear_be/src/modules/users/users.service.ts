@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserProfileService } from '../user-profiles/user-profiles.service';
-import { UserProfile } from '../user-profiles/domains/create-user-profile';
+import { UserProfileCreate } from '../user-profiles/domains/create-user-profile';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class UserService {
 
     await this.userProfileService.create(
       savedUser,
-      UserProfile.fromGooglePayload(tokenPayload),
+      UserProfileCreate.fromGooglePayload(tokenPayload),
     );
 
     return User.fromEntity(savedUser);
