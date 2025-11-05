@@ -308,3 +308,7 @@
 .google{
   margin-bottom: 10px;
 }
+#g_id_signin{
+  border-radius: 20px;
+  padding-bottom: 20px;
+}

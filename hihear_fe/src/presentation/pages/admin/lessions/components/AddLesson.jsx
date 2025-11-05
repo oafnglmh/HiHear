@@ -1,22 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Save, Plus, ImageIcon } from "lucide-react";
 import { useLessonForm } from "../hooks/useLessonForm";
 import QuestionForm from "./QuestionForm";
 import "../css/Lessons.css";
+import GrammarForm from "./GrammarForm";
+import PronunciationForm from "./PronunciationForm";
 
 export default function AddLesson({ onClose, onSave }) {
   const {
-    title, setTitle,
-    level, setLevel,
-    preview, handleImageChange,
-    questions, handleAddQuestion, handleDeleteQuestion, handleChangeQuestion,
+    title,
+    setTitle,
+    level,
+    setLevel,
+    preview,
+    handleImageChange,
+    questions,
+    handleAddQuestion,
+    handleDeleteQuestion,
+    handleChangeQuestion,
   } = useLessonForm();
+
+  const [type, setType] = useState("Từ vựng");
+
+  // Ngữ pháp
+  const [grammarDescription, setGrammarDescription] = useState("");
+  const [grammarExamples, setGrammarExamples] = useState([]);
+
+  // Phát âm
+  const [pronunciationOrder, setPronunciationOrder] = useState("");
+  const [pronunciationExamples, setPronunciationExamples] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({
+
+    const base = {
       title,
       level,
+      type,
       image: preview,
       color:
         level === "Dễ"
@@ -24,8 +44,34 @@ export default function AddLesson({ onClose, onSave }) {
           : level === "Trung bình"
           ? "#6ee7b7"
           : "#f9a8d4",
-      questions,
-    });
+    };
+
+    let payload = {};
+
+    if (type === "Từ vựng") {
+      payload = {
+        ...base,
+        questions,
+      };
+    } else if (type === "Ngữ pháp") {
+      payload = {
+        ...base,
+        grammar: {
+          description: grammarDescription,
+          examples: grammarExamples,
+        },
+      };
+    } else if (type === "Phát Âm") {
+      payload = {
+        ...base,
+        pronunciation: {
+          order: pronunciationOrder,
+          examples: pronunciationExamples,
+        },
+      };
+    }
+
+    onSave(payload);
   };
 
   return (
@@ -53,6 +99,13 @@ export default function AddLesson({ onClose, onSave }) {
             <option>Khó</option>
           </select>
 
+          <label>Loại:</label>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="Từ vựng">Từ vựng</option>
+            <option value="Ngữ pháp">Ngữ pháp</option>
+            <option value="Phát Âm">Phát Âm</option>
+          </select>
+
           <label>Ảnh minh họa:</label>
           <div className="image-upload">
             <input
@@ -66,21 +119,52 @@ export default function AddLesson({ onClose, onSave }) {
               <ImageIcon size={20} />
             </label>
           </div>
-          {preview && <img src={preview} alt="preview" className="image-preview" />}
+          {preview && (
+            <img src={preview} alt="preview" className="image-preview" />
+          )}
 
-          <h4>Câu hỏi trắc nghiệm</h4>
-          {questions.map((q) => (
-            <QuestionForm
-              key={q.id}
-              q={q}
-              onChange={handleChangeQuestion}
-              onDelete={handleDeleteQuestion}
+          {/* ========== TỪ VỰNG ========== */}
+          {type === "Từ vựng" && (
+            <>
+              <h4>Câu hỏi trắc nghiệm</h4>
+              {questions.map((q) => (
+                <QuestionForm
+                  key={q.id}
+                  q={q}
+                  onChange={handleChangeQuestion}
+                  onDelete={handleDeleteQuestion}
+                />
+              ))}
+
+              <button
+                type="button"
+                className="add-question-btn"
+                onClick={handleAddQuestion}
+              >
+                <Plus size={20} /> Thêm câu hỏi
+              </button>
+            </>
+          )}
+
+          {/* ========== NGỮ PHÁP ========== */}
+          {type === "Ngữ pháp" && (
+            <GrammarForm
+              description={grammarDescription}
+              setDescription={setGrammarDescription}
+              examples={grammarExamples}
+              setExamples={setGrammarExamples}
             />
-          ))}
+          )}
 
-          <button type="button" className="add-question-btn" onClick={handleAddQuestion}>
-            <Plus size={20} /> Thêm câu hỏi
-          </button>
+          {/* ========== PHÁT ÂM ========== */}
+          {type === "Phát Âm" && (
+            <PronunciationForm
+              order={pronunciationOrder}
+              setOrder={setPronunciationOrder}
+              examples={pronunciationExamples}
+              setExamples={setPronunciationExamples}
+            />
+          )}
 
           <button type="submit" className="save-btn">
             <Save size={18} /> Lưu bài học

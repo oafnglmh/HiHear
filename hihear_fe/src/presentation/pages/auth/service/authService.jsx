@@ -1,9 +1,11 @@
 import apiClient from "../../../../Core/config/apiClient";
 
 export const authService = {
-  loginWithGoogle: async () => {
-    const response = await apiClient.get("/auth/google");
-    return response.data;
+  loginWithGoogle: async (idToken) => {
+    console.log("chạy tới đây",idToken)
+    const res = await apiClient.post("/auths/google", { idToken });
+    console.log("chạy tới đây 02")
+    return res.data;
   },
 
   loginWithFacebook: async () => {

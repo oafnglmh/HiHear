@@ -1,0 +1,44 @@
+import { useState } from "react"
+import { authService } from "../service/authService";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+export const useAuth =()=>{
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const loginWithGoogle = async (idToken) => {
+    try {
+      setLoading(true);
+
+      const res = await authService.loginWithGoogle(idToken);
+      console.log("heheh",res)
+      toast.success("Đăng nhập Google thành công!");
+      if(res.user.role == "USER"){
+        navigate("/admin/dashboard");
+      }
+      else{
+        navigate("/admin/dashboard");
+      }
+    } catch (err) {
+      toast.error("Đăng nhập Google thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const loginWithFacebook = async() =>{
+    try{
+      setLoading(true);
+      const res = await authService.loginWithGoogle();
+      toast.success("Đăng nhập Facebook thành công!");
+    }
+    catch(err){
+      toast.error("Đăng nhập Google thất bại!")
+    } finally {
+      setLoading(false);
+    }
+  }
+   return {
+    loginWithGoogle,
+    loginWithFacebook,
+    loading,
+  };
+}

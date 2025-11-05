@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   Star,
   BarChart3,
-  Smile,
   Users,
   Mail,
   Phone,
@@ -13,321 +10,673 @@ import {
   Award,
   CheckCircle,
   ClipboardList,
+  Heart,
+  Zap,
+  Music,
+  Download,
+  Smartphone,
+  PlayCircle,
+  MessageCircle,
+  Target,
+  TrendingUp,
+  Headphones,
+  Coffee,
+  UtensilsCrossed,
+  Mountain,
+  Home,
+  ChevronRight,
+  Apple,
+  Volume, VolumeX
 } from "lucide-react";
+import "./css/home.css";
 import { AppAssets } from "../../../Core/constant/AppAssets";
-import { FadeInWhenVisible } from "../../components/FadeInWhenVisible";
-
-const TypingText: React.FC = () => {
-  const text = "Better!";
+const TypingText = () => {
+  const texts = ["Dễ dàng!", "Thú vị!", "Hiệu quả!"];
+  const [textIndex, setTextIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [index, setIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
 
   useEffect(() => {
-    const speed = isDeleting ? 80 : 160;
-    const t = setTimeout(() => {
+    const currentText = texts[textIndex];
+    const speed = isDeleting ? 50 : 100;
+
+    const timer = setTimeout(() => {
       if (!isDeleting) {
-        if (index < text.length) {
-          setDisplayText((p) => p + text[index]);
-          setIndex((v) => v + 1);
+        if (charIndex < currentText.length) {
+          setDisplayText(currentText.slice(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
         } else {
-          setIsDeleting(true);
+          setTimeout(() => setIsDeleting(true), 2000);
         }
       } else {
-        if (index > 0) {
-          setDisplayText(text.slice(0, index - 1));
-          setIndex((v) => v - 1);
+        if (charIndex > 0) {
+          setDisplayText(currentText.slice(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
         } else {
           setIsDeleting(false);
+          setTextIndex((textIndex + 1) % texts.length);
         }
       }
     }, speed);
-    return () => clearTimeout(t);
-  }, [index, isDeleting]);
+
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeleting, textIndex]);
 
   return (
-    <motion.span
-      className="text-blue-500 inline-block"
-      style={{ fontFamily: "'Patrick Hand', cursive" }}
-      animate={{ opacity: [0.85, 1, 0.85] }}
-      transition={{ duration: 2, repeat: Infinity }}
-    >
+    <span className="typing-text">
       {displayText}
-      <motion.span
-        className="inline-block w-[3px] bg-blue-400 ml-1 align-middle"
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 0.8, repeat: Infinity }}
-      />
-    </motion.span>
+      <span className="cursor">|</span>
+    </span>
   );
 };
 
-/* -------------------------
-  RewardCard: thẻ sao (thanh tiến trình động)
-------------------------- */
-const RewardCard: React.FC<{
-  icon: React.ElementType;
-  title: string;
-  desc: string;
-  percent: number;
-  color: "blue" | "yellow" | "pink";
-}> = ({ icon: Icon, title, desc, percent, color }) => {
+const RewardCard = ({ icon: Icon, title, desc, percent, color }) => {
   const [progress, setProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(percent), 350);
+    setIsVisible(true);
+    const timer = setTimeout(() => setProgress(percent), 300);
     return () => clearTimeout(timer);
   }, [percent]);
 
-  const bgMap = {
-    blue: "from-blue-50 to-blue-25 text-blue-700",
-    yellow: "from-yellow-50 to-amber-50 text-amber-700",
-    pink: "from-pink-50 to-rose-50 text-pink-700",
-  } as const;
-  const barMap = { blue: "bg-blue-500", yellow: "bg-amber-400", pink: "bg-pink-400" } as const;
-
   return (
-    <div className={`p-6 rounded-2xl shadow-md bg-gradient-to-br ${bgMap[color]} w-full max-w-[520px]`}>
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-white/80 rounded-lg flex items-center justify-center shadow">
-          <Icon className="w-6 h-6" />
+    <div
+      className={`reward-card reward-card-${color} ${
+        isVisible ? "fade-in" : ""
+      }`}
+    >
+      <div className="reward-icon-wrapper">
+        <Icon className="reward-icon" />
+      </div>
+      <div className="reward-content">
+        <h3 className="reward-title">{title}</h3>
+        <p className="reward-desc">{desc}</p>
+        <div className="progress-bar">
+          <div
+            className={`progress-fill progress-${color}`}
+            style={{ width: `${progress}%` }}
+          />
         </div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg mb-1">{title}</h3>
-          <p className="text-gray-600 text-sm mb-3">{desc}</p>
-
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div
-              className={`${barMap[color]} h-2 origin-left`}
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: progress / 100 }}
-              transition={{ duration: 1.8, ease: "easeOut" }}
-            />
-          </div>
-
-          <span className="text-xs text-gray-500 mt-2 inline-block">{percent}% hoàn thành</span>
-        </div>
+        <span className="progress-text">{percent}% hoàn thành</span>
       </div>
     </div>
   );
 };
 
-const HomePage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-yellow-50 text-gray-800">
-      {/* Header */}
-      <header className="flex justify-between items-center px-6 md:px-12 py-4 bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow">
-        <div className="flex items-center gap-3">
-          <img src={AppAssets.logo} alt="HiHear" className="w-16 h-16 object-contain" />
-          <h1 className="text-2xl font-bold text-orange-500" style={{ fontFamily: "'Fredoka One', cursive" }}>
-            HiHear
-          </h1>
-        </div>
+const App = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [showDownloadPage, setShowDownloadPage] = useState(false);
 
-        <nav className="hidden md:flex items-center gap-8 font-medium text-gray-700">
-          <a href="#home" className="hover:text-orange-500">Trang chủ</a>
-          <a href="#features" className="hover:text-orange-500">Tính năng</a>
-          <a href="#rewards" className="hover:text-orange-500">Thành tích</a>
-          <a href="#contact" className="hover:text-orange-500">Liên hệ</a>
-        </nav>
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const toggleSound = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+      if (!videoRef.current.paused) {
+        videoRef.current.play();
+      }
+    }
+  };
+  if (showDownloadPage) {
+    return (
+      <div className="download-page">
+        <div className="bamboo-bg" />
+        <div className="download-container">
+          <button
+            className="back-button"
+            onClick={() => setShowDownloadPage(false)}
+          >
+            <Home size={20} />
+            Về trang chủ
+          </button>
 
-        <div className="flex items-center gap-3">
-          <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-orange-500">Đăng nhập</Link>
-          <Link to="/login" className="bg-orange-500 text-white px-4 py-2 rounded-full font-bold shadow hover:bg-orange-600 transition">
-            Đăng ký
-          </Link>
-        </div>
-      </header>
+          <div className="download-content">
+            <div className="download-hero">
+              <div className="download-badge">
+                <Download size={20} />
+                Tải xuống ứng dụng
+              </div>
 
-      {/* Hero */}
-      <section id="home" className="flex flex-col lg:flex-row items-center gap-10 px-6 md:px-20 py-16 md:py-24">
-        <motion.div className="max-w-xl" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <h1 className="text-5xl md:text-[64px] font-extrabold mb-4" style={{ fontFamily: "'Patrick Hand', cursive" }}>
-            HiHear — Học tiếng Anh <br /> hiệu quả <br />
-            <span className="text-blue-500"><TypingText /></span>
-          </h1>
+              <h1 className="download-title">
+                Trải nghiệm HiHear
+                <br />
+                trên điện thoại của bạn
+              </h1>
 
-          <p className="text-gray-600 text-lg mb-6">
-            Ứng dụng học tiếng Anh dành cho mọi lứa tuổi — giúp bạn luyện nghe, nói và phát âm
-            qua các bài học tương tác, phần thưởng hấp dẫn và hệ thống tiến độ thông minh.
-          </p>
+              <p className="download-subtitle">
+                Học tiếng Việt mọi lúc, mọi nơi với ứng dụng HiHear. Tải ngay để
+                bắt đầu hành trình khám phá ngôn ngữ và văn hóa Việt Nam!
+              </p>
 
-          <div className="flex flex-wrap gap-3 mb-6">
-            <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-full shadow-sm">
-              <BookOpen className="w-5 h-5 text-green-500" /> <span className="text-sm">Bài học cá nhân hóa</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-full shadow-sm">
-              <Star className="w-5 h-5 text-amber-400" /> <span className="text-sm">Phần thưởng & huy hiệu</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-full shadow-sm">
-              <Users className="w-5 h-5 text-pink-500" /> <span className="text-sm">Cộng đồng học tập</span>
-            </div>
-          </div>
-
-          <Link to="/learn" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold shadow">
-            Bắt đầu học
-          </Link>
-        </motion.div>
-
-        <motion.div className="relative flex-1 max-w-[760px]" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-          <img src="https://images.pexels.com/photos/4144222/pexels-photo-4144222.jpeg" alt="learning" className="w-full rounded-3xl shadow-2xl" />
-          <motion.img src={AppAssets.hearuHi} alt="mascot" className="absolute -top-8 -right-8 w-28 rounded-lg shadow-lg border-4 border-white"
-            animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }} />
-        </motion.div>
-      </section>
-
-      {/* Stats */}
-      <section id="features" className="px-6 md:px-20 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow text-center">
-            <BookOpen className="mx-auto w-8 h-8 text-blue-500 mb-3" />
-            <h3 className="text-2xl font-bold text-blue-600">10.000+</h3>
-            <p className="text-gray-500 mt-1">Bài học hoàn thành</p>
-          </div>
-          <div className="bg-white p-6 rounded-2xl shadow text-center">
-            <Star className="mx-auto w-8 h-8 text-amber-400 mb-3" />
-            <h3 className="text-2xl font-bold text-amber-500">5.000+</h3>
-            <p className="text-gray-500 mt-1">Huy hiệu đạt được</p>
-          </div>
-          <div className="bg-white p-6 rounded-2xl shadow text-center">
-            <Users className="mx-auto w-8 h-8 text-pink-500 mb-3" />
-            <h3 className="text-2xl font-bold text-pink-500">2.000+</h3>
-            <p className="text-gray-500 mt-1">Người dùng đang học</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Rewards */}
-      <FadeInWhenVisible>
-        <section id="rewards" className="px-6 md:px-20 py-16 bg-gradient-to-b from-yellow-50 to-orange-50">
-          <div className="max-w-5xl mx-auto text-center mb-10">
-            <p className="uppercase text-sm tracking-wider text-amber-500 font-semibold mb-3">HỆ THỐNG THÀNH TÍCH THÔNG MINH</p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Patrick Hand', cursive" }}>
-              Biến việc học thành trải nghiệm thú vị <br />
-              và tạo động lực mỗi ngày
-            </h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-              Theo dõi tiến độ, nhận sao thưởng và đạt được huy hiệu — mọi bước tiến nhỏ đều được ghi nhận để bạn tiến xa hơn.
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row items-start gap-12">
-            <div className="flex-1 flex flex-col gap-6">
-              <RewardCard icon={ClipboardList} title="Lộ trình học rõ ràng" desc="Hệ thống gợi ý bài học và mục tiêu phù hợp với từng cấp độ của bạn." percent={95} color="blue" />
-              <RewardCard icon={Award} title="Sao thưởng & huy hiệu" desc="Nhận sao khi hoàn thành bài học và huy hiệu đặc biệt khi đạt cột mốc." percent={88} color="yellow" />
-              <RewardCard icon={BarChart3} title="Theo dõi tiến bộ" desc="Xem sự tiến triển qua biểu đồ chi tiết — giúp bạn luôn có động lực học tập." percent={92} color="pink" />
-            </div>
-
-            <div className="w-full lg:w-[360px]">
-              <motion.div className="rounded-full w-40 h-40 mx-auto flex items-center justify-center shadow-lg border-4 border-amber-300 mb-6"
-                initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.6 }}>
-                <div className="text-center">
-                  <Star className="mx-auto mb-1 text-amber-400" />
-                  <div className="text-3xl font-bold">4.9</div>
-                  <div className="text-sm text-gray-500">Đánh giá trung bình</div>
-                </div>
-              </motion.div>
-
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
-                  <div>
-                    <div className="text-xl font-bold text-blue-600">10.000+</div>
-                    <div className="text-sm text-gray-500">Bài học tạo</div>
+              <div className="download-buttons">
+                <a
+                  href="https://play.google.com/store"
+                  className="store-button"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="store-icon">
+                    <PlayCircle size={30} />
                   </div>
-                  <CheckCircle className="w-6 h-6 text-green-500" />
-                </div>
-                <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
-                  <div>
-                    <div className="text-xl font-bold text-emerald-600">8.500+</div>
-                    <div className="text-sm text-gray-500">Bài học hoàn thành</div>
+                  <div className="store-info">
+                    <div className="store-label">Tải trên</div>
+                    <div className="store-name">Google Play</div>
                   </div>
-                  <Star className="w-6 h-6 text-amber-400" />
-                </div>
-                <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
-                  <div>
-                    <div className="text-xl font-bold text-pink-500">2.000+</div>
-                    <div className="text-sm text-gray-500">Người học đang hoạt động</div>
+                  <ChevronRight size={24} color="#1a5f3f" />
+                </a>
+
+                <a
+                  href="https://www.apple.com/app-store/"
+                  className="store-button"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="store-icon">
+                    <Apple size={30} />
                   </div>
-                  <Users className="w-6 h-6 text-pink-500" />
+                  <div className="store-info">
+                    <div className="store-label">Tải trên</div>
+                    <div className="store-name">App Store</div>
+                  </div>
+                  <ChevronRight size={24} color="#1a5f3f" />
+                </a>
+              </div>
+            </div>
+
+            <div className="download-features">
+              <div className="feature-list">
+                <div className="feature-item">
+                  <div className="feature-icon">
+                    <Smartphone size={28} />
+                  </div>
+                  <div className="feature-text">
+                    <h3>Giao diện thân thiện</h3>
+                    <p>Thiết kế trực quan, dễ sử dụng cho mọi lứa tuổi</p>
+                  </div>
+                </div>
+
+                <div className="feature-item">
+                  <div className="feature-icon">
+                    <Headphones size={28} />
+                  </div>
+                  <div className="feature-text">
+                    <h3>Phát âm chuẩn</h3>
+                    <p>Luyện nghe và nói với giọng người Việt bản địa</p>
+                  </div>
+                </div>
+
+                <div className="feature-item">
+                  <div className="feature-icon">
+                    <Target size={28} />
+                  </div>
+                  <div className="feature-text">
+                    <h3>Học có mục tiêu</h3>
+                    <p>Đặt mục tiêu và theo dõi tiến độ mỗi ngày</p>
+                  </div>
+                </div>
+
+                <div className="feature-item">
+                  <div className="feature-icon">
+                    <TrendingUp size={28} />
+                  </div>
+                  <div className="feature-text">
+                    <h3>Tiến bộ nhanh chóng</h3>
+                    <p>Phương pháp học hiện đại, hiệu quả cao</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
-      </FadeInWhenVisible>
 
-      {/* Testimonials */}
-      <FadeInWhenVisible>
-        <section id="testimonials" className="py-16 px-6 md:px-20">
-          <h2 className="text-3xl text-center font-bold mb-8" style={{ fontFamily: "'Patrick Hand', cursive" }}>Người học nói gì?</h2>
-          <div className="flex flex-wrap justify-center gap-8">
-            {[
-              { name: "Minh Hoàng", text: "Ứng dụng giúp mình luyện nói và nghe tự nhiên hơn mỗi ngày.", avatar: "https://cdn-icons-png.flaticon.com/512/2922/2922510.png" },
-              { name: "Thương Hoài", text: "Giao diện đẹp, dễ sử dụng, học mà cảm giác như chơi!", avatar: "https://cdn-icons-png.flaticon.com/512/2922/2922506.png" },
-              { name: "Hearu", text: "Hệ thống phần thưởng khiến mình có động lực học đều đặn hơn.", avatar: "https://cdn-icons-png.flaticon.com/512/2922/2922561.png" },
-            ].map((t, i) => (
-              <motion.div key={i} whileHover={{ y: -6 }} className="bg-white p-6 rounded-2xl shadow-md max-w-sm text-center">
-                <img src={t.avatar} alt={t.name} className="w-14 h-14 rounded-full mx-auto mb-3" />
-                <p className="text-gray-600 italic mb-3">“{t.text}”</p>
-                <h4 className="font-semibold text-orange-500">{t.name}</h4>
-              </motion.div>
-            ))}
+          <div className="app-screenshots">
+            <div className="screenshot-card">
+              <img
+                src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400"
+                alt="App Screenshot 1"
+              />
+              <div className="screenshot-label">Màn hình chính</div>
+            </div>
+            <div className="screenshot-card">
+              <img
+                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400"
+                alt="App Screenshot 2"
+              />
+              <div className="screenshot-label">Bài học</div>
+            </div>
+            <div className="screenshot-card">
+              <img
+                src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400"
+                alt="App Screenshot 3"
+              />
+              <div className="screenshot-label">Thành tích</div>
+            </div>
           </div>
-        </section>
-      </FadeInWhenVisible>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-br from-yellow-50 to-amber-100 py-12 text-gray-700">
-        <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-[Chewy] text-orange-500 mb-3">Học tiếng Anh chủ động</h2>
-          <p className="text-gray-600 mb-6">
-            Cùng HiHear — xây dựng thói quen học tiếng Anh vui vẻ, hiệu quả và bền vững cho mọi người.
+  return (
+    <div className="app-container">
+      <header className={`header ${scrolled ? "scrolled" : ""}`}>
+        <div className="logo-section">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3898/3898082.png"
+            alt="HiHear Logo"
+            className="logo-image"
+          />
+          <h1 className="brand-name">HiHear</h1>
+        </div>
+
+        <nav className="nav-links">
+          <a href="#home">
+            <Home size={18} /> Trang chủ
+          </a>
+          <a href="#features">
+            <BookOpen size={18} /> Tính năng
+          </a>
+          <a href="#culture">
+            <Coffee size={18} /> Văn hóa
+          </a>
+          <a href="#rewards">
+            <Award size={18} /> Thành tích
+          </a>
+          <a href="#contact">
+            <Mail size={18} /> Liên hệ
+          </a>
+        </nav>
+
+        <div className="auth-buttons">
+          <a href="/login" className="btn-login">
+            Đăng nhập
+          </a>
+          <a href="/login" className="btn-register">
+            Đăng ký
+          </a>
+        </div>
+      </header>
+      <section id="home" className="hero">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Học tiếng Việt
+            <br />
+            từ cơ bản đến nâng cao
+            <br />
+            <TypingText />
+          </h1>
+
+          <p className="hero-subtitle">
+            Ứng dụng học tiếng Việt hiện đại dành cho người nước ngoài — giúp
+            bạn nắm vững phát âm, từ vựng và văn hóa Việt Nam qua các bài học
+            tương tác đầy màu sắc.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mb-8">
+          <div className="feature-tags">
+            <div className="feature-tag">
+              <BookOpen size={20} color="#1a5f3f" />
+              <span>Bài học thực tế</span>
+            </div>
+            <div className="feature-tag">
+              <Headphones size={20} color="#f59e0b" />
+              <span>Phát âm chuẩn</span>
+            </div>
+            <div className="feature-tag">
+              <Heart size={20} color="#f43f5e" />
+              <span>Văn hóa Việt Nam</span>
+            </div>
+          </div>
+
+          <button
+            className="btn-start"
+            onClick={() => setShowDownloadPage(true)}
+          >
+            <Download size={22} />
+            Bắt đầu học ngay
+          </button>
+        </div>
+
+        <div className="hero-image">
+          <img
+            src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800"
+            alt="Vietnamese bamboo"
+          />
+          <div className="floating-badge">🎋</div>
+        </div>
+      </section>
+      <section id="culture" className="culture-section">
+        <div className="culture-content">
+          <div className="culture-header">
+            <h2 className="culture-title">Khám phá văn hóa Việt Nam</h2>
+            <p className="culture-subtitle">
+              Học tiếng Việt đi cùng với hiểu biết sâu sắc về văn hóa, ẩm thực
+              và con người Việt Nam
+            </p>
+          </div>
+
+          <div className="culture-grid">
+            <div className="culture-card">
+              <span className="culture-icon">🎋</span>
+              <h3>Tre Việt Nam</h3>
+              <p>
+                Cây tre là biểu tượng của sự kiên cường và linh hoạt trong văn
+                hóa Việt. Học cách sử dụng từ ngữ liên quan đến thiên nhiên
+                trong giao tiếp hàng ngày.
+              </p>
+            </div>
+
+            <div className="culture-card">
+              <span className="culture-icon">🍜</span>
+              <h3>Ẩm thực Việt</h3>
+              <p>
+                Khám phá từ vựng về món ăn Việt Nam từ phở, bánh mì đến cà phê.
+                Học cách gọi món và trò chuyện về đồ ăn như người bản địa.
+              </p>
+            </div>
+
+            <div className="culture-card">
+              <span className="culture-icon">🏮</span>
+              <h3>Lễ hội truyền thống</h3>
+              <p>
+                Tìm hiểu về Tết Nguyên Đán, Trung thu và các lễ hội đặc sắc. Nắm
+                vững cách chúc mừng và giao tiếp trong các dịp đặc biệt.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Stats */}
+      <section id="features" className="stats-section">
+        <div className="stats-grid">
+          <div className="stat-card">
+            <BookOpen className="stat-icon" size={60} color="#1a5f3f" />
+            <h3 className="stat-number" style={{ color: "#1a5f3f" }}>
+              5.000+
+            </h3>
+            <p className="stat-label">Bài học phong phú</p>
+          </div>
+          <div className="stat-card">
+            <Star className="stat-icon" size={60} color="#fbbf24" />
+            <h3 className="stat-number" style={{ color: "#fbbf24" }}>
+              15.000+
+            </h3>
+            <p className="stat-label">Từ vựng thực tế</p>
+          </div>
+          <div className="stat-card">
+            <Users className="stat-icon" size={60} color="#f43f5e" />
+            <h3 className="stat-number" style={{ color: "#f43f5e" }}>
+              10.000+
+            </h3>
+            <p className="stat-label">Học viên quốc tế</p>
+          </div>
+        </div>
+      </section>
+      {/* Rewards */}
+      <section id="rewards" className="rewards-section">
+        <div className="section-header">
+          <span className="section-badge">🌟 HỆ THỐNG HỌC TẬP THÔNG MINH</span>
+          <h2 className="section-title">
+            Học tiếng Việt chưa bao giờ
+            <br />
+            dễ dàng và thú vị đến thế
+          </h2>
+          <p className="section-desc">
+            Theo dõi tiến độ, nhận phần thưởng và khám phá văn hóa Việt Nam —
+            mỗi bài học đều mang đến trải nghiệm học tập đáng nhớ.
+          </p>
+        </div>
+
+        <div className="rewards-content">
+          <div className="reward-cards">
+            <RewardCard
+              icon={ClipboardList}
+              title="Lộ trình cá nhân hóa"
+              desc="Hệ thống gợi ý bài học phù hợp với trình độ và mục tiêu của bạn."
+              percent={95}
+              color="blue"
+            />
+            <RewardCard
+              icon={Award}
+              title="Huy hiệu & phần thưởng"
+              desc="Nhận huy hiệu đặc biệt khi hoàn thành các cột mốc quan trọng."
+              percent={88}
+              color="yellow"
+            />
+            <RewardCard
+              icon={BarChart3}
+              title="Theo dõi tiến độ"
+              desc="Xem biểu đồ chi tiết về sự tiến bộ của bạn mỗi ngày."
+              percent={92}
+              color="pink"
+            />
+          </div>
+
+          <div className="rewards-sidebar">
+            <div className="rating-card">
+              <div className="rating-circle">
+                <Star size={45} />
+                <div className="rating-number">4.9</div>
+                <div className="rating-label">Đánh giá</div>
+              </div>
+            </div>
+
+            <div className="mini-stats">
+              <div className="mini-stat">
+                <div>
+                  <div
+                    className="mini-stat-number"
+                    style={{ color: "#1a5f3f" }}
+                  >
+                    5.000+
+                  </div>
+                  <div className="mini-stat-label">Bài học được tạo</div>
+                </div>
+                <CheckCircle size={35} color="#1a5f3f" />
+              </div>
+              <div className="mini-stat">
+                <div>
+                  <div
+                    className="mini-stat-number"
+                    style={{ color: "#f43f5e" }}
+                  >
+                    12.000+
+                  </div>
+                  <div className="mini-stat-label">Bài học hoàn thành</div>
+                </div>
+                <Star size={35} color="#fbbf24" />
+              </div>
+              <div className="mini-stat">
+                <div>
+                  <div
+                    className="mini-stat-number"
+                    style={{ color: "#3b82f6" }}
+                  >
+                    10.000+
+                  </div>
+                  <div className="mini-stat-label">Học viên hoạt động</div>
+                </div>
+                <Users size={35} color="#3b82f6" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="testimonials" className="testimonials-section">
+        <div className="section-header">
+          <span className="section-badge">TRẢI NGHIỆM HỌC VIÊN</span>
+          <h2 className="section-title">Học viên nói gì về HiHear?</h2>
+        </div>
+
+        <div className="testimonials-grid">
+          <div className="testimonial-card">
+            <img
+              src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/cac_tap_phim_co_su_tham_gia_cua_cha_eun_woo_1_9f8d8eff57.jpg"
+              alt="Cha un woo"
+              className="testimonial-avatar"
+            />
+            <p className="testimonial-text">
+              "Ứng dụng tuyệt vời! Tôi đã học được rất nhiều từ vựng và cách
+              phát âm chuẩn tiếng Việt trong vài tuần."
+            </p>
+            <h4 className="testimonial-name">Cha Un Woo (Hàn Quốc)</h4>
+          </div>
+
+          <div className="testimonial-card">
+            <img
+              src="https://vcdn1-thethao.vnecdn.net/2025/10/28/messi-1761617057-1761617067-17-6298-1176-1761617206.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=2mbtZ2lK5vmypydcVeie_A"
+              alt="Lionel Andrés Messi"
+              className="testimonial-avatar"
+            />
+            <p className="testimonial-text">
+              "Giao diện đẹp, bài học thú vị và dễ hiểu. Tôi cảm thấy tự tin hơn
+              khi nói chuyện với người Việt!"
+            </p>
+            <h4 className="testimonial-name">
+              Lionel Andrés Messi (Argentina)
+            </h4>
+          </div>
+
+          <div className="testimonial-card">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1-MXUc6ZkxBNNdj3-YW8SSJX-WGgjUXsxWg&s"
+              alt="elon musk"
+              className="testimonial-avatar"
+            />
+            <p className="testimonial-text">
+              "Hệ thống phần thưởng giúp tôi có động lực học mỗi ngày. Rất thích
+              phần văn hóa Việt Nam!"
+            </p>
+            <h4 className="testimonial-name">Elon Musk (Mỹ)</h4>
+          </div>
+        </div>
+      </section>
+      <section
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <video
+        ref={videoRef}
+        src={AppAssets.video01}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+
+      <button
+        onClick={toggleSound}
+        style={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          background: "rgba(0,0,0,0.5)",
+          border: "none",
+          borderRadius: "50%",
+          padding: 10,
+          cursor: "pointer",
+        }}
+      >
+        {isMuted ? (
+          <VolumeX size={50} color="white" />
+        ) : (
+          <Volume size={50} color="white" />
+        )}
+      </button>
+    </section>
+
+      <footer id="contact" className="footer">
+        <div className="footer-content">
+          <div className="footer-header">
+            <h2 className="footer-title">Bắt đầu hành trình học tiếng Việt</h2>
+            <p className="footer-subtitle">
+              Cùng HiHear khám phá vẻ đẹp của ngôn ngữ và văn hóa Việt Nam
+            </p>
+          </div>
+
+          <div className="newsletter">
             <input
               type="email"
               placeholder="Nhập email của bạn"
-              className="px-4 py-3 rounded-full border border-gray-300 w-72 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="newsletter-input"
             />
-            <button className="bg-sky-400 hover:bg-sky-500 text-white px-6 py-3 rounded-full font-semibold shadow-md transition">Đăng ký</button>
+            <button className="newsletter-button">Đăng ký ngay</button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left md:text-center mb-8">
-            <div>
-              <h3 className="font-bold text-lg mb-2">HiHear</h3>
-              <p className="text-sm text-gray-600">
-                Ứng dụng giúp người học tiếng Anh ở mọi độ tuổi luyện tập hiệu quả, duy trì động lực và tiến bộ mỗi ngày.
+          <div className="footer-grid">
+            <div className="footer-column">
+              <h3>HiHear</h3>
+              <p>
+                Ứng dụng học tiếng Việt hàng đầu cho người nước ngoài — giúp bạn
+                nắm vững ngôn ngữ và hiểu sâu văn hóa Việt Nam.
               </p>
             </div>
-            <div>
-              <h3 className="font-bold text-lg mb-2">Dịch vụ</h3>
-              <ul className="space-y-1 text-sm">
-                <li className="flex items-center justify-center md:justify-start gap-2"><BookOpen className="w-4 h-4 text-blue-500" /> Lộ trình học tập</li>
-                <li className="flex items-center justify-center md:justify-start gap-2"><Star className="w-4 h-4 text-amber-400" /> Phần thưởng & huy hiệu</li>
-                <li className="flex items-center justify-center md:justify-start gap-2"><BarChart3 className="w-4 h-4 text-green-500" /> Theo dõi tiến độ</li>
+
+            <div className="footer-column">
+              <h3>Dịch vụ</h3>
+              <ul>
+                <li>
+                  <BookOpen size={18} /> Lộ trình học tập
+                </li>
+                <li>
+                  <Star size={18} /> Phần thưởng & huy hiệu
+                </li>
+                <li>
+                  <BarChart3 size={18} /> Theo dõi tiến độ
+                </li>
+                <li>
+                  <Heart size={18} /> Văn hóa Việt Nam
+                </li>
               </ul>
             </div>
-            <div>
-              <h3 className="font-bold text-lg mb-2">Liên hệ</h3>
-              <ul className="space-y-1 text-sm">
-                <li className="flex items-center justify-center md:justify-start gap-2"><Phone className="w-4 h-4 text-sky-500" /> +84 123 456 789</li>
-                <li className="flex items-center justify-center md:justify-start gap-2"><Mail className="w-4 h-4 text-sky-500" /> support@hihear.vn</li>
-                <li className="flex items-center justify-center md:justify-start gap-2"><Globe className="w-4 h-4 text-sky-500" /> hihear.vn</li>
+
+            <div className="footer-column">
+              <h3>Liên hệ</h3>
+              <ul>
+                <li>
+                  <Phone size={18} /> 0384252407
+                </li>
+                <li>
+                  <Mail size={18} /> hcassano.dev@gmail.com
+                </li>
+                <li>
+                  <Globe size={18} /> hihear.vn
+                </li>
               </ul>
             </div>
-            <div>
-              <h3 className="font-bold text-lg mb-2">Cập nhật</h3>
-              <p className="text-sm text-gray-600">Theo dõi tin tức, mẹo học tập và tính năng mới nhất từ HiHear.</p>
+
+            <div className="footer-column">
+              <h3>Theo dõi</h3>
+              <p>Cập nhật tin tức, mẹo học tập và tính năng mới từ HiHear.</p>
             </div>
           </div>
 
-          <p className="text-gray-500 text-sm mt-6">
-            © 2025 HiHear — Học tiếng Anh vui & hiệu quả | Phát triển bởi HiHear Team
-          </p>
+          <div className="footer-bottom">
+            <p>
+              © 2025 HiHear — Học tiếng Việt dễ dàng & hiệu quả | Được phát
+              triển bởi HHTeam
+            </p>
+          </div>
         </div>
       </footer>
     </div>
   );
 };
 
-export default HomePage;
+export default App;
