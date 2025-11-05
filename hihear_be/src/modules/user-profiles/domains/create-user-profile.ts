@@ -1,26 +1,28 @@
 import { UserProfileEntity } from '../entities/user-profile.entity';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
-export class UserProfile {
+export class UserProfileCreate {
   firstName: string;
 
   lastName: string;
 
-  static toEntity(userProfile: UserProfile): Partial<UserProfileEntity> {
+  static toEntity(
+    userProfileCreate: UserProfileCreate,
+  ): Partial<UserProfileEntity> {
     return {
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
+      firstName: userProfileCreate.firstName,
+      lastName: userProfileCreate.lastName,
     };
   }
 
-  static fromEntity(userProfileEntity: UserProfileEntity): UserProfile {
+  static fromEntity(userProfileEntity: UserProfileEntity): UserProfileCreate {
     return {
       firstName: userProfileEntity.firstName,
       lastName: userProfileEntity.lastName,
     };
   }
 
-  static fromGooglePayload(payload: GoogleTokenPayload): UserProfile {
+  static fromGooglePayload(payload: GoogleTokenPayload): UserProfileCreate {
     return {
       firstName: payload.given_name ?? '',
       lastName: payload.family_name ?? '',

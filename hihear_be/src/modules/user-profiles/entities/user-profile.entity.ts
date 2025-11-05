@@ -14,11 +14,11 @@ export class UserProfileEntity extends AbstractEntity {
   @Column()
   lastName: string;
 
-  @Column({ nullable: true })
-  avatarUrl: string;
+  @Column({ type: 'varchar', nullable: true })
+  avatarUrl: string | null;
 
-  @Column({ nullable: true })
-  level: string;
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  level: string | null;
 
   @Column({ type: 'int', default: 0 })
   xpPoints: number;
