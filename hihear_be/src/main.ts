@@ -26,6 +26,10 @@ async function bootstrap() {
   const configService = app.select(SharedModule).get(ApiConfigService);
 
   app.setGlobalPrefix(configService.apiPrefix);
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
 
   configureSwagger(app, configService);
   configLogging(app, configService);
