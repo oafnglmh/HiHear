@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserProfile } from '../domains/user-profile';
 import type { Uuid } from 'src/common/types';
+import { Language } from 'src/utils/language.enum';
 
 export class UserProfileDto {
   @ApiProperty({
@@ -27,6 +28,9 @@ export class UserProfileDto {
   @ApiProperty()
   streakDays: number | null;
 
+  @ApiProperty({ enum: Language, example: Language.ENGLISH })
+  language: Language;
+
   @ApiProperty({
     example: '14/10/2025',
     description: 'Time created account',
@@ -48,6 +52,7 @@ export class UserProfileDto {
       level: userProfile.level,
       streakDays: userProfile.streakDays,
       xpPoints: userProfile.xpPoints,
+      language: userProfile.language,
       createdAt: userProfile.createdAt,
       updatedAt: userProfile.updatedAt,
     };
