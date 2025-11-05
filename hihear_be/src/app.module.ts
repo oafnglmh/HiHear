@@ -13,6 +13,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserProfilesModule } from './modules/user-profiles/user-profile.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { LessionModule } from './modules/lession/lession.module';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { join } from 'path';
     SharedModule,
 
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'), // đường dẫn tới folder public
-      serveRoot: '/', // URL gốc, vd: http://localhost:3000/
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/',
     }),
 
     TypeOrmModule.forRootAsync({
@@ -49,6 +50,7 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
     UserProfilesModule,
+    LessionModule,
   ],
 })
 export class AppModule {}
