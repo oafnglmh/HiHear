@@ -8,6 +8,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { UserCreate } from '../users/domains/user-create';
 import { User } from '../users/domains/user';
 import { JwtService } from '@nestjs/jwt';
+import { UserProfile } from '../user-profiles/domains/user-profile';
 
 @Injectable()
 export class AuthService {
@@ -38,15 +39,15 @@ export class AuthService {
       throw new BadRequestException('Invalid Google token payload.');
     }
 
-    const user = await this.userService.createOrGetGoogleUser(
+    const { user, profile } = await this.userService.createOrGetGoogleUser(
       UserCreate.fromGooglePayload(tokenPayload),
       tokenPayload,
     );
 
-    return this.createTokenForUser(user);
+    return this.createTokenForUser(user,profile);
   }
 
-  private createTokenForUser(user: User): AuthResult {
+  private createTokenForUser(user: User, profile: UserProfile): AuthResult {
     const accessToken = this.generateTokenPayload(user);
 
     return {
@@ -60,6 +61,7 @@ export class AuthService {
         scope: 'all',
       },
       user,
+      profile,
     };
   }
 

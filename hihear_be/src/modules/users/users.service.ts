@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { UserProfileService } from '../user-profiles/user-profiles.service';
 import { UserProfileCreate } from '../user-profiles/domains/create-user-profile';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
+import { UserProfile } from '../user-profiles/domains/user-profile';
 
 @Injectable()
 export class UserService {
@@ -31,11 +32,13 @@ export class UserService {
   async createOrGetGoogleUser(
     userCreate: UserCreate,
     tokenPayload: GoogleTokenPayload,
-  ): Promise<User> {
-    const existingUser = await this.findByEmail(userCreate.email);
+  ): Promise<{ user: User; profile: UserProfile }> {
+    let user = await this.findByEmail(userCreate.email);
+    let profile: UserProfile | undefined;
 
-    if (existingUser) {
-      return existingUser;
+    if (user) {
+      profile = await this.userProfileService.findUserOrThrow(user.id);
+      return { user, profile };
     }
 
     const userEntity = this.userRepository.create(
@@ -44,12 +47,14 @@ export class UserService {
 
     const savedUser = await this.userRepository.save(userEntity);
 
-    await this.userProfileService.create(
-      savedUser,
+    profile = await this.userProfileService.create(
+      User.fromEntity(savedUser),
       UserProfileCreate.fromGooglePayload(tokenPayload),
     );
 
-    return User.fromEntity(savedUser);
+    user = User.fromEntity(savedUser);
+
+    return { user, profile };
   }
 
   private async verifyEmailIsAvailable(email: string): Promise<void> {

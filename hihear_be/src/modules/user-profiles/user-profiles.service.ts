@@ -43,7 +43,7 @@ export class UserProfileService {
     );
   }
 
-  private async findUserOrThrow(id: Uuid): Promise<UserProfileEntity> {
+  async findUserOrThrow(id: Uuid): Promise<UserProfileEntity> {
     const userProfileEntity = await this.userProfileRepository.findOneBy({
       user: { id },
     });
