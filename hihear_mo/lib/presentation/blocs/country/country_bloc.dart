@@ -11,7 +11,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
   final CountryRepository _repository;
   final List<CountryEntity> _countries = [];
   CountryBloc(this._repository) : super(const CountryState.initial()) {
-    on<_AddCountry>(_onAddCountry);
+    on<_AddOrUpdateCountry>(_onAddOrUpdateCountry);
     on<_LoadCountries>(_onLoadCountries);
     on<_Search>(_onSearch);
   }
@@ -30,9 +30,20 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
       addError(e, s);
     }
   }
-  Future<void> _onAddCountry(
-      _AddCountry event, Emitter<CountryState> emit) async {
-    
+  Future<void> _onAddOrUpdateCountry(
+      _AddOrUpdateCountry event, Emitter<CountryState> emit) async {
+    emit(const CountryState.loading());
+    try{
+      final result = await _repository.addCountry(event.countryEntity);
+      result.fold(
+        (failure) => emit(CountryState.error(failure.message)),
+        (result) => emit(CountryState.success()),
+      );
+    }
+    catch (e, s) {
+      emit(CountryState.error('Add Failer: $e'));
+      addError(e, s);
+    }
   }
 
   Future<void> _onSearch(

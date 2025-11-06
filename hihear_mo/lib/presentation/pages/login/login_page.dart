@@ -4,7 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
-import 'package:hihear_mo/presentation/routes/app_routes.dart';
+import 'package:hihear_mo/presentation/pages/login/widget/login_buttons_widget.dart';
+import 'package:hihear_mo/presentation/pages/login/widget/logo_section_widget.dart';
+import 'package:hihear_mo/presentation/painter/lantern_painter.dart';
+
+import '../../painter/bamboo_painter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,31 +17,42 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Alignment> _logoAnimation;
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
+  late final AnimationController _logoCtrl;
+  late final AnimationController _buttonsCtrl;
+  late final AnimationController _bambooCtrl;
+  late final AnimationController _lanternCtrl;
+
+  late final Animation<double> _logoScale;
+  late final Animation<double> _logoOpacity;
+  late final Animation<Offset> _buttonsSlide;
+  late final Animation<double> _buttonsOpacity;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
+    _logoCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
+    _buttonsCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _bambooCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 3000))..repeat(reverse: true);
+    _lanternCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 2000))..repeat(reverse: true);
 
-    _logoAnimation = Tween<Alignment>(
-      begin: const Alignment(-1.5, -0.5),
-      end: const Alignment(0, -0.5),
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _logoScale = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _logoCtrl, curve: Curves.elasticOut));
+    _logoOpacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _logoCtrl, curve: const Interval(0.0, 0.5)));
+    _buttonsSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeOutCubic));
+    _buttonsOpacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeIn));
 
-    _controller.forward();
+    _logoCtrl.forward();
+    Future.delayed(const Duration(milliseconds: 500), _buttonsCtrl.forward);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _logoCtrl.dispose();
+    _buttonsCtrl.dispose();
+    _bambooCtrl.dispose();
+    _lanternCtrl.dispose();
     super.dispose();
   }
 
@@ -49,146 +64,74 @@ class _LoginPageState extends State<LoginPage>
       listener: (context, state) {
         state.whenOrNull(
           authenticated: (user) {
-            if (user.national == null) {
-              context.go('/languageCountry');
-            } else {
-              context.go('/home');
-            }
+            context.go(user.national == null ? '/goalSelector' : '/home');
           },
-          error: (message) => ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message))),
+          error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(msg),
+              backgroundColor: const Color(0xFFDA251C),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
         );
       },
-
       builder: (context, state) {
-        final isLoading = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
+        final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
 
         return Scaffold(
           body: Stack(
             fit: StackFit.expand,
             children: [
-              // Background
-              Image.asset(AppAssets.background, fit: BoxFit.cover),
-              Container(color: Colors.black.withOpacity(0.2)),
-
-              // Main content
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedBuilder(
-                    animation: _logoAnimation,
-                    builder: (context, child) {
-                      return Align(
-                        alignment: _logoAnimation.value,
-                        child: Image.asset(
-                          AppAssets.logo,
-                          height: 180,
-                          width: 180,
-                        ),
-                      );
-                    },
+              const _LoginBackground(),
+              AnimatedBuilder(
+                animation: _bambooCtrl,
+                builder: (_, __) => CustomPaint(painter: BambooPainter(animationValue: _bambooCtrl.value)),
+              ),
+              AnimatedBuilder(
+                animation: _lanternCtrl,
+                builder: (_, __) => CustomPaint(painter: LanternPainter(animationValue: _lanternCtrl.value)),
+              ),
+              SafeArea(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      LogoSection(logoScale: _logoScale, logoOpacity: _logoOpacity, l10n: l10n),
+                      const SizedBox(height: 60),
+                      LoginButtons(
+                        slide: _buttonsSlide,
+                        opacity: _buttonsOpacity,
+                        l10n: l10n,
+                        isLoading: isLoading,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  Text(
-                    l10n.translWelcome,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 6,
-                          color: Colors.black26,
-                          offset: Offset(2, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-
-                  // Google login button
-                  SizedBox(
-                    width: 280,
-                    height: 60,
-                    child: ElevatedButton.icon(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              context.read<AuthBloc>().add(
-                                const AuthEvent.loginWithGoogle(),
-                              );
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        elevation: 6,
-                      ),
-                      icon: Image.asset(
-                        AppAssets.googleIcon,
-                        height: 30,
-                        width: 30,
-                      ),
-                      label: Text(
-                        l10n.translLoginGg,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Facebook login button
-                  SizedBox(
-                    width: 280,
-                    height: 60,
-                    child: ElevatedButton.icon(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              context.read<AuthBloc>().add(
-                                const AuthEvent.loginWithFacebook(),
-                              );
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1877F2),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        elevation: 6,
-                      ),
-                      icon: const Icon(Icons.facebook, size: 30),
-                      label: Text(
-                        l10n.translLoginFb,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Loading indicator
-                  if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 30),
-                      child: CircularProgressIndicator(color: Colors.white),
-                    ),
-                ],
+                ),
               ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _LoginBackground extends StatelessWidget {
+  const _LoginBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF4A7C2C), Color(0xFF5E9A3A), Color(0xFF3D6624)],
+        ),
+      ),
     );
   }
 }
