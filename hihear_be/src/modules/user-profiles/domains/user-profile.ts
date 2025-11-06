@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import { Uuid } from '../../../common/types';
 import { UserProfileEntity } from '../entities/user-profile.entity';
+import { Language } from 'src/utils/language.enum';
 
 export class UserProfile {
   id: Uuid;
@@ -19,6 +20,8 @@ export class UserProfile {
 
   level: string | null;
 
+  language: Language;
+
   createdAt: Date;
 
   updatedAt: Date;
@@ -31,6 +34,7 @@ export class UserProfile {
       avatarUrl: userProfileEntity.avatarUrl,
       xpPoints: userProfileEntity.xpPoints,
       streakDays: userProfileEntity.streakDays,
+      language: userProfileEntity.language,
       level: userProfileEntity.level,
       createdAt: userProfileEntity.createdAt,
       updatedAt: userProfileEntity.updatedAt,

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserProfileUpdate } from '../domains/update-user-profile';
 import { IsInt, IsOptional, IsString } from 'class-validator';
+import { Language } from 'src/utils/language.enum';
 
 export class UserProfileUpdateDto {
   @ApiProperty()
@@ -33,6 +34,9 @@ export class UserProfileUpdateDto {
   @IsInt()
   streakDays?: number;
 
+  @ApiProperty({ enum: Language, example: Language.ENGLISH })
+  language: Language;
+
   static toUserProfileUpdate(
     userProfileUpdateDto: UserProfileUpdateDto,
   ): UserProfileUpdate {
@@ -43,6 +47,7 @@ export class UserProfileUpdateDto {
       level: userProfileUpdateDto.level,
       streakDays: userProfileUpdateDto.streakDays,
       xpPoints: userProfileUpdateDto.xpPoints,
+      language: userProfileUpdateDto.language,
     };
   }
 }
