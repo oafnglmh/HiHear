@@ -7,9 +7,9 @@ part of 'user_entity.dart';
 // **************************************************************************
 
 _UserEntity _$UserEntityFromJson(Map<String, dynamic> json) => _UserEntity(
-  id: json['id'] as String,
-  name: json['name'] as String,
-  email: json['email'] as String,
+  id: json['id'] as String?,
+  name: json['name'] as String?,
+  email: json['email'] as String?,
   photoUrl: json['photoUrl'] as String?,
   national: json['national'] as String?,
 );

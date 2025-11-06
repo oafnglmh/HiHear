@@ -55,11 +55,11 @@ extension CountryEventPatterns on CountryEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _AddCountry value)?  addCountry,TResult Function( _LoadCountries value)?  loadCountries,TResult Function( _Search value)?  search,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _AddOrUpdateCountry value)?  addOrUpdateCountry,TResult Function( _LoadCountries value)?  loadCountries,TResult Function( _Search value)?  search,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _AddCountry() when addCountry != null:
-return addCountry(_that);case _LoadCountries() when loadCountries != null:
+case _AddOrUpdateCountry() when addOrUpdateCountry != null:
+return addOrUpdateCountry(_that);case _LoadCountries() when loadCountries != null:
 return loadCountries(_that);case _Search() when search != null:
 return search(_that);case _:
   return orElse();
@@ -79,11 +79,11 @@ return search(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _AddCountry value)  addCountry,required TResult Function( _LoadCountries value)  loadCountries,required TResult Function( _Search value)  search,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _AddOrUpdateCountry value)  addOrUpdateCountry,required TResult Function( _LoadCountries value)  loadCountries,required TResult Function( _Search value)  search,}){
 final _that = this;
 switch (_that) {
-case _AddCountry():
-return addCountry(_that);case _LoadCountries():
+case _AddOrUpdateCountry():
+return addOrUpdateCountry(_that);case _LoadCountries():
 return loadCountries(_that);case _Search():
 return search(_that);case _:
   throw StateError('Unexpected subclass');
@@ -102,11 +102,11 @@ return search(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _AddCountry value)?  addCountry,TResult? Function( _LoadCountries value)?  loadCountries,TResult? Function( _Search value)?  search,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _AddOrUpdateCountry value)?  addOrUpdateCountry,TResult? Function( _LoadCountries value)?  loadCountries,TResult? Function( _Search value)?  search,}){
 final _that = this;
 switch (_that) {
-case _AddCountry() when addCountry != null:
-return addCountry(_that);case _LoadCountries() when loadCountries != null:
+case _AddOrUpdateCountry() when addOrUpdateCountry != null:
+return addOrUpdateCountry(_that);case _LoadCountries() when loadCountries != null:
 return loadCountries(_that);case _Search() when search != null:
 return search(_that);case _:
   return null;
@@ -125,10 +125,10 @@ return search(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  addCountry,TResult Function()?  loadCountries,TResult Function( String keyword)?  search,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( CountryEntity countryEntity)?  addOrUpdateCountry,TResult Function()?  loadCountries,TResult Function( String keyword)?  search,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _AddCountry() when addCountry != null:
-return addCountry();case _LoadCountries() when loadCountries != null:
+case _AddOrUpdateCountry() when addOrUpdateCountry != null:
+return addOrUpdateCountry(_that.countryEntity);case _LoadCountries() when loadCountries != null:
 return loadCountries();case _Search() when search != null:
 return search(_that.keyword);case _:
   return orElse();
@@ -148,10 +148,10 @@ return search(_that.keyword);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  addCountry,required TResult Function()  loadCountries,required TResult Function( String keyword)  search,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( CountryEntity countryEntity)  addOrUpdateCountry,required TResult Function()  loadCountries,required TResult Function( String keyword)  search,}) {final _that = this;
 switch (_that) {
-case _AddCountry():
-return addCountry();case _LoadCountries():
+case _AddOrUpdateCountry():
+return addOrUpdateCountry(_that.countryEntity);case _LoadCountries():
 return loadCountries();case _Search():
 return search(_that.keyword);case _:
   throw StateError('Unexpected subclass');
@@ -170,10 +170,10 @@ return search(_that.keyword);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  addCountry,TResult? Function()?  loadCountries,TResult? Function( String keyword)?  search,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( CountryEntity countryEntity)?  addOrUpdateCountry,TResult? Function()?  loadCountries,TResult? Function( String keyword)?  search,}) {final _that = this;
 switch (_that) {
-case _AddCountry() when addCountry != null:
-return addCountry();case _LoadCountries() when loadCountries != null:
+case _AddOrUpdateCountry() when addOrUpdateCountry != null:
+return addOrUpdateCountry(_that.countryEntity);case _LoadCountries() when loadCountries != null:
 return loadCountries();case _Search() when search != null:
 return search(_that.keyword);case _:
   return null;
@@ -186,34 +186,77 @@ return search(_that.keyword);case _:
 /// @nodoc
 
 
-class _AddCountry implements CountryEvent {
-  const _AddCountry();
+class _AddOrUpdateCountry implements CountryEvent {
+  const _AddOrUpdateCountry(this.countryEntity);
   
 
+ final  CountryEntity countryEntity;
 
-
+/// Create a copy of CountryEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AddOrUpdateCountryCopyWith<_AddOrUpdateCountry> get copyWith => __$AddOrUpdateCountryCopyWithImpl<_AddOrUpdateCountry>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddCountry);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddOrUpdateCountry&&(identical(other.countryEntity, countryEntity) || other.countryEntity == countryEntity));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,countryEntity);
 
 @override
 String toString() {
-  return 'CountryEvent.addCountry()';
+  return 'CountryEvent.addOrUpdateCountry(countryEntity: $countryEntity)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$AddOrUpdateCountryCopyWith<$Res> implements $CountryEventCopyWith<$Res> {
+  factory _$AddOrUpdateCountryCopyWith(_AddOrUpdateCountry value, $Res Function(_AddOrUpdateCountry) _then) = __$AddOrUpdateCountryCopyWithImpl;
+@useResult
+$Res call({
+ CountryEntity countryEntity
+});
 
 
+$CountryEntityCopyWith<$Res> get countryEntity;
+
+}
+/// @nodoc
+class __$AddOrUpdateCountryCopyWithImpl<$Res>
+    implements _$AddOrUpdateCountryCopyWith<$Res> {
+  __$AddOrUpdateCountryCopyWithImpl(this._self, this._then);
+
+  final _AddOrUpdateCountry _self;
+  final $Res Function(_AddOrUpdateCountry) _then;
+
+/// Create a copy of CountryEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? countryEntity = null,}) {
+  return _then(_AddOrUpdateCountry(
+null == countryEntity ? _self.countryEntity : countryEntity // ignore: cast_nullable_to_non_nullable
+as CountryEntity,
+  ));
+}
+
+/// Create a copy of CountryEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CountryEntityCopyWith<$Res> get countryEntity {
+  
+  return $CountryEntityCopyWith<$Res>(_self.countryEntity, (value) {
+    return _then(_self.copyWith(countryEntity: value));
+  });
+}
+}
 
 /// @nodoc
 

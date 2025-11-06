@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CountryEntity {
 
- String get name; String get code; String get flag;
+ String get name; String get code; String get flag; String get api;
 /// Create a copy of CountryEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CountryEntityCopyWith<CountryEntity> get copyWith => _$CountryEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CountryEntity&&(identical(other.name, name) || other.name == name)&&(identical(other.code, code) || other.code == code)&&(identical(other.flag, flag) || other.flag == flag));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CountryEntity&&(identical(other.name, name) || other.name == name)&&(identical(other.code, code) || other.code == code)&&(identical(other.flag, flag) || other.flag == flag)&&(identical(other.api, api) || other.api == api));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,code,flag);
+int get hashCode => Object.hash(runtimeType,name,code,flag,api);
 
 @override
 String toString() {
-  return 'CountryEntity(name: $name, code: $code, flag: $flag)';
+  return 'CountryEntity(name: $name, code: $code, flag: $flag, api: $api)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CountryEntityCopyWith<$Res>  {
   factory $CountryEntityCopyWith(CountryEntity value, $Res Function(CountryEntity) _then) = _$CountryEntityCopyWithImpl;
 @useResult
 $Res call({
- String name, String code, String flag
+ String name, String code, String flag, String api
 });
 
 
@@ -65,11 +65,12 @@ class _$CountryEntityCopyWithImpl<$Res>
 
 /// Create a copy of CountryEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? code = null,Object? flag = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? code = null,Object? flag = null,Object? api = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,flag: null == flag ? _self.flag : flag // ignore: cast_nullable_to_non_nullable
+as String,api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String code,  String flag)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String code,  String flag,  String api)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CountryEntity() when $default != null:
-return $default(_that.name,_that.code,_that.flag);case _:
+return $default(_that.name,_that.code,_that.flag,_that.api);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.name,_that.code,_that.flag);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String code,  String flag)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String code,  String flag,  String api)  $default,) {final _that = this;
 switch (_that) {
 case _CountryEntity():
-return $default(_that.name,_that.code,_that.flag);case _:
+return $default(_that.name,_that.code,_that.flag,_that.api);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.name,_that.code,_that.flag);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String code,  String flag)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String code,  String flag,  String api)?  $default,) {final _that = this;
 switch (_that) {
 case _CountryEntity() when $default != null:
-return $default(_that.name,_that.code,_that.flag);case _:
+return $default(_that.name,_that.code,_that.flag,_that.api);case _:
   return null;
 
 }
@@ -211,12 +212,13 @@ return $default(_that.name,_that.code,_that.flag);case _:
 @JsonSerializable()
 
 class _CountryEntity implements CountryEntity {
-  const _CountryEntity({required this.name, required this.code, required this.flag});
+  const _CountryEntity({required this.name, required this.code, required this.flag, required this.api});
   factory _CountryEntity.fromJson(Map<String, dynamic> json) => _$CountryEntityFromJson(json);
 
 @override final  String name;
 @override final  String code;
 @override final  String flag;
+@override final  String api;
 
 /// Create a copy of CountryEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CountryEntity&&(identical(other.name, name) || other.name == name)&&(identical(other.code, code) || other.code == code)&&(identical(other.flag, flag) || other.flag == flag));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CountryEntity&&(identical(other.name, name) || other.name == name)&&(identical(other.code, code) || other.code == code)&&(identical(other.flag, flag) || other.flag == flag)&&(identical(other.api, api) || other.api == api));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,code,flag);
+int get hashCode => Object.hash(runtimeType,name,code,flag,api);
 
 @override
 String toString() {
-  return 'CountryEntity(name: $name, code: $code, flag: $flag)';
+  return 'CountryEntity(name: $name, code: $code, flag: $flag, api: $api)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$CountryEntityCopyWith<$Res> implements $CountryEntityCopy
   factory _$CountryEntityCopyWith(_CountryEntity value, $Res Function(_CountryEntity) _then) = __$CountryEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String code, String flag
+ String name, String code, String flag, String api
 });
 
 
@@ -268,11 +270,12 @@ class __$CountryEntityCopyWithImpl<$Res>
 
 /// Create a copy of CountryEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? code = null,Object? flag = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? code = null,Object? flag = null,Object? api = null,}) {
   return _then(_CountryEntity(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,flag: null == flag ? _self.flag : flag // ignore: cast_nullable_to_non_nullable
+as String,api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

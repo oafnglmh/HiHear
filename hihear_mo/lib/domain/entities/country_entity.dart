@@ -9,6 +9,7 @@ abstract class CountryEntity with _$CountryEntity {
     required String name,
     required String code,
     required String flag,
+    required String api,
   }) = _CountryEntity;
 
   factory CountryEntity.fromJson(Map<String, dynamic> json) =>

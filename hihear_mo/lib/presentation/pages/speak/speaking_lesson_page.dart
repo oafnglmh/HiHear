@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
-import 'package:hihear_mo/presentation/widgets/wave_painter.dart';
+import 'package:hihear_mo/presentation/painter/wave_painter.dart';
 import '../../blocs/speaking/speaking_bloc.dart';
 import '../../blocs/speaking/speaking_event.dart';
 import '../../blocs/speaking/speaking_state.dart';
 
 class SpeakingLessonPage extends StatefulWidget {
-  final bool isPremium;
-  
-  const SpeakingLessonPage({
-    super.key,
-    this.isPremium = true,
-  });
+  const SpeakingLessonPage({super.key});
 
   @override
   State<SpeakingLessonPage> createState() => _SpeakingLessonPageState();
@@ -23,9 +17,9 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
     with TickerProviderStateMixin {
   late final AnimationController _waveController;
   late final AnimationController _pulseController;
-  late final AnimationController _shimmerController;
   late final AnimationController _headerController;
-  late final AnimationController _particleController;
+  late final AnimationController _bambooController;
+  late final AnimationController _fadeController;
 
   @override
   void initState() {
@@ -41,29 +35,29 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
 
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2500),
-    )..repeat();
-
     _headerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..forward();
 
-    _particleController = AnimationController(
+    _bambooController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
-    )..repeat();
+    )..repeat(reverse: true);
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..forward();
   }
 
   @override
   void dispose() {
     _waveController.dispose();
     _pulseController.dispose();
-    _shimmerController.dispose();
     _headerController.dispose();
-    _particleController.dispose();
+    _bambooController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -72,217 +66,156 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
     return BlocProvider(
       create: (_) => SpeakingBloc(),
       child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: widget.isPremium
-                ? const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF1a1a2e),
-                      Color(0xFF16213e),
-                      Color(0xFF0f3460),
-                      Color(0xFF1a1a2e),
-                    ],
-                  )
-                : null,
-            color: widget.isPremium ? null : Colors.white,
-          ),
-          child: SafeArea(
-            child: BlocBuilder<SpeakingBloc, SpeakingState>(
-              builder: (context, state) {
-                final bloc = context.read<SpeakingBloc>();
-                final lesson = bloc.lessons[state.currentLesson];
-
-                return Stack(
-                  children: [
-                    // Animated particles background (Premium only)
-                    if (widget.isPremium) _buildParticlesBackground(),
-
-                    Column(
-                      children: [
-                        _buildAppBar(context, state),
-                        const SizedBox(height: 24),
-                        _buildLessonCard(lesson, state),
-                        const SizedBox(height: 32),
-                        _buildProgressSection(state),
-                        const Spacer(),
-                        if (!state.showPopup)
-                          _buildMicrophoneButton(context, state),
-                        const SizedBox(height: 60),
-                      ],
-                    ),
-
-                    if (state.showPopup)
-                      _buildFeedbackPopup(context, state),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background gradient - màu tre xanh
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF4A7C2C), // Xanh lá tre đậm
+                    Color(0xFF5E9A3A), // Xanh lá tre
+                    Color(0xFF3D6624), // Xanh lá tre sẫm
                   ],
+                ),
+              ),
+            ),
+
+            // Bamboo decoration
+            AnimatedBuilder(
+              animation: _bambooController,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: BambooPainter(
+                    animationValue: _bambooController.value,
+                  ),
+                  size: Size.infinite,
                 );
               },
             ),
-          ),
+
+            // Content
+            SafeArea(
+              child: BlocBuilder<SpeakingBloc, SpeakingState>(
+                builder: (context, state) {
+                  final bloc = context.read<SpeakingBloc>();
+                  final lesson = bloc.lessons[state.currentLesson];
+
+                  return Stack(
+                    children: [
+                      Column(
+                        children: [
+                          _buildAppBar(context, state),
+                          const SizedBox(height: 24),
+                          _buildLessonCard(lesson, state),
+                          const SizedBox(height: 32),
+                          _buildProgressSection(state),
+                          const Spacer(),
+                          if (!state.showPopup)
+                            _buildMicrophoneButton(context, state),
+                          const SizedBox(height: 60),
+                        ],
+                      ),
+
+                      if (state.showPopup)
+                        _buildFeedbackPopup(context, state),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildParticlesBackground() {
-    return AnimatedBuilder(
-      animation: _particleController,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: ParticlesPainter(
-            animationValue: _particleController.value,
-          ),
-          size: Size.infinite,
-        );
-      },
     );
   }
 
   Widget _buildAppBar(BuildContext context, SpeakingState state) {
     return FadeTransition(
-      opacity: _headerController,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, -0.5),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: _headerController,
-          curve: Curves.easeOut,
-        )),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: widget.isPremium
-                      ? Colors.white.withOpacity(0.1)
-                      : AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: widget.isPremium
-                      ? Border.all(
-                          color: const Color(0xFFFFD700).withOpacity(0.3),
-                        )
-                      : null,
+      opacity: _fadeController,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFD4AF37).withOpacity(0.3),
                 ),
-                child: IconButton(
-                  onPressed: () => context.go('/home'),
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: widget.isPremium ? Colors.white : AppColors.primary,
+              ),
+              child: IconButton(
+                onPressed: () => context.go('/home'),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Bài Luyện Nói",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Bài ${state.currentLesson + 1}/${state.currentLesson + 5}",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Speaking Lesson",
-                          style: TextStyle(
-                            color: widget.isPremium ? Colors.white : Colors.black87,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (widget.isPremium) ...[
-                          const SizedBox(width: 8),
-                          _buildPremiumBadge(),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Bài ${state.currentLesson + 1}/${state.currentLesson + 5}",
-                      style: TextStyle(
-                        color: widget.isPremium
-                            ? Colors.white.withOpacity(0.7)
-                            : Colors.black54,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
                 ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFD4AF37).withOpacity(0.3),
+                    blurRadius: 8,
+                  ),
+                ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  gradient: widget.isPremium
-                      ? const LinearGradient(
-                          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                        )
-                      : null,
-                  color: widget.isPremium ? null : AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: widget.isPremium ? Colors.white : AppColors.primary,
-                      size: 16,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.star,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    "${state.score.toInt()}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${state.score.toInt()}",
-                      style: TextStyle(
-                        color: widget.isPremium ? Colors.white : AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildPremiumBadge() {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (context, child) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: const [
-                Color(0xFFFFD700),
-                Color(0xFFFFA500),
-                Color(0xFFFFD700),
-              ],
-              stops: [
-                _shimmerController.value - 0.3,
-                _shimmerController.value,
-                _shimmerController.value + 0.3,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFD700).withOpacity(0.5),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: const Text(
-            "PRO",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -300,23 +233,18 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: widget.isPremium
-                      ? LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFFFFD700).withOpacity(0.9),
-                            const Color(0xFFFFA500).withOpacity(0.8),
-                          ],
-                        )
-                      : null,
-                  color: widget.isPremium ? null : AppColors.primary,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFD4AF37),
+                      Color(0xFFB8941E),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.isPremium
-                          ? const Color(0xFFFFD700).withOpacity(0.4)
-                          : AppColors.primary.withOpacity(0.4),
+                      color: const Color(0xFFD4AF37).withOpacity(0.4),
                       blurRadius: 24,
                       spreadRadius: 4,
                       offset: const Offset(0, 8),
@@ -375,20 +303,18 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Tiến độ",
                 style: TextStyle(
-                  color: widget.isPremium ? Colors.white : Colors.black87,
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
                 "${((state.currentLesson + 1) / 5 * 100).toInt()}%",
-                style: TextStyle(
-                  color: widget.isPremium
-                      ? const Color(0xFFFFD700)
-                      : AppColors.primary,
+                style: const TextStyle(
+                  color: Color(0xFFD4AF37),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -401,13 +327,9 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             child: LinearProgressIndicator(
               value: (state.currentLesson + 1) / 5,
               minHeight: 12,
-              backgroundColor: widget.isPremium
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.grey.shade200,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                widget.isPremium
-                    ? const Color(0xFFFFD700)
-                    : AppColors.primary,
+              backgroundColor: Colors.white.withOpacity(0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFFD4AF37),
               ),
             ),
           ),
@@ -436,21 +358,17 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: widget.isPremium
-            ? Colors.white.withOpacity(0.1)
-            : Colors.grey.shade100,
+        color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
-        border: widget.isPremium
-            ? Border.all(
-                color: const Color(0xFFFFD700).withOpacity(0.2),
-              )
-            : null,
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: widget.isPremium ? const Color(0xFFFFD700) : AppColors.primary,
+            color: const Color(0xFFD4AF37),
             size: 20,
           ),
           const SizedBox(width: 8),
@@ -459,8 +377,8 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             children: [
               Text(
                 value,
-                style: TextStyle(
-                  color: widget.isPremium ? Colors.white : Colors.black87,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -468,9 +386,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               Text(
                 label,
                 style: TextStyle(
-                  color: widget.isPremium
-                      ? Colors.white.withOpacity(0.7)
-                      : Colors.black54,
+                  color: Colors.white.withOpacity(0.7),
                   fontSize: 12,
                 ),
               ),
@@ -493,6 +409,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             child: Stack(
               alignment: Alignment.center,
               children: [
+                // Ripple effect when recording
                 if (state.isRecording) ...[
                   for (int i = 0; i < 3; i++)
                     Transform.scale(
@@ -503,10 +420,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: (widget.isPremium
-                                    ? const Color(0xFFFFD700)
-                                    : Colors.redAccent)
-                                .withOpacity(0.2 - (i * 0.05)),
+                            color: Colors.redAccent.withOpacity(0.2 - (i * 0.05)),
                             width: 2,
                           ),
                         ),
@@ -514,18 +428,17 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                     ),
                 ],
 
+                // Wave animation
                 CustomPaint(
                   painter: WavePainter(
                     animationValue: _waveController.value,
                     active: state.isRecording,
-                    color: (widget.isPremium
-                            ? const Color(0xFFFFD700)
-                            : AppColors.primary)
-                        .withOpacity(0.3),
+                    color: const Color(0xFFD4AF37).withOpacity(0.3),
                   ),
                   size: const Size(180, 180),
                 ),
 
+                // Main button
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: 110,
@@ -536,21 +449,14 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                         ? const LinearGradient(
                             colors: [Colors.red, Colors.redAccent],
                           )
-                        : (widget.isPremium
-                            ? const LinearGradient(
-                                colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                              )
-                            : null),
-                    color: state.isRecording || widget.isPremium
-                        ? null
-                        : AppColors.primary,
+                        : const LinearGradient(
+                            colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                          ),
                     boxShadow: [
                       BoxShadow(
                         color: (state.isRecording
                                 ? Colors.redAccent
-                                : (widget.isPremium
-                                    ? const Color(0xFFFFD700)
-                                    : AppColors.primary))
+                                : const Color(0xFFD4AF37))
                             .withOpacity(0.6),
                         blurRadius: 30 + (_pulseController.value * 10),
                         spreadRadius: state.isRecording ? 15 : 8,
@@ -564,6 +470,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                   ),
                 ),
 
+                // Recording indicator
                 if (state.isRecording)
                   Positioned(
                     bottom: 0,
@@ -573,8 +480,16 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        gradient: const LinearGradient(
+                          colors: [Colors.red, Colors.redAccent],
+                        ),
                         borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.4),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -589,7 +504,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                           ),
                           const SizedBox(width: 8),
                           const Text(
-                            "Recording...",
+                            "Đang ghi âm...",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -610,21 +525,15 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
   Widget _buildFeedbackPopup(BuildContext context, SpeakingState state) {
     return Stack(
       children: [
+        // Backdrop
         GestureDetector(
           onTap: () => context.read<SpeakingBloc>().add(HideFeedbackPopup()),
           child: Container(
             color: Colors.black.withOpacity(0.7),
-            child: BackdropFilter(
-              filter: widget.isPremium
-                  ? ColorFilter.mode(
-                      Colors.black.withOpacity(0.3),
-                      BlendMode.darken,
-                    )
-                  : ColorFilter.mode(Colors.transparent, BlendMode.src),
-              child: Container(),
-            ),
           ),
         ),
+
+        // Popup content
         Center(
           child: AnimatedSlide(
             offset: state.showPopup ? Offset.zero : const Offset(0, 0.3),
@@ -637,17 +546,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                 margin: const EdgeInsets.all(20),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  gradient: widget.isPremium
-                      ? const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFFFFFFFF),
-                            Color(0xFFF5F5F5),
-                          ],
-                        )
-                      : null,
-                  color: widget.isPremium ? null : Colors.white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(32),
                   boxShadow: [
                     BoxShadow(
@@ -664,19 +563,13 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        gradient: widget.isPremium
-                            ? const LinearGradient(
-                                colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                              )
-                            : null,
-                        color: widget.isPremium ? null : AppColors.primary,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                        ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: (widget.isPremium
-                                    ? const Color(0xFFFFD700)
-                                    : AppColors.primary)
-                                .withOpacity(0.4),
+                            color: const Color(0xFFD4AF37).withOpacity(0.4),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
@@ -771,9 +664,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.isPremium
-                                  ? const Color(0xFFFFD700)
-                                  : AppColors.primary,
+                              backgroundColor: const Color(0xFFD4AF37),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -803,25 +694,74 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
   }
 }
 
-// Custom painter for animated particles
-class ParticlesPainter extends CustomPainter {
+// Bamboo Painter - vẽ cây tre
+class BambooPainter extends CustomPainter {
   final double animationValue;
 
-  ParticlesPainter({required this.animationValue});
+  BambooPainter({required this.animationValue});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFFFD700).withOpacity(0.1)
-      ..style = PaintingStyle.fill;
+      ..color = const Color(0xFF2D5016).withOpacity(0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
 
-    for (int i = 0; i < 20; i++) {
-      final x = (i * 50.0 + animationValue * 100) % size.width;
-      final y = (i * 30.0 + animationValue * 80) % size.height;
-      canvas.drawCircle(Offset(x, y), 2 + (i % 3), paint);
+    // Vẽ cây tre bên trái
+    _drawBamboo(canvas, size, 30, paint, animationValue);
+    // Vẽ cây tre bên phải
+    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
+  }
+
+  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
+    final path = Path();
+    final segments = 6;
+    final segmentHeight = size.height / segments;
+    
+    for (int i = 0; i < segments; i++) {
+      final y = i * segmentHeight;
+      final swayOffset = sway * 10 * (i / segments);
+      
+      // Thân tre
+      path.moveTo(x + swayOffset, y);
+      path.lineTo(x + swayOffset, y + segmentHeight - 10);
+      
+      // Đốt tre
+      canvas.drawCircle(
+        Offset(x + swayOffset, y + segmentHeight - 10),
+        5,
+        paint,
+      );
+      
+      // Lá tre
+      if (i > 2) {
+        final leafPaint = Paint()
+          ..color = const Color(0xFF6DB33F).withOpacity(0.2)
+          ..style = PaintingStyle.fill;
+        
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
+            width: 30,
+            height: 10,
+          ),
+          leafPaint,
+        );
+        
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
+            width: 30,
+            height: 10,
+          ),
+          leafPaint,
+        );
+      }
     }
+    
+    canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(ParticlesPainter oldDelegate) => true;
+  bool shouldRepaint(BambooPainter oldDelegate) => true;
 }

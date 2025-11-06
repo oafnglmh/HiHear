@@ -22,7 +22,7 @@ Future<void> main() async {
   );
 
   final authRepository = AuthRepositoryImpl(AuthRemoteDataSource());
-  final countryRepository = CountryRepositoryImpl();
+  final countryRepository = CountryRepositoryImpl(AuthRemoteDataSource());
   runApp(
     MultiRepositoryProvider(
       providers: [

@@ -15,6 +15,7 @@ import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speaking_lesson_page.dart';
 import 'package:hihear_mo/presentation/pages/splash/splash_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRoutes {
   static const splash = '/';
@@ -37,13 +38,14 @@ class AppRouter {
     return GoRouter(
       initialLocation: AppRoutes.splash,
       debugLogDiagnostics: true,
-      redirect: (context, state) {
-        final user = FirebaseAuth.instance.currentUser;
+      redirect: (context, state) async {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('access_token');
         final loggingIn = state.matchedLocation == AppRoutes.login;
 
-        if (user == null && !loggingIn) {
+        if ((token == null || token.isEmpty) && !loggingIn) {
           return AppRoutes.login;
-        } else if (user != null && loggingIn) {
+        } else if (token != null && token.isNotEmpty && loggingIn) {
           return AppRoutes.home;
         }
         return null;

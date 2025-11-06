@@ -56,7 +56,7 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
 
   Widget _buildUserName(UserEntity user) {
     final text = Text(
-      user.name.isNotEmpty ? user.name : "No Name",
+      user.name?.trim().isNotEmpty == true ? user.name! : "No Name",
       style: AppTextStyles.title.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -70,7 +70,7 @@ class _ProfileViewState extends State<_ProfileView> with SingleTickerProviderSta
 
   Widget _buildUserEmail(UserEntity user) {
     final text = Text(
-      user.email.isNotEmpty ? user.email : "No Email",
+      user.email?.trim().isNotEmpty == true ? user.email! : "No Name",
       style: AppTextStyles.subtitle.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w500,

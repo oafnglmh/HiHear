@@ -11,6 +11,7 @@ _CountryEntity _$CountryEntityFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       code: json['code'] as String,
       flag: json['flag'] as String,
+      api: json['api'] as String,
     );
 
 Map<String, dynamic> _$CountryEntityToJson(_CountryEntity instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$CountryEntityToJson(_CountryEntity instance) =>
       'name': instance.name,
       'code': instance.code,
       'flag': instance.flag,
+      'api': instance.api,
     };

@@ -13,12 +13,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
 
 class HomePage extends StatefulWidget {
-  final bool isPremium;
-  
-  const HomePage({
-    super.key,
-    this.isPremium = true,
-  });
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   late AnimationController _navBarController;
-  late AnimationController _shimmerController;
+  late AnimationController _bambooController;
   int _selectedIndex = 0;
 
   @override
@@ -39,17 +34,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
     );
 
-    _shimmerController = AnimationController(
+    _bambooController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    )..repeat();
+      duration: const Duration(milliseconds: 3000),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     _navBarController.dispose();
-    _shimmerController.dispose();
+    _bambooController.dispose();
     super.dispose();
   }
 
@@ -68,9 +63,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      _HomeContent(isPremium: widget.isPremium),
-      SpeakPage(isPremium: widget.isPremium),
-      SavedVocabPage(isPremium: widget.isPremium),
+      const _HomeContent(),
+      const SpeakPage(),
+      const SavedVocabPage(),
       ProfilePage(),
     ];
 
@@ -79,34 +74,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       body: Stack(
         children: [
           Positioned.fill(
-            child: widget.isPremium
-                ? Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF1a1a2e),
-                          Color(0xFF16213e),
-                          Color(0xFF0f3460),
-                        ],
-                      ),
-                    ),
-                  )
-                : Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFFFF9F66),
-                          Color(0xFFFF8C50),
-                          Color(0xFFFFA976),
-                        ],
-                      ),
-                    ),
-                  ),
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF4A7C2C),
+                    Color(0xFF5E9A3A),
+                    Color(0xFF3D6624),
+                  ],
+                ),
+              ),
+            ),
           ),
+
+          AnimatedBuilder(
+            animation: _bambooController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: BambooPainter(
+                  animationValue: _bambooController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          // Content
           SafeArea(
             child: PageView(
               controller: _pageController,
@@ -117,6 +112,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               children: pages,
             ),
           ),
+
+          // Navigation Bar
           Positioned(
             left: 0,
             right: 0,
@@ -135,9 +132,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: widget.isPremium
-                ? const Color(0xFFFFD700).withOpacity(0.3)
-                : Colors.black.withOpacity(0.15),
+            color: const Color(0xFFD4AF37).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -149,31 +144,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             decoration: BoxDecoration(
-              gradient: widget.isPremium
-                  ? LinearGradient(
-                      colors: [
-                        const Color(0xFFFFD700).withOpacity(0.15),
-                        const Color(0xFFFFA500).withOpacity(0.1),
-                      ],
-                    )
-                  : null,
-              color: widget.isPremium ? null : Colors.white.withOpacity(0.95),
+              color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: widget.isPremium
-                    ? const Color(0xFFFFD700).withOpacity(0.3)
-                    : Colors.white.withOpacity(0.5),
-                width: 1.5,
+                color: const Color(0xFFD4AF37).withOpacity(0.3),
+                width: 2,
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home_rounded, 0),
-                _buildNavItem(Icons.mic_rounded, 1),
-                _buildNavItem(Icons.bookmark_rounded, 2),
-                _buildNavItem(Icons.person_rounded, 3),
+                _buildNavItem(Icons.home_rounded, 0, "Trang chủ"),
+                _buildNavItem(Icons.mic_rounded, 1, "Nói"),
+                _buildNavItem(Icons.bookmark_rounded, 2, "Đã lưu"),
+                _buildNavItem(Icons.person_rounded, 3, "Tài khoản"),
               ],
             ),
           ),
@@ -182,7 +167,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildNavItem(IconData icon, int index) {
+  Widget _buildNavItem(IconData icon, int index, String label) {
     final bool isSelected = _selectedIndex == index;
     
     return GestureDetector(
@@ -190,38 +175,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOutCubic,
-        padding: EdgeInsets.all(isSelected ? 14 : 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          gradient: isSelected && widget.isPremium
+          gradient: isSelected
               ? const LinearGradient(
-                  colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
                 )
               : null,
-          color: isSelected && !widget.isPremium 
-              ? const Color(0xFFFF8C50)
-              : Colors.transparent,
-          shape: BoxShape.circle,
+          color: isSelected ? null : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: (widget.isPremium
-                            ? const Color(0xFFFFD700)
-                            : const Color(0xFFFF8C50))
-                        .withOpacity(0.4),
+                    color: const Color(0xFFD4AF37).withOpacity(0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [],
         ),
-        child: Icon(
-          icon,
-          color: isSelected
-              ? Colors.white
-              : (widget.isPremium
-                  ? Colors.white.withOpacity(0.6)
-                  : const Color(0xFF666666)),
-          size: 24,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : const Color(0xFF666666),
+              size: 24,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -229,9 +221,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 }
 
 class _HomeContent extends StatefulWidget {
-  final bool isPremium;
-  
-  const _HomeContent({this.isPremium = false});
+  const _HomeContent();
 
   @override
   State<_HomeContent> createState() => _HomeContentState();
@@ -277,7 +267,7 @@ class _HomeContentState extends State<_HomeContent>
           sliver: _buildLessonGrid(context),
         ),
         const SliverToBoxAdapter(
-          child: SizedBox(height: 100),
+          child: SizedBox(height: 120),
         ),
       ],
     );
@@ -288,92 +278,78 @@ class _HomeContentState extends State<_HomeContent>
       opacity: _headerController,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(widget.isPremium ? 0.2 : 0.95),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: widget.isPremium
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-              ),
-              child: Icon(
-                Icons.school_rounded,
-                color: widget.isPremium ? Colors.white : const Color(0xFFFF8C50),
-                size: 28,
-              ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFD4AF37).withOpacity(0.3),
+              width: 2,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Xin chào! 👋",
-                    style: TextStyle(
-                      color: widget.isPremium ? Colors.white : Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Sẵn sàng học hôm nay?",
-                    style: TextStyle(
-                      color: widget.isPremium
-                          ? Colors.white.withOpacity(0.8)
-                          : Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
-            ),
-            if (widget.isPremium) _buildPremiumBadge(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPremiumBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFFD700).withOpacity(0.5),
-            blurRadius: 8,
+            ],
           ),
-        ],
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.workspace_premium, color: Colors.white, size: 16),
-          SizedBox(width: 4),
-          Text(
-            "PRO",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
+          child: Row(
+            children: [
+              // Icon cờ Việt Nam
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFDA291C), // Đỏ cờ Việt Nam
+                      Color(0xFFFD0000),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFDA291C).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Text(
+                  '🇻🇳',
+                  style: TextStyle(fontSize: 28),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Xin chào! 👋",
+                      style: TextStyle(
+                        color: Color(0xFF2D5016),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Học tiếng Việt thôi nào!",
+                      style: TextStyle(
+                        color: const Color(0xFF2D5016).withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Hoa sen
+              const Text('🪷', style: TextStyle(fontSize: 32)),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -386,30 +362,25 @@ class _HomeContentState extends State<_HomeContent>
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: widget.isPremium
-              ? Colors.white.withOpacity(0.1)
-              : Colors.white.withOpacity(0.95),
+          color: Colors.white.withOpacity(0.95),
           borderRadius: BorderRadius.circular(24),
-          border: widget.isPremium
-              ? Border.all(
-                  color: const Color(0xFFFFD700).withOpacity(0.3),
-                )
-              : null,
-          boxShadow: widget.isPremium
-              ? []
-              : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          border: Border.all(
+            color: const Color(0xFFD4AF37).withOpacity(0.3),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           children: [
             Row(
               children: [
-                // Circular Progress
+                // Circular Progress với màu cờ đỏ
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -419,12 +390,8 @@ class _HomeContentState extends State<_HomeContent>
                       child: CircularProgressIndicator(
                         value: 0.1,
                         strokeWidth: 8,
-                        color: widget.isPremium
-                            ? const Color(0xFFFFD700)
-                            : const Color(0xFFFF8C50),
-                        backgroundColor: widget.isPremium
-                            ? Colors.white.withOpacity(0.2)
-                            : const Color(0xFFFFE0D0),
+                        color: const Color(0xFFDA291C),
+                        backgroundColor: const Color(0xFFFFE0E0),
                       ),
                     ),
                     Column(
@@ -432,20 +399,16 @@ class _HomeContentState extends State<_HomeContent>
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.local_fire_department,
-                              color: widget.isPremium
-                                  ? const Color(0xFFFFD700)
-                                  : const Color(0xFFFF6B35),
+                              color: Color(0xFFFF6B35),
                               size: 24,
                             ),
                             const SizedBox(width: 4),
-                            Text(
+                            const Text(
                               "1",
                               style: TextStyle(
-                                color: widget.isPremium
-                                    ? Colors.white
-                                    : const Color(0xFF333333),
+                                color: Color(0xFF2D5016),
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -456,9 +419,7 @@ class _HomeContentState extends State<_HomeContent>
                         Text(
                           "ngày",
                           style: TextStyle(
-                            color: widget.isPremium
-                                ? Colors.white.withOpacity(0.7)
-                                : const Color(0xFF999999),
+                            color: const Color(0xFF2D5016).withOpacity(0.6),
                             fontSize: 11,
                           ),
                         ),
@@ -475,33 +436,27 @@ class _HomeContentState extends State<_HomeContent>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Streak hiện tại",
+                        "Chuỗi ngày học",
                         style: TextStyle(
-                          color: widget.isPremium
-                              ? Colors.white.withOpacity(0.8)
-                              : const Color(0xFF666666),
+                          color: const Color(0xFF2D5016).withOpacity(0.7),
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      const Text(
                         "Tuyệt vời!",
                         style: TextStyle(
-                          color: widget.isPremium
-                              ? const Color(0xFFFFD700)
-                              : const Color(0xFFFF8C50),
+                          color: Color(0xFFDA291C),
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Tiếp tục duy trì nhé!",
+                        "Tiếp tục phát huy nhé!",
                         style: TextStyle(
-                          color: widget.isPremium
-                              ? Colors.white.withOpacity(0.7)
-                              : const Color(0xFF999999),
+                          color: const Color(0xFF2D5016).withOpacity(0.6),
                           fontSize: 12,
                         ),
                       ),
@@ -513,41 +468,36 @@ class _HomeContentState extends State<_HomeContent>
             
             const SizedBox(height: 20),
             
-            // Level Badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                gradient: widget.isPremium
-                    ? LinearGradient(
-                        colors: [
-                          const Color(0xFFFFD700).withOpacity(0.3),
-                          const Color(0xFFFFA500).withOpacity(0.2),
-                        ],
-                      )
-                    : const LinearGradient(
-                        colors: [Color(0xFFFFE5D0), Color(0xFFFFF0E5)],
-                      ),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                ),
                 borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFD4AF37).withOpacity(0.4),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.emoji_events,
-                    color: widget.isPremium
-                        ? const Color(0xFFFFD700)
-                        : const Color(0xFFFF8C50),
-                    size: 20,
+                    color: Colors.white,
+                    size: 22,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "${l10n.level} 1",
-                    style: TextStyle(
-                      color: widget.isPremium
-                          ? Colors.white
-                          : const Color(0xFF333333),
+                    "${l10n.level} 1 - Người mới",
+                    style: const TextStyle(
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                   ),
                 ],
@@ -583,7 +533,7 @@ class _HomeContentState extends State<_HomeContent>
             },
           );
         },
-        childCount: 4,
+        childCount: 6,
       ),
     );
   }
@@ -591,6 +541,7 @@ class _HomeContentState extends State<_HomeContent>
   Widget _buildLessonCard(BuildContext context, int lessonId) {
     final l10n = AppLocalizations.of(context)!;
     final colors = _getLessonColors(lessonId);
+    final icon = _getLessonIcon(lessonId);
     
     return GestureDetector(
       onTap: () {
@@ -601,27 +552,17 @@ class _HomeContentState extends State<_HomeContent>
       },
       child: Container(
         decoration: BoxDecoration(
-          gradient: widget.isPremium
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: colors,
-                )
-              : null,
-          color: widget.isPremium ? null : Colors.white.withOpacity(0.95),
+          color: Colors.white.withOpacity(0.95),
           borderRadius: BorderRadius.circular(24),
-          border: widget.isPremium
-              ? Border.all(
-                  color: colors[0].withOpacity(0.5),
-                )
-              : null,
+          border: Border.all(
+            color: colors[0].withOpacity(0.3),
+            width: 2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: widget.isPremium
-                  ? colors[0].withOpacity(0.3)
-                  : Colors.black.withOpacity(0.08),
+              color: colors[0].withOpacity(0.2),
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -629,100 +570,122 @@ class _HomeContentState extends State<_HomeContent>
           borderRadius: BorderRadius.circular(24),
           child: Stack(
             children: [
-              // Background Image/Pattern
-              if (!widget.isPremium)
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.05,
-                    child: Image.asset(
-                      AppAssets.englishBg,
-                      fit: BoxFit.cover,
+              // Decorative pattern
+              Positioned(
+                top: -20,
+                right: -20,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        colors[0].withOpacity(0.1),
+                        colors[1].withOpacity(0.05),
+                      ],
                     ),
                   ),
                 ),
+              ),
               
               // Content
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Lesson badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: widget.isPremium
-                            ? Colors.white.withOpacity(0.2)
-                            : colors[0].withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        "Bài $lessonId",
-                        style: TextStyle(
-                          color: widget.isPremium ? Colors.white : colors[0],
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                    // Icon và Badge
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: colors,
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors[0].withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            icon,
+                            style: const TextStyle(fontSize: 24),
+                          ),
                         ),
-                      ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors[0].withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "Bài $lessonId",
+                            style: TextStyle(
+                              color: colors[0],
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     
                     const Spacer(),
                     
                     // Title
                     Text(
-                      "Từ vựng cơ bản",
-                      style: TextStyle(
-                        color: widget.isPremium ? Colors.white : const Color(0xFF333333),
-                        fontSize: 18,
+                      _getLessonTitle(lessonId),
+                      style: const TextStyle(
+                        color: Color(0xFF2D5016),
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
                         Icon(
                           Icons.article_outlined,
                           size: 14,
-                          color: widget.isPremium
-                              ? Colors.white.withOpacity(0.8)
-                              : const Color(0xFF999999),
+                          color: const Color(0xFF2D5016).withOpacity(0.6),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           "20 từ mới",
                           style: TextStyle(
-                            color: widget.isPremium
-                                ? Colors.white.withOpacity(0.8)
-                                : const Color(0xFF999999),
-                            fontSize: 13,
+                            color: const Color(0xFF2D5016).withOpacity(0.6),
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                     
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                     
                     // Start button
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 11),
                       decoration: BoxDecoration(
-                        gradient: widget.isPremium
-                            ? null
-                            : LinearGradient(
-                                colors: [colors[0], colors[1]],
-                              ),
-                        color: widget.isPremium ? Colors.white : null,
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          colors: colors,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: (widget.isPremium ? Colors.white : colors[0])
-                                .withOpacity(0.3),
+                            color: colors[0].withOpacity(0.3),
                             blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -731,16 +694,16 @@ class _HomeContentState extends State<_HomeContent>
                         children: [
                           Text(
                             l10n.startButton,
-                            style: TextStyle(
-                              color: widget.isPremium ? colors[0] : Colors.white,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(
+                          const SizedBox(width: 6),
+                          const Icon(
                             Icons.arrow_forward_rounded,
-                            color: widget.isPremium ? colors[0] : Colors.white,
+                            color: Colors.white,
                             size: 18,
                           ),
                         ],
@@ -758,11 +721,102 @@ class _HomeContentState extends State<_HomeContent>
 
   List<Color> _getLessonColors(int lessonId) {
     final colorSets = [
-      [const Color(0xFF667eea), const Color(0xFF764ba2)],
-      [const Color(0xFFf093fb), const Color(0xFFf5576c)],
-      [const Color(0xFF4facfe), const Color(0xFF00f2fe)],
-      [const Color(0xFF43e97b), const Color(0xFF38f9d7)],
+      [const Color(0xFFDA291C), const Color(0xFFFD0000)], // Đỏ cờ VN
+      [const Color(0xFFD4AF37), const Color(0xFFB8941E)], // Vàng gold
+      [const Color(0xFF4A7C2C), const Color(0xFF5E9A3A)], // Xanh tre
+      [const Color(0xFFFF6B35), const Color(0xFFFF8C50)], // Cam
+      [const Color(0xFF667eea), const Color(0xFF764ba2)], // Tím
+      [const Color(0xFF43e97b), const Color(0xFF38f9d7)], // Xanh mint
     ];
     return colorSets[(lessonId - 1) % colorSets.length];
   }
+
+  String _getLessonIcon(int lessonId) {
+    final icons = ['📚', '✍️', '🗣️', '👂', '🎯', '⭐'];
+    return icons[(lessonId - 1) % icons.length];
+  }
+
+  String _getLessonTitle(int lessonId) {
+    final titles = [
+      'Từ vựng cơ bản',
+      'Chào hỏi',
+      'Gia đình',
+      'Thức ăn',
+      'Động vật',
+      'Màu sắc',
+    ];
+    return titles[(lessonId - 1) % titles.length];
+  }
+}
+
+// Bamboo Painter - vẽ cây tre
+class BambooPainter extends CustomPainter {
+  final double animationValue;
+
+  BambooPainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF2D5016).withOpacity(0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+
+    // Vẽ cây tre bên trái
+    _drawBamboo(canvas, size, 30, paint, animationValue);
+    // Vẽ cây tre bên phải
+    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
+  }
+
+  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
+    final path = Path();
+    final segments = 6;
+    final segmentHeight = size.height / segments;
+    
+    for (int i = 0; i < segments; i++) {
+      final y = i * segmentHeight;
+      final swayOffset = sway * 10 * (i / segments);
+      
+      // Thân tre
+      path.moveTo(x + swayOffset, y);
+      path.lineTo(x + swayOffset, y + segmentHeight - 10);
+      
+      // Đốt tre
+      canvas.drawCircle(
+        Offset(x + swayOffset, y + segmentHeight - 10),
+        5,
+        paint,
+      );
+      
+      // Lá tre
+      if (i > 2) {
+        final leafPaint = Paint()
+          ..color = const Color(0xFF6DB33F).withOpacity(0.15)
+          ..style = PaintingStyle.fill;
+        
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
+            width: 30,
+            height: 10,
+          ),
+          leafPaint,
+        );
+        
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
+            width: 30,
+            height: 10,
+          ),
+          leafPaint,
+        );
+      }
+    }
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(BambooPainter oldDelegate) => true;
 }
