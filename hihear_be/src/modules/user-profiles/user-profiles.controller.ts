@@ -5,6 +5,7 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { UserEntity } from '../users/entities/user.entity';
 import { AuthUser } from 'src/decorator/auth-user.decorator';
 import { UserProfileService } from './user-profiles.service';
+import { RequireLoggedIn } from 'src/guards/role-container';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -12,6 +13,7 @@ export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}
 
   @Patch('/me')
+  @RequireLoggedIn()
   async update(
     @AuthUser() currentUser: UserEntity,
     @Body() userUpdateDto: UserProfileUpdateDto,
