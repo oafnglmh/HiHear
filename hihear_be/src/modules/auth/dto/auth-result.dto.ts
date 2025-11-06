@@ -18,7 +18,7 @@ export class AuthResultDto {
     return {
       token: TokenDto.fromToken(authResult.token),
       user: UserDto.fromDomain(authResult.user),
-      profile:UserProfileDto.fromDomain(authResult.profile)
+      profile: UserProfileDto.fromDomain(authResult.profile),
     };
   }
 }

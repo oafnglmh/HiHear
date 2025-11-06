@@ -37,7 +37,7 @@ export class UserService {
     let profile: UserProfile | undefined;
 
     if (user) {
-      profile = await this.userProfileService.findUserOrThrow(user.id);
+      profile = await this.userProfileService.findUserProfileOrThrow(user.id);
       return { user, profile };
     }
 
