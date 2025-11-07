@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/domain/entities/country_entity.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
+import 'package:hihear_mo/presentation/painter/bamboo_painter.dart';
 
 class CountrySelectionPage extends StatefulWidget {
   const CountrySelectionPage({super.key});
@@ -74,15 +75,14 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFF4A7C2C), // Xanh lá tre đậm
-                    Color(0xFF5E9A3A), // Xanh lá tre
-                    Color(0xFF3D6624), // Xanh lá tre sẫm
+                    Color(0xFF4A7C2C),
+                    Color(0xFF5E9A3A),
+                    Color(0xFF3D6624),
                   ],
                 ),
               ),
             ),
 
-            // Bamboo decoration
             AnimatedBuilder(
               animation: _bambooController,
               builder: (context, child) {
@@ -95,7 +95,6 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
               },
             ),
 
-            // Content
             SafeArea(
               child: Column(
                 children: [
@@ -305,7 +304,6 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
         ),
         child: Row(
           children: [
-            // Flag
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -401,82 +399,4 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
       },
     );
   }
-}
-
-// Bamboo Painter - vẽ cây tre
-class BambooPainter extends CustomPainter {
-  final double animationValue;
-
-  BambooPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2D5016).withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    // Vẽ cây tre bên trái
-    _drawBamboo(canvas, size, 30, paint, animationValue);
-    // Vẽ cây tre bên phải
-    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
-  }
-
-  void _drawBamboo(
-    Canvas canvas,
-    Size size,
-    double x,
-    Paint paint,
-    double sway,
-  ) {
-    final path = Path();
-    final segments = 6;
-    final segmentHeight = size.height / segments;
-
-    for (int i = 0; i < segments; i++) {
-      final y = i * segmentHeight;
-      final swayOffset = sway * 10 * (i / segments);
-
-      // Thân tre
-      path.moveTo(x + swayOffset, y);
-      path.lineTo(x + swayOffset, y + segmentHeight - 10);
-
-      // Đốt tre
-      canvas.drawCircle(
-        Offset(x + swayOffset, y + segmentHeight - 10),
-        5,
-        paint,
-      );
-
-      // Lá tre
-      if (i > 2) {
-        final leafPaint = Paint()
-          ..color = const Color(0xFF6DB33F).withOpacity(0.2)
-          ..style = PaintingStyle.fill;
-
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-      }
-    }
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(BambooPainter oldDelegate) => true;
 }

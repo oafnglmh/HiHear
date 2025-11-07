@@ -21,6 +21,7 @@ class AppAssets {
   static const String bookIcon = "$imagesPath/book.png";
   static const String userIcon = "$imagesPath/user.png";
   static const String premiumIcon = "$imagesPath/premium.png";
+  static const String flowerIcon ="$imagesPath/flower.png";
 
   // --------------------- VIDEOS -------------------- //
   static const String welcomeVideo = "$videosPath/wc.mp4";

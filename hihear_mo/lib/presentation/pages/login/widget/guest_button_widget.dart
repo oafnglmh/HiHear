@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class GuestButton extends StatelessWidget {
   const GuestButton({super.key});
@@ -9,7 +10,9 @@ class GuestButton extends StatelessWidget {
       height: 56,
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          context.go('/home');
+        },
         icon: const Icon(Icons.person_outline, size: 24, color: Color(0xFFFFCD00)),
         label: const Text(
           "Tiếp tục với tư cách khách",

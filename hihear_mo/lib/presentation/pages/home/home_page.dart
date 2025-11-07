@@ -344,9 +344,12 @@ class _HomeContentState extends State<_HomeContent>
                     ),
                   ],
                 ),
+                
               ),
-              // Hoa sen
-              const Text('🪷', style: TextStyle(fontSize: 32)),
+              Image.asset(
+                AppAssets.flowerIcon,
+                fit: BoxFit.cover,
+              ),
             ],
           ),
         ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/painter/leaves_painter.dart';
 import '../../../../core/constants/app_assets.dart';
+import '../../painter/bamboo_painter.dart';
 
 class StudyTimePage extends StatefulWidget {
   const StudyTimePage({super.key});
@@ -54,22 +56,19 @@ class _StudyTimePageState extends State<StudyTimePage>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Gradient Background - màu tre xanh
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF4A7C2C), // Xanh lá tre đậm
-                  Color(0xFF5E9A3A), // Xanh lá tre
-                  Color(0xFF3D6624), // Xanh lá tre sẫm
+                  Color(0xFF4A7C2C),
+                  Color(0xFF5E9A3A),
+                  Color(0xFF3D6624),
                 ],
               ),
             ),
           ),
-
-          // Bamboo decoration
           AnimatedBuilder(
             animation: _bambooController,
             builder: (context, child) {
@@ -82,7 +81,6 @@ class _StudyTimePageState extends State<StudyTimePage>
             },
           ),
 
-          // Falling leaves
           AnimatedBuilder(
             animation: _leafController,
             builder: (context, child) {
@@ -95,7 +93,6 @@ class _StudyTimePageState extends State<StudyTimePage>
             },
           ),
 
-          // Content
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -165,8 +162,6 @@ class _StudyTimePageState extends State<StudyTimePage>
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        _buildPremiumBadge(),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -187,42 +182,6 @@ class _StudyTimePageState extends State<StudyTimePage>
     );
   }
 
-  Widget _buildPremiumBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFD4AF37),
-            Color(0xFFB8941E),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFD4AF37).withOpacity(0.5),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.workspace_premium, color: Colors.white, size: 12),
-          SizedBox(width: 4),
-          Text(
-            "PRO",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildQuestionBubble(AppLocalizations l10n) {
     return TweenAnimationBuilder<double>(
@@ -532,112 +491,3 @@ class _StudyTimePageState extends State<StudyTimePage>
   }
 }
 
-// Bamboo Painter - vẽ cây tre
-class BambooPainter extends CustomPainter {
-  final double animationValue;
-
-  BambooPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2D5016).withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    // Vẽ cây tre bên trái
-    _drawBamboo(canvas, size, 30, paint, animationValue);
-    // Vẽ cây tre bên phải
-    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
-  }
-
-  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
-    final path = Path();
-    final segments = 6;
-    final segmentHeight = size.height / segments;
-    
-    for (int i = 0; i < segments; i++) {
-      final y = i * segmentHeight;
-      final swayOffset = sway * 10 * (i / segments);
-      
-      // Thân tre
-      path.moveTo(x + swayOffset, y);
-      path.lineTo(x + swayOffset, y + segmentHeight - 10);
-      
-      // Đốt tre
-      canvas.drawCircle(
-        Offset(x + swayOffset, y + segmentHeight - 10),
-        5,
-        paint,
-      );
-      
-      // Lá tre
-      if (i > 2) {
-        final leafPaint = Paint()
-          ..color = const Color(0xFF6DB33F).withOpacity(0.2)
-          ..style = PaintingStyle.fill;
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-      }
-    }
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(BambooPainter oldDelegate) => true;
-}
-
-// Leaves Painter - lá tre rơi
-class LeavesPainter extends CustomPainter {
-  final double animationValue;
-
-  LeavesPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF6DB33F).withOpacity(0.3)
-      ..style = PaintingStyle.fill;
-
-    for (int i = 0; i < 15; i++) {
-      final x = (i * 80.0 + animationValue * 100) % size.width;
-      final y = (i * 60.0 + animationValue * 200) % size.height;
-      final rotation = animationValue * 6.28 + i;
-      
-      canvas.save();
-      canvas.translate(x, y);
-      canvas.rotate(rotation);
-      
-      // Vẽ lá tre
-      final path = Path();
-      path.moveTo(0, -8);
-      path.quadraticBezierTo(4, -4, 6, 0);
-      path.quadraticBezierTo(4, 4, 0, 8);
-      path.quadraticBezierTo(-4, 4, -6, 0);
-      path.quadraticBezierTo(-4, -4, 0, -8);
-      
-      canvas.drawPath(path, paint);
-      canvas.restore();
-    }
-  }
-
-  @override
-  bool shouldRepaint(LeavesPainter oldDelegate) => true;
-}

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/data/models/phoneme.dart';
 import 'package:hihear_mo/data/repositories/phoneme_repository.dart';
 
+import '../../painter/bamboo_painter.dart';
+
 class SpeakPage extends StatefulWidget {
   const SpeakPage({super.key});
 
@@ -56,6 +58,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
     });
 
     await flutterTts.setLanguage("vi-VN");
+    await flutterTts.setVoice({"name": "vi-VN-Standard-A", "locale": "vi-VN"});
     await flutterTts.setPitch(1.0);
     await flutterTts.awaitSpeakCompletion(true);
     String textToSpeak = "${phoneme.tts}, ví dụ: ${phoneme.example}";
@@ -73,16 +76,15 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background gradient - màu tre xanh
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF4A7C2C), // Xanh lá tre đậm
-                  Color(0xFF5E9A3A), // Xanh lá tre
-                  Color(0xFF3D6624), // Xanh lá tre sẫm
+                  Color(0xFF4A7C2C),
+                  Color(0xFF5E9A3A),
+                  Color(0xFF3D6624)
                 ],
               ),
             ),
@@ -446,76 +448,4 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
       ),
     );
   }
-}
-
-// Bamboo Painter - vẽ cây tre
-class BambooPainter extends CustomPainter {
-  final double animationValue;
-
-  BambooPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2D5016).withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    // Vẽ cây tre bên trái
-    _drawBamboo(canvas, size, 30, paint, animationValue);
-    // Vẽ cây tre bên phải
-    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
-  }
-
-  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
-    final path = Path();
-    final segments = 6;
-    final segmentHeight = size.height / segments;
-    
-    for (int i = 0; i < segments; i++) {
-      final y = i * segmentHeight;
-      final swayOffset = sway * 10 * (i / segments);
-      
-      // Thân tre
-      path.moveTo(x + swayOffset, y);
-      path.lineTo(x + swayOffset, y + segmentHeight - 10);
-      
-      // Đốt tre
-      canvas.drawCircle(
-        Offset(x + swayOffset, y + segmentHeight - 10),
-        5,
-        paint,
-      );
-      
-      // Lá tre
-      if (i > 2) {
-        final leafPaint = Paint()
-          ..color = const Color(0xFF6DB33F).withOpacity(0.2)
-          ..style = PaintingStyle.fill;
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-      }
-    }
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(BambooPainter oldDelegate) => true;
 }

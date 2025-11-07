@@ -3,6 +3,9 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+import 'package:hihear_mo/presentation/painter/clound_painter.dart';
+
+import '../../painter/bamboo_painter.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -52,22 +55,20 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background gradient - màu tre xanh Việt Nam
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF4A7C2C), // Xanh lá tre đậm
-                  Color(0xFF5E9A3A), // Xanh lá tre
-                  Color(0xFF3D6624), // Xanh lá tre sẫm
+                  Color(0xFF4A7C2C),
+                  Color(0xFF5E9A3A),
+                  Color(0xFF3D6624),
                 ],
               ),
             ),
           ),
 
-          // Bamboo decoration
           AnimatedBuilder(
             animation: _bambooController,
             builder: (context, child) {
@@ -80,14 +81,12 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
             },
           ),
 
-          // Vân mây nhẹ
           Positioned.fill(
             child: CustomPaint(
               painter: CloudPainter(),
             ),
           ),
 
-          // Content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32),
@@ -95,7 +94,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                 children: [
                   const Spacer(),
 
-                  // Message box với họa tiết Việt Nam
                   SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, 0.3),
@@ -108,7 +106,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                       opacity: _fadeController,
                       child: Column(
                         children: [
-                          // Tiêu đề với chữ Việt Nam
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
@@ -117,7 +114,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFFDA291C), // Đỏ cờ Việt Nam
+                                  Color(0xFFDA291C),
                                   Color(0xFFFD0000),
                                 ],
                               ),
@@ -159,7 +156,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
 
                           const SizedBox(height: 20),
 
-                          // Message box với viền vàng gold
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
@@ -238,7 +234,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
 
                   const Spacer(),
 
-                  // Button bắt đầu
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 600),
                     tween: Tween(begin: 0.0, end: 1.0),
@@ -305,100 +300,4 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
       ),
     );
   }
-}
-
-// Bamboo Painter - vẽ cây tre
-class BambooPainter extends CustomPainter {
-  final double animationValue;
-
-  BambooPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2D5016).withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    // Vẽ cây tre bên trái
-    _drawBamboo(canvas, size, 30, paint, animationValue);
-    // Vẽ cây tre bên phải
-    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
-  }
-
-  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
-    final path = Path();
-    final segments = 6;
-    final segmentHeight = size.height / segments;
-    
-    for (int i = 0; i < segments; i++) {
-      final y = i * segmentHeight;
-      final swayOffset = sway * 10 * (i / segments);
-      
-      // Thân tre
-      path.moveTo(x + swayOffset, y);
-      path.lineTo(x + swayOffset, y + segmentHeight - 10);
-      
-      // Đốt tre
-      canvas.drawCircle(
-        Offset(x + swayOffset, y + segmentHeight - 10),
-        5,
-        paint,
-      );
-      
-      // Lá tre
-      if (i > 2) {
-        final leafPaint = Paint()
-          ..color = const Color(0xFF6DB33F).withOpacity(0.2)
-          ..style = PaintingStyle.fill;
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-      }
-    }
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(BambooPainter oldDelegate) => true;
-}
-
-// Cloud Painter - vẽ mây nhẹ
-class CloudPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
-      ..style = PaintingStyle.fill;
-
-    // Vẽ vài đám mây nhẹ
-    _drawCloud(canvas, size.width * 0.2, size.height * 0.15, 60, paint);
-    _drawCloud(canvas, size.width * 0.7, size.height * 0.25, 50, paint);
-    _drawCloud(canvas, size.width * 0.4, size.height * 0.8, 55, paint);
-  }
-
-  void _drawCloud(Canvas canvas, double x, double y, double radius, Paint paint) {
-    canvas.drawCircle(Offset(x, y), radius, paint);
-    canvas.drawCircle(Offset(x + radius * 0.6, y), radius * 0.8, paint);
-    canvas.drawCircle(Offset(x - radius * 0.6, y), radius * 0.7, paint);
-  }
-
-  @override
-  bool shouldRepaint(CloudPainter oldDelegate) => false;
 }

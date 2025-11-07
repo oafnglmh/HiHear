@@ -3,14 +3,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
+import 'package:hihear_mo/presentation/painter/bamboo_painter.dart';
 
 class SavedVocabPage extends StatefulWidget {
-  final bool isPremium;
-  
-  const SavedVocabPage({
-    super.key,
-    this.isPremium = true,
-  });
+  const SavedVocabPage({super.key});
 
   @override
   State<SavedVocabPage> createState() => _SavedVocabPageState();
@@ -20,22 +16,22 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     with TickerProviderStateMixin {
   final FlutterTts _tts = FlutterTts();
   final TextEditingController _searchController = TextEditingController();
-  late AnimationController _shimmerController;
   late AnimationController _headerController;
+  late AnimationController _bambooController;
 
   final List<Map<String, String>> _savedVocab = [
-    {'en': 'apple', 'vi': 'quả táo', 'category': 'Food'},
-    {'en': 'book', 'vi': 'quyển sách', 'category': 'Education'},
-    {'en': 'computer', 'vi': 'máy tính', 'category': 'Technology'},
-    {'en': 'friend', 'vi': 'người bạn', 'category': 'Social'},
-    {'en': 'music', 'vi': 'âm nhạc', 'category': 'Art'},
-    {'en': 'school', 'vi': 'trường học', 'category': 'Education'},
-    {'en': 'teacher', 'vi': 'giáo viên', 'category': 'Education'},
-    {'en': 'beautiful', 'vi': 'đẹp', 'category': 'Adjective'},
+    {'en': 'apple', 'vi': 'quả táo', 'category': 'Thức ăn', 'emoji': '🍎'},
+    {'en': 'book', 'vi': 'quyển sách', 'category': 'Học tập', 'emoji': '📚'},
+    {'en': 'computer', 'vi': 'máy tính', 'category': 'Công nghệ', 'emoji': '💻'},
+    {'en': 'friend', 'vi': 'người bạn', 'category': 'Xã hội', 'emoji': '👥'},
+    {'en': 'music', 'vi': 'âm nhạc', 'category': 'Nghệ thuật', 'emoji': '🎵'},
+    {'en': 'school', 'vi': 'trường học', 'category': 'Học tập', 'emoji': '🏫'},
+    {'en': 'teacher', 'vi': 'giáo viên', 'category': 'Học tập', 'emoji': '👨‍🏫'},
+    {'en': 'beautiful', 'vi': 'đẹp', 'category': 'Tính từ', 'emoji': '✨'},
   ];
 
   List<Map<String, String>> _filteredVocab = [];
-  String _selectedCategory = 'All';
+  String _selectedCategory = 'Tất cả';
 
   @override
   void initState() {
@@ -43,23 +39,23 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     _filteredVocab = List.from(_savedVocab);
     _searchController.addListener(_onSearchChanged);
     
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    )..repeat();
-
     _headerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     )..forward();
+
+    _bambooController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _tts.stop();
     _searchController.dispose();
-    _shimmerController.dispose();
     _headerController.dispose();
+    _bambooController.dispose();
     super.dispose();
   }
 
@@ -70,7 +66,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
         final en = vocab['en']!.toLowerCase();
         final vi = vocab['vi']!.toLowerCase();
         final matchesSearch = en.contains(query) || vi.contains(query);
-        final matchesCategory = _selectedCategory == 'All' ||
+        final matchesCategory = _selectedCategory == 'Tất cả' ||
             vocab['category'] == _selectedCategory;
         return matchesSearch && matchesCategory;
       }).toList();
@@ -86,34 +82,50 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: widget.isPremium
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF1a1a2e),
-                    const Color(0xFF16213e),
-                    const Color(0xFF0f3460),
-                  ],
-                )
-              : null,
-          color: widget.isPremium ? null : AppColors.background,
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSearchBar(),
-              if (widget.isPremium) _buildCategoryFilter(),
-              _buildStatsBar(),
-              Expanded(child: _buildVocabGrid()),
-            ],
+      body: Stack(
+        children: [
+          // Background gradient - màu tre xanh
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF4A7C2C),
+                  Color(0xFF5E9A3A),
+                  Color(0xFF3D6624),
+                ],
+              ),
+            ),
           ),
-        ),
+
+          AnimatedBuilder(
+            animation: _bambooController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: BambooPainter(
+                  animationValue: _bambooController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  _buildSearchBar(),
+                  _buildCategoryFilter(),
+                  _buildStatsBar(),
+                  _buildVocabGrid(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: widget.isPremium ? _buildPremiumFAB() : null,
     );
   }
 
@@ -129,33 +141,44 @@ class _SavedVocabPageState extends State<SavedVocabPage>
           curve: Curves.easeOut,
         )),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFD4AF37).withOpacity(0.3),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  gradient: widget.isPremium
-                      ? const LinearGradient(
-                          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                        )
-                      : null,
-                  color: widget.isPremium ? null : AppColors.textWhite.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: widget.isPremium
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFFFD700).withOpacity(0.3),
-                            blurRadius: 12,
-                            spreadRadius: 2,
-                          )
-                        ]
-                      : null,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFD4AF37).withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.bookmark,
-                  color: widget.isPremium ? Colors.white : AppColors.textWhite,
-                  size: 24,
+                  color: Colors.white,
+                  size: 28,
                 ),
               ),
               const SizedBox(width: 16),
@@ -163,27 +186,23 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Text(
-                          "Từ vựng đã lưu",
+                          "Từ đã lưu",
                           style: TextStyle(
-                            color: AppColors.textWhite,
-                            fontSize: 24,
+                            color: Color(0xFF2D5016),
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (widget.isPremium) ...[
-                          const SizedBox(width: 8),
-                          _buildPremiumBadge(),
-                        ],
                       ],
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${_savedVocab.length} từ đã lưu",
+                      "${_savedVocab.length} từ vựng",
                       style: TextStyle(
-                        color: AppColors.textWhite.withOpacity(0.6),
+                        color: const Color(0xFF2D5016).withOpacity(0.6),
                         fontSize: 14,
                       ),
                     ),
@@ -197,89 +216,38 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     );
   }
 
-  Widget _buildPremiumBadge() {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (context, child) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: const [
-                Color(0xFFFFD700),
-                Color(0xFFFFA500),
-                Color(0xFFFFD700),
-              ],
-              stops: [
-                _shimmerController.value - 0.3,
-                _shimmerController.value,
-                _shimmerController.value + 0.3,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFD700).withOpacity(0.4),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.star, color: Colors.white, size: 12),
-              SizedBox(width: 4),
-              Text(
-                "PRO",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: widget.isPremium
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  )
-                ]
-              : null,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: TextField(
           controller: _searchController,
-          style: TextStyle(color: AppColors.textWhite),
+          style: const TextStyle(color: Color(0xFF2D5016)),
           decoration: InputDecoration(
-            hintText: 'Tìm kiếm từ vựng...',
+            hintText: 'Tìm từ vựng... 🔍',
             hintStyle: TextStyle(
-              color: AppColors.textWhite.withOpacity(0.5),
+              color: const Color(0xFF2D5016).withOpacity(0.5),
             ),
-            prefixIcon: Icon(
+            prefixIcon: const Icon(
               Icons.search_rounded,
-              color: widget.isPremium
-                  ? const Color(0xFFFFD700)
-                  : AppColors.textWhite,
+              color: Color(0xFFD4AF37),
+              size: 24,
             ),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(
-                      Icons.clear,
-                      color: AppColors.textWhite.withOpacity(0.7),
+                      Icons.clear_rounded,
+                      color: const Color(0xFF2D5016).withOpacity(0.5),
                     ),
                     onPressed: () {
                       _searchController.clear();
@@ -287,26 +255,22 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                   )
                 : null,
             filled: true,
-            fillColor: AppColors.textWhite.withOpacity(0.1),
+            fillColor: Colors.white.withOpacity(0.95),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
-                color: widget.isPremium
-                    ? const Color(0xFFFFD700).withOpacity(0.2)
-                    : Colors.transparent,
-                width: 1,
+                color: const Color(0xFFD4AF37).withOpacity(0.3),
+                width: 2,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: widget.isPremium
-                    ? const Color(0xFFFFD700)
-                    : AppColors.textWhite.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+              borderSide: const BorderSide(
+                color: Color(0xFFD4AF37),
                 width: 2,
               ),
             ),
@@ -317,51 +281,78 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildCategoryFilter() {
-    final categories = ['All', 'Food', 'Education', 'Technology', 'Social', 'Art'];
+    final categories = [
+      {'name': 'Tất cả', 'emoji': '📚'},
+      {'name': 'Thức ăn', 'emoji': '🍎'},
+      {'name': 'Học tập', 'emoji': '📖'},
+      {'name': 'Công nghệ', 'emoji': '💻'},
+      {'name': 'Xã hội', 'emoji': '👥'},
+      {'name': 'Nghệ thuật', 'emoji': '🎨'},
+    ];
     
     return Container(
-      height: 50,
-      margin: const EdgeInsets.only(bottom: 12),
+      height: 60,
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          final isSelected = category == _selectedCategory;
+          final isSelected = category['name'] == _selectedCategory;
           
           return Padding(
             padding: const EdgeInsets.only(right: 12),
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedCategory = category;
+                  _selectedCategory = category['name']!;
                   _onSearchChanged();
                 });
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
                   gradient: isSelected
                       ? const LinearGradient(
-                          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                          colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
                         )
                       : null,
-                  color: isSelected ? null : AppColors.textWhite.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: isSelected ? null : Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
-                        ? Colors.transparent
-                        : AppColors.textWhite.withOpacity(0.2),
+                        ? const Color(0xFFD4AF37)
+                        : const Color(0xFFD4AF37).withOpacity(0.3),
+                    width: 2,
                   ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
                 ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textWhite.withOpacity(0.7),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      category['emoji']!,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      category['name']!,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : const Color(0xFF2D5016),
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -374,56 +365,69 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   Widget _buildStatsBar() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: widget.isPremium
-            ? LinearGradient(
-                colors: [
-                  const Color(0xFFFFD700).withOpacity(0.2),
-                  const Color(0xFFFFA500).withOpacity(0.1),
-                ],
-              )
-            : null,
-        color: widget.isPremium ? null : AppColors.textWhite.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(0.95),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: widget.isPremium
-              ? const Color(0xFFFFD700).withOpacity(0.3)
-              : AppColors.textWhite.withOpacity(0.1),
+          color: const Color(0xFFD4AF37).withOpacity(0.3),
+          width: 2,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(Icons.library_books, _filteredVocab.length.toString(), "Từ hiển thị"),
-          _buildStatItem(Icons.local_fire_department, "7", "Streak"),
+          _buildStatItem(
+            '📚',
+            _filteredVocab.length.toString(),
+            "Từ hiển thị",
+            const Color(0xFFD4AF37),
+          ),
+          Container(
+            width: 2,
+            height: 40,
+            color: const Color(0xFFD4AF37).withOpacity(0.3),
+          ),
+          _buildStatItem(
+            '🔥',
+            "7",
+            "Ngày streak",
+            const Color(0xFFDA291C),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(IconData icon, String value, String label) {
+  Widget _buildStatItem(String emoji, String value, String label, Color color) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: widget.isPremium ? const Color(0xFFFFD700) : AppColors.textWhite,
-          size: 24,
+        Text(
+          emoji,
+          style: const TextStyle(fontSize: 28),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           value,
           style: TextStyle(
-            color: AppColors.textWhite,
-            fontSize: 18,
+            color: color,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           label,
           style: TextStyle(
-            color: AppColors.textWhite.withOpacity(0.6),
+            color: const Color(0xFF2D5016).withOpacity(0.6),
             fontSize: 12,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -433,24 +437,40 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   Widget _buildVocabGrid() {
     if (_filteredVocab.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 80,
-              color: AppColors.textWhite.withOpacity(0.3),
+        child: Container(
+          margin: const EdgeInsets.all(40),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFD4AF37).withOpacity(0.3),
+              width: 2,
             ),
-            const SizedBox(height: 16),
-            Text(
-              "Không tìm thấy từ nào",
-              style: TextStyle(
-                color: AppColors.textWhite.withOpacity(0.7),
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('🔍', style: TextStyle(fontSize: 64)),
+              const SizedBox(height: 16),
+              const Text(
+                "Không tìm thấy từ nào",
+                style: TextStyle(
+                  color: Color(0xFF2D5016),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                "Thử tìm kiếm với từ khóa khác",
+                style: TextStyle(
+                  color: const Color(0xFF2D5016).withOpacity(0.6),
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -458,7 +478,8 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: GridView.builder(
-        physics: const BouncingScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
         itemCount: _filteredVocab.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -472,7 +493,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
             tween: Tween(begin: 0.0, end: 1.0),
             builder: (context, value, child) {
               return Transform.scale(
-                scale: value,
+                scale: 0.8 + (value * 0.2),
                 child: Opacity(
                   opacity: value,
                   child: _buildFlipCard(_filteredVocab[index], index),
@@ -493,6 +514,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
         title: vocab['en']!,
         subtitle: "Nhấn để xem nghĩa",
         category: vocab['category']!,
+        emoji: vocab['emoji']!,
         icon: Icons.volume_up_rounded,
         onIconPressed: () => _speak(vocab['en']!),
         index: index,
@@ -501,6 +523,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
         title: vocab['vi']!,
         subtitle: vocab['en'],
         category: vocab['category']!,
+        emoji: vocab['emoji']!,
         isBack: true,
         index: index,
       ),
@@ -511,6 +534,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     required String title,
     String? subtitle,
     required String category,
+    required String emoji,
     IconData? icon,
     VoidCallback? onIconPressed,
     bool isBack = false,
@@ -520,72 +544,51 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     
     return Container(
       decoration: BoxDecoration(
-        gradient: widget.isPremium
+        gradient: isBack
             ? LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: isBack
-                    ? [colors[0], colors[1]]
-                    : [
-                        AppColors.textWhite.withOpacity(0.95),
-                        AppColors.textWhite.withOpacity(0.85),
-                      ],
+                colors: colors,
               )
             : null,
-        color: widget.isPremium
-            ? null
-            : (isBack ? AppColors.gold.withOpacity(0.9) : AppColors.bgWhite),
+        color: isBack ? null : Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(20),
-        border: widget.isPremium
-            ? Border.all(
-                color: isBack
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFFFD700).withOpacity(0.3),
-                width: 1.5,
-              )
-            : null,
-        boxShadow: widget.isPremium
-            ? [
-                BoxShadow(
-                  color: isBack
-                      ? colors[0].withOpacity(0.3)
-                      : const Color(0xFFFFD700).withOpacity(0.2),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
-                ),
-              ]
-            : [
-                const BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 6,
-                  offset: Offset(2, 3),
-                ),
-              ],
+        border: Border.all(
+          color: isBack
+              ? colors[0].withOpacity(0.5)
+              : const Color(0xFFD4AF37).withOpacity(0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isBack
+                ? colors[0].withOpacity(0.3)
+                : Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Stack(
         children: [
-          if (widget.isPremium && !isBack)
-            AnimatedBuilder(
-              animation: _shimmerController,
-              builder: (context, child) {
-                return Positioned(
-                  top: -50,
-                  left: -50 + (_shimmerController.value * 250),
-                  child: Container(
-                    width: 100,
-                    height: 300,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.white.withOpacity(0),
-                          Colors.white.withOpacity(0.3),
-                          Colors.white.withOpacity(0),
-                        ],
-                      ),
-                    ),
+          // Decorative circle
+          if (!isBack)
+            Positioned(
+              top: -30,
+              right: -30,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      colors[0].withOpacity(0.1),
+                      colors[1].withOpacity(0.05),
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
             ),
           
           Padding(
@@ -594,22 +597,31 @@ class _SavedVocabPageState extends State<SavedVocabPage>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isBack
-                        ? Colors.white.withOpacity(0.2)
-                        : colors[0].withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isBack ? Colors.white : colors[0],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isBack
+                            ? Colors.white.withOpacity(0.2)
+                            : colors[0].withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: isBack ? Colors.white : colors[0],
+                        ),
+                      ),
                     ),
-                  ),
+                    Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ],
                 ),
                 
                 Expanded(
@@ -620,17 +632,22 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: widget.isPremium
-                                ? const Color(0xFFFFD700).withOpacity(0.2)
-                                : AppColors.textBlue.withOpacity(0.1),
+                            gradient: LinearGradient(
+                              colors: colors,
+                            ),
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors[0].withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
                           child: IconButton(
                             icon: Icon(
                               icon,
-                              color: widget.isPremium
-                                  ? const Color(0xFFFFD700)
-                                  : AppColors.textBlue,
+                              color: Colors.white,
                               size: 28,
                             ),
                             onPressed: onIconPressed,
@@ -642,10 +659,8 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: isBack
-                              ? AppColors.textWhite
-                              : (widget.isPremium ? const Color(0xFF1a1a2e) : AppColors.textSecondary),
+                          fontSize: 20,
+                          color: isBack ? Colors.white : const Color(0xFF2D5016),
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -658,9 +673,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                             fontSize: 13,
                             color: isBack
                                 ? Colors.white.withOpacity(0.8)
-                                : (widget.isPremium
-                                    ? const Color(0xFF1a1a2e).withOpacity(0.6)
-                                    : AppColors.textSecondary.withOpacity(0.7)),
+                                : const Color(0xFF2D5016).withOpacity(0.6),
                           ),
                         ),
                       ],
@@ -677,28 +690,12 @@ class _SavedVocabPageState extends State<SavedVocabPage>
 
   List<Color> _getCardColors(int index) {
     final colorSets = [
+      [const Color(0xFFDA291C), const Color(0xFFFD0000)],
+      [const Color(0xFFD4AF37), const Color(0xFFB8941E)],
+      [const Color(0xFF4A7C2C), const Color(0xFF5E9A3A)],
+      [const Color(0xFFFF6B35), const Color(0xFFFF8C50)],
       [const Color(0xFF667eea), const Color(0xFF764ba2)],
-      [const Color(0xFFf093fb), const Color(0xFFf5576c)],
-      [const Color(0xFF4facfe), const Color(0xFF00f2fe)],
-      [const Color(0xFF43e97b), const Color(0xFF38f9d7)],
-      [const Color(0xFFfa709a), const Color(0xFFfee140)],
     ];
     return colorSets[index % colorSets.length];
-  }
-
-  Widget _buildPremiumFAB() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-      },
-      backgroundColor: const Color(0xFFFFD700),
-      icon: const Icon(Icons.add, color: Colors.white),
-      label: const Text(
-        "Thêm từ mới",
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
   }
 }
