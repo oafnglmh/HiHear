@@ -44,7 +44,7 @@ export class AuthService {
       tokenPayload,
     );
 
-    return this.createTokenForUser(user,profile);
+    return this.createTokenForUser(user, profile);
   }
 
   private createTokenForUser(user: User, profile: UserProfile): AuthResult {

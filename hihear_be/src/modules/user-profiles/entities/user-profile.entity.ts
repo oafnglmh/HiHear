@@ -30,7 +30,7 @@ export class UserProfileEntity extends AbstractEntity {
   @Column({
     type: 'enum',
     enum: Language,
-    default: Language.ENGLISH,
+    default: null,
     nullable: true,
   })
   language: Language;

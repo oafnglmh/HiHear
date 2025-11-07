@@ -33,7 +33,7 @@ export class UserProfileService {
     user: User,
     userProfileUpdate: UserProfileUpdate,
   ): Promise<UserProfile> {
-    const userProfileEntity = await this.findUserOrThrow(user.id);
+    const userProfileEntity = await this.findUserProfileOrThrow(user.id);
 
     return UserProfile.fromEntity(
       await this.userProfileRepository.save({
@@ -43,7 +43,7 @@ export class UserProfileService {
     );
   }
 
-  async findUserOrThrow(id: Uuid): Promise<UserProfileEntity> {
+  async findUserProfileOrThrow(id: Uuid): Promise<UserProfileEntity> {
     const userProfileEntity = await this.userProfileRepository.findOneBy({
       user: { id },
     });
