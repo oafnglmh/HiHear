@@ -350,7 +350,7 @@ const App = () => {
             src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800"
             alt="Vietnamese bamboo"
           />
-          <div className="floating-badge">🎋</div>
+          <div className="floating-badge"><img src={AppAssets.hearuHi}></img></div>
         </div>
       </section>
       <section id="culture" className="culture-section">
@@ -465,7 +465,6 @@ const App = () => {
               <div className="rating-circle">
                 <Star size={45} />
                 <div className="rating-number">4.9</div>
-                <div className="rating-label">Đánh giá</div>
               </div>
             </div>
 

@@ -86,7 +86,7 @@ export default function AddLesson({ onClose, onSave }) {
 
         <form onSubmit={handleSubmit} className="lesson-form">
           <label>Tên bài học:</label>
-          <input
+          <input type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required

@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageWrapper from "../layouts/PageWrapper";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/auth/pages/LoginPage";
-import Dashboard from "../pages/admin/Dashboard";
-import Users from "../pages/admin/Users";
 import AdminLayout from "../layouts/AdminLayout";
 import Lession from "../pages/admin/lessions/Lessons";
+import Dashboard from "../pages/admin/dashboard/Dashboard";
+import Users from "../pages/admin/users/Users";
 
 const AppRoutes = () => (
   <BrowserRouter>

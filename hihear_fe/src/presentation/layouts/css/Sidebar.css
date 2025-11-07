@@ -1,149 +1,244 @@
 /* ==================== */
-/* Màu pastel tươi sáng */
+/* Màu sắc Việt Nam - Cây Tre */
 /* ==================== */
 :root {
-  --primary: #a78bfa; /* tím nhạt */
-  --secondary: #f9a8d4; /* hồng baby */
-  --accent: #7dd3fc; /* xanh trời */
-  --bg: #fafafa;
-  --text: #374151;
+  --bamboo-green: #2d5016;
+  --bamboo-light: #6b8e23;
+  --bamboo-yellow: #f4e4c1;
+  --vietnam-red: #da251d;
+  --vietnam-gold: #ffcd00;
+  --bg-light: #faf8f3;
 }
 
 /* Sidebar tổng thể */
 .sidebar {
-  width: 240px;
+  width: 260px;
   height: 100vh;
-  background: linear-gradient(180deg, var(--secondary), var(--accent));
+  background: linear-gradient(180deg, #2d5016 0%, #4a7c2c 50%, #6b8e23 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-  transition: width 0.4s ease;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   animation: slideIn 0.8s ease-out;
+}
+
+/* Hiệu ứng vân tre ở background */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 30px,
+      rgba(255, 255, 255, 0.03) 30px,
+      rgba(255, 255, 255, 0.03) 35px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 80px,
+      rgba(255, 255, 255, 0.05) 80px,
+      rgba(255, 255, 255, 0.05) 85px
+    );
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .sidebar.collapsed {
   width: 80px;
 }
 
-/* Logo & header */
+/* Header với họa tiết Việt Nam */
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-  animation: fadeIn 1.2s ease;
+  padding: 20px;
+  background: rgba(218, 37, 29, 0.15);
+  border-bottom: 3px solid var(--vietnam-gold);
+  position: relative;
+  animation: fadeIn 1s ease;
 }
 
+/* Họa tiết sao vàng nhỏ */
+.sidebar-header::after {
+  content: '★';
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--vietnam-gold);
+  font-size: 12px;
+  opacity: 0.6;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+}
+
+/* Logo */
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
+  color: var(--bamboo-yellow);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
-.logo-icon {
-  animation: spinStar 4s linear infinite;
-  color: #fff;
+.sidebar-logo::before {
+  content: '🎋';
+  font-size: 28px;
+  animation: bambooSway 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-@keyframes spinStar {
-  0% {
-    transform: rotate(0deg);
-    color: #fff;
-  }
-  50% {
-    color: #fde68a;
-  }
-  100% {
-    transform: rotate(360deg);
-    color: #fff;
-  }
+@keyframes bambooSway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
 }
 
 /* Nút toggle */
 .sidebar-toggle {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 20px;
+  background: rgba(255, 205, 0, 0.2);
+  border: 2px solid var(--vietnam-gold);
+  color: var(--vietnam-gold);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.3s;
-}
-.sidebar-toggle:hover {
-  transform: rotate(90deg);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-/* Navigation links */
+.sidebar-toggle:hover {
+  background: var(--vietnam-gold);
+  color: var(--bamboo-green);
+  transform: scale(1.1);
+}
+
+/* Navigation */
 .sidebar-nav {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px 0;
+  padding: 20px 0;
   animation: fadeUp 1s ease;
 }
 
 .sidebar-link {
-  color: #fff;
+  color: var(--bamboo-yellow);
   text-decoration: none;
-  padding: 12px 20px;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
   font-size: 15px;
-  border-radius: 12px;
-  margin: 4px 12px;
+  border-radius: 0 20px 20px 0;
+  margin: 4px 0 4px 15px;
   position: relative;
+  border-left: 3px solid transparent;
+}
+
+/* Hiệu ứng đốt tre */
+.sidebar-link::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--vietnam-gold);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
 .sidebar-link:hover {
-  background-color: rgba(255, 255, 255, 0.25);
+  background: rgba(244, 228, 193, 0.15);
+  border-left-color: var(--vietnam-gold);
   transform: translateX(5px);
 }
 
+.sidebar-link:hover::before {
+  opacity: 1;
+  left: -10px;
+}
+
 .sidebar-link.active {
-  background-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-  transform: scale(1.02);
+  background: rgba(255, 205, 0, 0.25);
+  border-left-color: var(--vietnam-red);
+  box-shadow: 0 0 15px rgba(255, 205, 0, 0.3);
 }
 
-/* Icon màu động */
+.sidebar-link.active::before {
+  opacity: 1;
+  left: -10px;
+  background: var(--vietnam-red);
+  box-shadow: 0 0 8px var(--vietnam-red);
+}
+
+/* Icon */
 .icon {
-  color: #fff;
-  transition: color 0.3s, transform 0.3s;
-}
-.sidebar-link:hover .icon {
-  color: #fde68a;
-  transform: rotate(10deg);
+  color: var(--bamboo-yellow);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-/* Ẩn chữ khi thu nhỏ */
+.sidebar-link:hover .icon {
+  color: var(--vietnam-gold);
+  transform: scale(1.15) rotate(5deg);
+}
+
+.sidebar-link.active .icon {
+  color: var(--vietnam-gold);
+  filter: drop-shadow(0 0 4px var(--vietnam-gold));
+}
+
+/* Ẩn text khi collapsed */
 .sidebar.collapsed .sidebar-link span {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-logo span {
   display: none;
 }
 
 /* Footer */
 .sidebar-footer {
-  border-top: 2px solid rgba(255, 255, 255, 0.3);
-  padding: 16px;
-  text-align: center;
+  border-top: 3px solid var(--vietnam-gold);
+  padding: 20px;
+  background: rgba(45, 80, 22, 0.5);
   animation: fadeIn 1.2s ease;
 }
 
 .logout-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: #fff;
+  background: rgba(218, 37, 29, 0.3);
+  border: 2px solid var(--vietnam-red);
+  color: var(--bamboo-yellow);
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
   display: flex;
@@ -154,17 +249,21 @@
 }
 
 .logout-btn:hover {
-  background: #f87171;
-  transform: scale(1.05);
+  background: var(--vietnam-red);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(218, 37, 29, 0.4);
 }
 
-/* Keyframes */
+/* Animations */
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
+    opacity: 0;
   }
   to {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -180,12 +279,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Responsive */
@@ -198,16 +293,13 @@
 
   .sidebar.open {
     transform: translateX(0);
-    animation: slideIn 0.6s ease;
   }
 
   .sidebar-toggle {
     position: absolute;
-    right: -45px;
-    top: 15px;
-    background: var(--primary);
-    border-radius: 50%;
-    padding: 8px;
-    color: white;
+    right: -50px;
+    top: 20px;
+    background: var(--bamboo-green);
+    border-color: var(--vietnam-gold);
   }
 }

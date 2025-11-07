@@ -22,6 +22,7 @@ export const useAuth =()=>{
       toast.error("Đăng nhập Google thất bại");
     } finally {
       setLoading(false);
+       navigate("/admin/dashboard");
     }
   };
   const loginWithFacebook = async() =>{
