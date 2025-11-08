@@ -352,6 +352,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  z-index: 999999;
 }
 
 .close-btn:hover {
@@ -957,4 +958,45 @@
     height: auto;
     padding: 10px;
   }
+}
+.delete-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete-popup {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.popup-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.confirm-btn {
+  background: #ef4444;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #9ca3af;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }

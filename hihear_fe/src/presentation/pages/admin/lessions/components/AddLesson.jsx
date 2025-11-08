@@ -5,11 +5,22 @@ import QuestionForm from "./QuestionForm";
 import "../css/Lessons.css";
 import GrammarForm from "./GrammarForm";
 import PronunciationForm from "./PronunciationForm";
-
-export default function AddLesson({ onClose, onSave }) {
+import { saveLesson, editLesson } from "../services/lessonService";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
+export default function AddLesson({
+  onClose,
+  onSave,
+  lessonOptions = [],
+  editingLesson = null,
+}) {
   const {
+    id,
+    setId,
     title,
     setTitle,
+    category,
+    setCategory,
     level,
     setLevel,
     preview,
@@ -22,21 +33,50 @@ export default function AddLesson({ onClose, onSave }) {
 
   const [type, setType] = useState("Từ vựng");
 
-  // Ngữ pháp
+  const [description, setDescription] = useState("");
+  const [prerequisiteLesson, setPrerequisiteLesson] = useState(null);
+
   const [grammarDescription, setGrammarDescription] = useState("");
   const [grammarExamples, setGrammarExamples] = useState([]);
 
-  // Phát âm
   const [pronunciationOrder, setPronunciationOrder] = useState("");
   const [pronunciationExamples, setPronunciationExamples] = useState([]);
+  useEffect(() => {
+    console.log("lession option",editingLesson);
+    if (editingLesson) {
+      setId(editingLesson.id || "");
+      setTitle(editingLesson.title || "");
+      setCategory(editingLesson.category || "");
+      setLevel(editingLesson.level || "Dễ");
+      setDescription(editingLesson.description || "");
+      setPrerequisiteLesson(editingLesson.prerequisiteLesson || null);
+      setType(editingLesson.type || "Từ vựng");
 
-  const handleSubmit = (e) => {
+      // if (editingLesson.questions) {
+      //   setQuestions(editingLesson.questions);
+      // }
+
+      if (editingLesson.grammar) {
+        setGrammarDescription(editingLesson.grammar.description || "");
+        setGrammarExamples(editingLesson.grammar.examples || []);
+      }
+
+      if (editingLesson.pronunciation) {
+        setPronunciationOrder(editingLesson.pronunciation.order || "");
+        setPronunciationExamples(editingLesson.pronunciation.examples || []);
+      }
+    }
+  }, [editingLesson]);
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const base = {
       title,
+      description,
+      category,
       level,
       type,
+      prerequisiteLesson,
       image: preview,
       color:
         level === "Dễ"
@@ -45,23 +85,15 @@ export default function AddLesson({ onClose, onSave }) {
           ? "#6ee7b7"
           : "#f9a8d4",
     };
-
+    console.log("dataaaaa", base)
     let payload = {};
-
-    if (type === "Từ vựng") {
+    if (type === "Từ vựng") payload = { ...base, questions };
+    else if (type === "Ngữ pháp")
       payload = {
         ...base,
-        questions,
+        grammar: { description: grammarDescription, examples: grammarExamples },
       };
-    } else if (type === "Ngữ pháp") {
-      payload = {
-        ...base,
-        grammar: {
-          description: grammarDescription,
-          examples: grammarExamples,
-        },
-      };
-    } else if (type === "Phát Âm") {
+    else if (type === "Phát Âm")
       payload = {
         ...base,
         pronunciation: {
@@ -69,16 +101,31 @@ export default function AddLesson({ onClose, onSave }) {
           examples: pronunciationExamples,
         },
       };
-    }
 
-    onSave(payload);
+    try {
+      let result;
+      if (editingLesson) {
+        result = await editLesson(payload,id);
+        toast.success("Cập nhật thành công!");
+      } else {
+        result = await saveLesson(payload);
+        toast.success("Thêm thành công!");
+      }
+
+      onSave(result.data);
+      onClose();
+    } catch (err) {
+      toast.error(editingLesson ? "Cập nhật thất bại!" : "Thêm thất bại!");
+      console.error(err);
+    }
   };
 
   return (
     <div className="add-lesson-overlay">
       <div className="add-lesson-modal animate-slide-up">
         <div className="modal-header">
-          <h3>Thêm bài học mới</h3>
+          <h3>{editingLesson ? "Cập nhật bài học" : "Thêm bài học mới"}</h3>
+
           <button className="close-btn" onClick={onClose}>
             <X size={20} />
           </button>
@@ -86,9 +133,25 @@ export default function AddLesson({ onClose, onSave }) {
 
         <form onSubmit={handleSubmit} className="lesson-form">
           <label>Tên bài học:</label>
-          <input type="text"
+          <input
+            type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+
+          <label>Mô tả:</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+
+          <label>Phân loại:</label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             required
           />
 
@@ -97,6 +160,19 @@ export default function AddLesson({ onClose, onSave }) {
             <option>Dễ</option>
             <option>Trung bình</option>
             <option>Khó</option>
+          </select>
+
+          <label>Bài học yêu cầu trước:</label>
+          <select
+            value={prerequisiteLesson || ""}
+            onChange={(e) => setPrerequisiteLesson(e.target.value || null)}
+          >
+            <option value="">Không</option>
+            {lessonOptions.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.title}
+              </option>
+            ))}
           </select>
 
           <label>Loại:</label>
@@ -123,7 +199,6 @@ export default function AddLesson({ onClose, onSave }) {
             <img src={preview} alt="preview" className="image-preview" />
           )}
 
-          {/* ========== TỪ VỰNG ========== */}
           {type === "Từ vựng" && (
             <>
               <h4>Câu hỏi trắc nghiệm</h4>
@@ -146,7 +221,6 @@ export default function AddLesson({ onClose, onSave }) {
             </>
           )}
 
-          {/* ========== NGỮ PHÁP ========== */}
           {type === "Ngữ pháp" && (
             <GrammarForm
               description={grammarDescription}
@@ -156,7 +230,6 @@ export default function AddLesson({ onClose, onSave }) {
             />
           )}
 
-          {/* ========== PHÁT ÂM ========== */}
           {type === "Phát Âm" && (
             <PronunciationForm
               order={pronunciationOrder}
@@ -167,7 +240,8 @@ export default function AddLesson({ onClose, onSave }) {
           )}
 
           <button type="submit" className="save-btn">
-            <Save size={18} /> Lưu bài học
+            <Save size={18} />{editingLesson ? "Cập nhật" : "Thêm bài học"}
+
           </button>
         </form>
       </div>

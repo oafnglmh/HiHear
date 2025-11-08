@@ -1,32 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Book, Edit3, Trash2, X } from "lucide-react";
 import AddLesson from "./AddLesson";
+import apiClient from "../../../../../Core/config/apiClient";
 import "../css/Lessons.css";
+import { getLesson } from "../api/lessonApi";
+import { deleteLesson } from "../services/lessonService";
+
+import toast from "react-hot-toast";
 
 export default function LessonsList() {
-  const [lessons, setLessons] = useState([
-    {
-      id: 1,
-      title: "Chào hỏi",
-      level: "Dễ",
-      color: "#93c5fd",
-      questions: [
-        { text: "Hello nghĩa là gì?", optionA: "Xin chào", optionB: "Tạm biệt", correct: "A" },
-      ],
-    },
-  ]);
-
+  const [lessons, setLessons] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState(null);
-
-  const handleAddLesson = (newLesson) => {
-    setLessons([...lessons, { ...newLesson, id: lessons.length + 1 }]);
-    setShowAdd(false);
+  const [lessonOptions, setLessonOptions] = useState([]);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [lessonToDelete, setLessonToDelete] = useState(null);
+  const [editingLesson, setEditingLesson] = useState(null);
+  const fetchLessons = async () => {
+    try {
+      const res = await getLesson();
+      const lessonsWithQuestions = res.data.map((l) => ({
+        ...l,
+        questions: l.questions || [],
+      }));
+      console.log("jdvnkvn",res)
+      setLessons(lessonsWithQuestions);
+      setLessonOptions(lessonsWithQuestions);
+    } catch (err) {
+      console.error("Fetch lessons error:", err);
+    }
   };
 
-  const handleDeleteLesson = (id) => {
-    if (window.confirm("Bạn có chắc muốn xóa bài học này?")) {
-      setLessons(lessons.filter((l) => l.id !== id));
+  useEffect(() => {
+    fetchLessons();
+  }, []);
+
+  const handleAddLesson = (newLesson) => {
+    if (!newLesson) return;
+
+    if (editingLesson) {
+      setLessons((prev) =>
+        prev.map((l) => (l.id === newLesson.id ? newLesson : l))
+      );
+    } else {
+      setLessons((prev) => [...prev, newLesson]);
+    }
+  };
+
+
+  const confirmDeleteLesson = (lesson) => {
+    setLessonToDelete(lesson);
+    setShowDeletePopup(true);
+  };
+
+  const handleDeleteConfirmed = async () => {
+    try {
+      await deleteLesson(lessonToDelete.id);
+      setLessons(lessons.filter((l) => l.id !== lessonToDelete.id));
+      toast.success("Xóa thành công");
+    } catch (err) {
+      console.error("Delete lesson error:", err);
+    } finally {
+      setShowDeletePopup(false);
+      setLessonToDelete(null);
     }
   };
 
@@ -44,7 +79,7 @@ export default function LessonsList() {
           <div
             key={l.id}
             className="lesson-card"
-            style={{ background: l.color }}
+            style={{ background: l.color || "#93c5fd" }}
             onClick={() => setSelectedLesson(l)}
           >
             <div className="lesson-icon">
@@ -53,14 +88,22 @@ export default function LessonsList() {
             <h3>{l.title}</h3>
             <p className="lesson-level">Level: {l.level}</p>
             <div className="lesson-actions">
-              <button className="edit-btn">
+              <button
+                className="edit-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingLesson(l);
+                  setShowAdd(true);
+                }}
+              >
                 <Edit3 size={18} />
               </button>
+
               <button
                 className="delete-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteLesson(l.id);
+                  confirmDeleteLesson(l);
                 }}
               >
                 <Trash2 size={18} />
@@ -70,33 +113,36 @@ export default function LessonsList() {
         ))}
       </div>
 
-      {showAdd && <AddLesson onClose={() => setShowAdd(false)} onSave={handleAddLesson} />}
+      {showAdd && (
+        <AddLesson
+          onClose={() => {
+            setShowAdd(false);
+            setEditingLesson(null);
+          }}
+          onSave={handleAddLesson}
+          lessonOptions={lessonOptions}
+          editingLesson={editingLesson}
+        />
+      )}
 
-      {selectedLesson && (
-        <div className="lesson-detail-overlay">
-          <div className="lesson-detail-modal animate-slide-up">
-            <div className="modal-header">
-              <h3>{selectedLesson.title}</h3>
-              <button className="close-btn" onClick={() => setSelectedLesson(null)}>
-                <X size={20} />
+      {showDeletePopup && lessonToDelete && (
+        <div
+          className="delete-popup-overlay"
+          onClick={() => setShowDeletePopup(false)}
+        >
+          <div className="delete-popup" onClick={(e) => e.stopPropagation()}>
+            <p>Bạn có chắc muốn xóa bài học "{lessonToDelete.title}" không?</p>
+            <div className="popup-actions">
+              <button onClick={handleDeleteConfirmed} className="confirm-btn">
+                Xóa
+              </button>
+              <button
+                onClick={() => setShowDeletePopup(false)}
+                className="cancel-btn"
+              >
+                Hủy
               </button>
             </div>
-
-            {selectedLesson.image && (
-              <img src={selectedLesson.image} alt="lesson" className="detail-img" />
-            )}
-
-            <h4>Danh sách câu hỏi</h4>
-            <ul className="question-list">
-              {selectedLesson.questions?.map((q, i) => (
-                <li key={i} className="question-item">
-                  <strong>{q.text}</strong>
-                  <p>A: {q.optionA}</p>
-                  <p>B: {q.optionB}</p>
-                  <p className="correct-answer">Đáp án đúng: {q.correct}</p>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       )}

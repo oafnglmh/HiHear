@@ -128,7 +128,7 @@ export default function Dashboard() {
               <div className="lesson-info">
                 <p className="lesson-name">Chào hỏi & Giới thiệu</p>
                 <div className="lesson-progress">
-                  <div className="progress-bar" style={{width: '85%'}}></div>
+                  <div className="progress-bar-admin" style={{width: '85%'}}></div>
                 </div>
               </div>
               <span className="lesson-count">456 học viên</span>
@@ -138,7 +138,7 @@ export default function Dashboard() {
               <div className="lesson-info">
                 <p className="lesson-name">Số đếm từ 1-100</p>
                 <div className="lesson-progress">
-                  <div className="progress-bar" style={{width: '72%'}}></div>
+                  <div className="progress-bar-admin" style={{width: '72%'}}></div>
                 </div>
               </div>
               <span className="lesson-count">389 học viên</span>
@@ -148,7 +148,7 @@ export default function Dashboard() {
               <div className="lesson-info">
                 <p className="lesson-name">Gia đình & Người thân</p>
                 <div className="lesson-progress">
-                  <div className="progress-bar" style={{width: '68%'}}></div>
+                  <div className="progress-bar-admin" style={{width: '68%'}}></div>
                 </div>
               </div>
               <span className="lesson-count">334 học viên</span>
@@ -158,7 +158,7 @@ export default function Dashboard() {
               <div className="lesson-info">
                 <p className="lesson-name">Đồ ăn & Thức uống</p>
                 <div className="lesson-progress">
-                  <div className="progress-bar" style={{width: '55%'}}></div>
+                  <div className="progress-bar-admin" style={{width: '55%'}}></div>
                 </div>
               </div>
               <span className="lesson-count">278 học viên</span>
