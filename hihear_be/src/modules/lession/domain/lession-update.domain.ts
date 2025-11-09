@@ -1,12 +1,15 @@
 import { Uuid } from 'src/common/types';
 import { LessionUpdateDto } from '../dto/lession-update.dto';
+import { LessonCategory } from 'src/utils/lesson-category.enum';
+import { MediaCreate } from 'src/modules/media/domain/media-create.domain';
+import { Exercise } from 'src/modules/exercise/domain/exercise.domain';
 
 export class LessionUpdate {
   title?: string;
 
   description?: string;
 
-  category?: string;
+  category?: LessonCategory;
 
   level?: string;
 
@@ -15,6 +18,10 @@ export class LessionUpdate {
   xpReward?: number;
 
   prerequisiteLesson?: Uuid;
+
+  media?: MediaCreate[];
+
+  exercise?: Exercise[];
 
   static toEntity(lessionUpdate: LessionUpdate): Partial<LessionUpdateDto> {
     return {

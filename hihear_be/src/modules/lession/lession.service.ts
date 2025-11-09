@@ -11,26 +11,31 @@ import { Lession } from './domain/lession.domain';
 import { LessionCreate } from './domain/lession-create.domain';
 import { Uuid } from 'src/common/types';
 import { LessionUpdate } from './domain/lession-update.domain';
+import { MediaEntity } from '../media/entities/media.entity';
+import { ExerciseEntity } from '../exercise/entities/exercise.entity';
 
 @Injectable()
 export class LessionService {
   constructor(
     @InjectRepository(LessionEntity)
     private readonly lessionRepository: Repository<LessionEntity>,
+
+    @InjectRepository(MediaEntity)
+    private readonly mediaRepository: Repository<MediaEntity>,
+
+    @InjectRepository(ExerciseEntity)
+    private readonly exerciseRepository: Repository<ExerciseEntity>,
   ) {}
 
   async create(
     currentUser: UserEntity,
     lessionCreate: LessionCreate,
   ): Promise<Lession> {
-    await this.verifyLessionNotExisting(lessionCreate.title);
+    await this.verifyTitleLessionNotExisting(lessionCreate.title);
 
-    let prerequisiteLesson: LessionEntity | null = null;
-    if (lessionCreate.prerequisiteLesson) {
-      prerequisiteLesson = await this.findPrerequisiteLesson(
-        lessionCreate.prerequisiteLesson,
-      );
-    }
+    const prerequisiteLesson = lessionCreate.prerequisiteLesson
+      ? await this.findPrerequisiteLesson(lessionCreate.prerequisiteLesson)
+      : null;
 
     return Lession.fromEntity(
       await this.lessionRepository.save(
@@ -38,6 +43,12 @@ export class LessionService {
           ...lessionCreate,
           prerequisiteLesson,
           user: currentUser,
+          media: lessionCreate.media?.map((m) =>
+            this.mediaRepository.create({ ...m }),
+          ),
+          exercises: lessionCreate.exercises?.map((e) =>
+             this.exerciseRepository.create({ ...e }),
+          ),
         } as Partial<LessionEntity>),
       ),
     );
@@ -48,18 +59,11 @@ export class LessionService {
     id: Uuid,
     lessionUpdate: LessionUpdate,
   ): Promise<Lession> {
-    const lessionEntity = await this.findLessionById(id);
+    await this.getLessionOrThrow(id);
 
-    if (!lessionEntity) {
-      throw new NotFoundException(`Lession with id ${id} not found`);
-    }
-
-    let prerequisiteLesson: LessionEntity | null = null;
-    if (lessionUpdate.prerequisiteLesson) {
-      prerequisiteLesson = await this.findPrerequisiteLesson(
-        lessionUpdate.prerequisiteLesson,
-      );
-    }
+    const prerequisiteLesson = lessionUpdate.prerequisiteLesson
+      ? await this.findPrerequisiteLesson(lessionUpdate.prerequisiteLesson)
+      : null;
 
     return Lession.fromEntity(
       await this.lessionRepository.save({
@@ -67,47 +71,47 @@ export class LessionService {
         ...lessionUpdate,
         prerequisiteLesson,
         user: currentUser,
+        media: lessionUpdate.media?.map((m) =>
+          this.mediaRepository.create({ ...m }),
+        ),
       } as Partial<LessionEntity>),
     );
   }
 
   async findAll(): Promise<Lession[]> {
-    const lessions = await this.lessionRepository.find();
+    const lessions = await this.lessionRepository.find({
+      relations: ['prerequisiteLesson'],
+    });
 
     return Lession.fromEntities(lessions);
   }
 
   async findById(id: Uuid): Promise<Lession> {
-    const lessionEntity = await this.findLessionById(id);
-
-    if (!lessionEntity) {
-      throw new NotFoundException(`Lession with id ${id} not found`);
-    }
+    const lessionEntity = await this.getLessionOrThrow(id);
 
     return Lession.fromEntity(lessionEntity);
   }
 
   async remove(id: Uuid): Promise<void> {
-    const lessionEntity = await this.findLessionById(id);
+    const lessionEntity = await this.getLessionOrThrow(id);
+
+    await this.lessionRepository.remove(lessionEntity);
+  }
+
+  private async getLessionOrThrow(id: Uuid): Promise<LessionEntity> {
+    const lessionEntity = await this.lessionRepository.findOne({
+      where: { id },
+      relations: ['prerequisiteLesson'],
+    });
 
     if (!lessionEntity) {
       throw new NotFoundException(`Lession with id ${id} not found`);
     }
 
-    await this.lessionRepository.remove(lessionEntity);
-  }
-
-  private async findLessionById(id: Uuid): Promise<LessionEntity | null> {
-    const lessionEntity = await this.lessionRepository.findOneBy({ id });
-
-    if (!lessionEntity) {
-      return null;
-    }
-
     return lessionEntity;
   }
 
-  private async verifyLessionNotExisting(title: string): Promise<void> {
+  private async verifyTitleLessionNotExisting(title: string): Promise<void> {
     const existingLession = await this.lessionRepository.findOneBy({
       title: title,
     });

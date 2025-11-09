@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -8,6 +9,9 @@ import {
 } from 'class-validator';
 import { LessionCreate } from '../domain/lession-create.domain';
 import { Uuid } from 'src/common/types';
+import { LessonCategory } from 'src/utils/lesson-category.enum';
+import { MediaCreateDto } from 'src/modules/media/dto/media-create.dto';
+import { ExerciseCreateDto } from 'src/modules/exercise/dto/exercise-create.dto';
 
 export class LessionCreateDto {
   @ApiProperty()
@@ -21,8 +25,8 @@ export class LessionCreateDto {
 
   @ApiProperty()
   @IsString()
-  @MaxLength(100)
-  category: string | null;
+  @IsEnum(LessonCategory)
+  category: LessonCategory;
 
   @ApiProperty()
   @IsString()
@@ -44,6 +48,14 @@ export class LessionCreateDto {
   @IsUUID()
   prerequisiteLesson?: Uuid | null;
 
+  @ApiProperty()
+  @IsOptional()
+  media?: MediaCreateDto[];
+
+  @ApiProperty()
+  @IsOptional()
+  exercises?: ExerciseCreateDto[];
+
   static toLessionCreate(lessionCreateDto: LessionCreateDto): LessionCreate {
     return {
       title: lessionCreateDto.title,
@@ -53,6 +65,14 @@ export class LessionCreateDto {
       durationSeconds: lessionCreateDto.durationSeconds ?? 0,
       prerequisiteLesson: lessionCreateDto.prerequisiteLesson ?? null,
       xpReward: lessionCreateDto.xpReward ?? 0,
+      media: lessionCreateDto.media
+        ? lessionCreateDto.media.map((m) => MediaCreateDto.toMediaCreate(m))
+        : [],
+      exercises: lessionCreateDto.exercises
+        ? lessionCreateDto.exercises.map((m) =>
+            ExerciseCreateDto.toExerciseCreate(m),
+          )
+        : [],
     };
   }
 }

@@ -1,8 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { Lession } from '../domain/lession.domain';
 import type { Uuid } from 'src/common/types';
 import { timeStamp } from 'console';
+import { LessonCategory } from 'src/utils/lesson-category.enum';
+import { MediaDto } from 'src/modules/media/dto/media.dto';
+import { ExerciseDto } from 'src/modules/exercise/dto/exercise.dto';
 
 export class LessionDto {
   @ApiProperty()
@@ -16,7 +19,8 @@ export class LessionDto {
   description: string | null;
 
   @ApiPropertyOptional()
-  category: string | null;
+  @IsEnum(LessonCategory)
+  category: LessonCategory;
 
   @ApiPropertyOptional()
   level: string | null;
@@ -29,6 +33,12 @@ export class LessionDto {
 
   @ApiPropertyOptional({ type: () => Lession, isArray: true })
   prerequisiteLesson: Lession | null;
+
+  @ApiPropertyOptional({ type: () => MediaDto, isArray: true })
+  media: MediaDto[];
+
+  @ApiPropertyOptional({ type: () => ExerciseDto, isArray: true })
+  exercises: ExerciseDto[];
 
   @ApiProperty({ type: timeStamp })
   createdAt: Date;
@@ -45,6 +55,8 @@ export class LessionDto {
       description: lession.description,
       durationSeconds: lession.durationSeconds,
       prerequisiteLesson: lession.prerequisiteLesson,
+      media: MediaDto.fromDomains(lession.media),
+      exercises: ExerciseDto.fromDomains(lession.exercise),
       xpReward: lession.xpReward,
       createdAt: lession.createdAt,
       updatedAt: lession.updatedAt,

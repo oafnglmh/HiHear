@@ -14,6 +14,8 @@ import { UserProfilesModule } from './modules/user-profiles/user-profile.module'
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LessionModule } from './modules/lession/lession.module';
+import { MediaModule } from './modules/media/media.module';
+import { ExerciseModule } from './modules/exercise/exercise.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { LessionModule } from './modules/lession/lession.module';
     AuthModule,
     UserProfilesModule,
     LessionModule,
+    MediaModule,
+    ExerciseModule,
   ],
 })
 export class AppModule {}

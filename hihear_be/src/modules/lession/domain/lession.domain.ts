@@ -1,6 +1,9 @@
 import { Uuid } from 'src/common/types';
 import { LessionEntity } from '../entities/lession.entity';
 import _ from 'lodash';
+import { LessonCategory } from 'src/utils/lesson-category.enum';
+import { Exercise } from 'src/modules/exercise/domain/exercise.domain';
+import { Media } from 'src/modules/media/domain/media.domain';
 
 export class Lession {
   id: Uuid;
@@ -9,7 +12,7 @@ export class Lession {
 
   description: string | null;
 
-  category: string | null;
+  category: LessonCategory;
 
   level: string | null;
 
@@ -18,6 +21,10 @@ export class Lession {
   xpReward: number | null;
 
   prerequisiteLesson: Lession | null;
+
+  media: Media[];
+
+  exercise: Exercise[];
 
   createdAt: Date;
 
@@ -35,6 +42,8 @@ export class Lession {
       prerequisiteLesson: lessionEntity.prerequisiteLesson
         ? Lession.fromEntity(lessionEntity.prerequisiteLesson)
         : null,
+      media: Media.fromEntities(lessionEntity.media),
+      exercise: Exercise.fromEntities(lessionEntity.exercises),
       createdAt: lessionEntity.createdAt,
       updatedAt: lessionEntity.updatedAt,
     };
