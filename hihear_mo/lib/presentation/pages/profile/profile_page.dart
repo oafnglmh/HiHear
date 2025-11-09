@@ -9,7 +9,6 @@ import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/auth/auth_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import 'package:hihear_mo/presentation/widgets/ShimmerWidget.dart';
-import 'package:hihear_mo/presentation/widgets/profile_info_card.dart';
 import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 

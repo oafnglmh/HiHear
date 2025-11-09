@@ -5,8 +5,6 @@ import 'package:hihear_mo/presentation/blocs/vocab/vocab_event.dart';
 import 'package:hihear_mo/presentation/blocs/vocab/vocab_state.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
-import 'vocab_lesson_3_page.dart';
-
 class VocabLesson2Page extends StatelessWidget {
   const VocabLesson2Page({super.key});
 
@@ -191,12 +189,6 @@ class _VocabLesson2ViewState extends State<_VocabLesson2View> {
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const VocabLesson3Page(),
-                            ),
-                          );
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(

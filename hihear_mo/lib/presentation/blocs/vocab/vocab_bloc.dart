@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:hihear_mo/presentation/pages/lession/vocab_complete_page.dart'
-    show VocabCompletePage;
 import 'vocab_event.dart';
 import 'vocab_state.dart';
 
@@ -123,10 +121,6 @@ class VocabBloc extends Bloc<VocabEvent, VocabState> {
       } else {
         emit(state.copyWith(currentInput: '', inputCorrect: null));
         await Future.delayed(const Duration(milliseconds: 500));
-        Navigator.pushReplacement(
-          event.context,
-          MaterialPageRoute(builder: (_) => const VocabCompletePage()),
-        );
       }
     } else {
       emit(state.copyWith(inputCorrect: null));

@@ -11,7 +11,6 @@ import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/help_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/language_setting_page.dart';
-import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speaking_lesson_page.dart';
 import 'package:hihear_mo/presentation/pages/splash/splash_page.dart';
@@ -90,11 +89,6 @@ class AppRouter {
           path: AppRoutes.language,
           name: 'language',
           builder: (context, state) => const LanguageSettingPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.setting,
-          name: 'setting',
-          builder: (context, state) => const SettingPage(),
         ),
         GoRoute(
           path: AppRoutes.speak,

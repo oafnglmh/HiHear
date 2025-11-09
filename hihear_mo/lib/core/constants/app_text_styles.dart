@@ -1,25 +1,44 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
 class AppTextStyles {
-  static const TextStyle title = TextStyle(
-    fontSize: 16,
+  static const TextStyle header = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 22,
     fontWeight: FontWeight.bold,
-    color: Colors.white,
   );
 
-  static const TextStyle subtitle = TextStyle(
+  static const TextStyle subHeader = TextStyle(
+    color: AppColors.textPrimary,
     fontSize: 14,
-    color: Colors.white70,
+  );
+
+  static const TextStyle cardTitle = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 17,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle cardDescription = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 12,
+  );
+
+  static const TextStyle smallText = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 11,
+    fontWeight: FontWeight.bold,
   );
 
   static const TextStyle button = TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
     fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: Color.fromARGB(255, 0, 0, 0),
   );
 
-  static const TextStyle body = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
+  static const TextStyle levelText = TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
   );
 }
