@@ -10,5 +10,5 @@ class ApiClient {
   static const String profile_url = "${base_url}/profile";
 
   // --------------------api_lession----------------------------
-  static const String lessionUrlC = "${base_url}/lession";
+  static const String lession_get_url = "${base_url}/";
 }

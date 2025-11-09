@@ -1,15 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hihear_mo/domain/entities/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
-import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
-import 'package:hihear_mo/presentation/pages/lession/vocab_lesson_1_page.dart';
+import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
-import 'package:hihear_mo/presentation/pages/setting/setting_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_assets.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,6 +35,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 3000),
     )..repeat(reverse: true);
+    context.read<LessonBloc>().add(const LessionEvent.loadLession());
   }
 
   @override
@@ -248,28 +246,38 @@ class _HomeContentState extends State<_HomeContent>
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildHeader(context),
-              const SizedBox(height: 24),
-              _buildProgressCard(context),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          sliver: _buildLessonGrid(context),
-        ),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 120),
-        ),
-      ],
+    return BlocBuilder<LessonBloc, LessonState>(
+      builder: (context, state) {
+        List<LessionEntity> lessons = [];
+        state.maybeWhen(
+          data: (data) => lessons = data,
+          orElse: () => lessons = [],
+        );
+
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  _buildHeader(context),
+                  const SizedBox(height: 24),
+                  _buildProgressCard(context),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: _buildLessonGrid(context, lessons),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 120),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -512,7 +520,7 @@ class _HomeContentState extends State<_HomeContent>
     );
   }
 
-  Widget _buildLessonGrid(BuildContext context) {
+   Widget _buildLessonGrid(BuildContext context, List<LessionEntity> lessons) {
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -522,6 +530,7 @@ class _HomeContentState extends State<_HomeContent>
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) {
+          final lesson = lessons[index];
           return TweenAnimationBuilder<double>(
             duration: Duration(milliseconds: 400 + (index * 100)),
             tween: Tween(begin: 0.0, end: 1.0),
@@ -530,28 +539,26 @@ class _HomeContentState extends State<_HomeContent>
                 scale: 0.8 + (value * 0.2),
                 child: Opacity(
                   opacity: value,
-                  child: _buildLessonCard(context, index + 1),
+                  child: _buildLessonCard(context, lesson),
                 ),
               );
             },
           );
         },
-        childCount: 6,
+        childCount: lessons.length,
       ),
     );
   }
 
-  Widget _buildLessonCard(BuildContext context, int lessonId) {
+  Widget _buildLessonCard(BuildContext context, LessionEntity lesson){
+
     final l10n = AppLocalizations.of(context)!;
-    final colors = _getLessonColors(lessonId);
-    final icon = _getLessonIcon(lessonId);
+    final colors = _getLessonColors(lesson.id);
+    final icon = '📚';
     
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const VocabLesson1Page()),
-        );
+
       },
       child: Container(
         decoration: BoxDecoration(
@@ -569,148 +576,104 @@ class _HomeContentState extends State<_HomeContent>
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Stack(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Decorative pattern
-              Positioned(
-                top: -20,
-                right: -20,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        colors[0].withOpacity(0.1),
-                        colors[1].withOpacity(0.05),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: colors,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors[0].withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
+                    ),
+                    child: Text(
+                      icon,
+                      style: const TextStyle(fontSize: 24),
                     ),
                   ),
-                ),
-              ),
-              
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Icon và Badge
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: colors,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors[0].withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            icon,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors[0].withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            "Bài $lessonId",
-                            style: TextStyle(
-                              color: colors[0],
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: colors[0].withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    
-                    const Spacer(),
-                    
-                    // Title
-                    Text(
-                      _getLessonTitle(lessonId),
-                      style: const TextStyle(
-                        color: Color(0xFF2D5016),
-                        fontSize: 17,
+                    child: Text(
+                      lesson.title ?? 'Bài học',
+                      style: TextStyle(
+                        color: colors[0],
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.article_outlined,
-                          size: 14,
-                          color: const Color(0xFF2D5016).withOpacity(0.6),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          "20 từ mới",
-                          style: TextStyle(
-                            color: const Color(0xFF2D5016).withOpacity(0.6),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                lesson.title ?? 'Bài học',
+                style: const TextStyle(
+                  color: Color(0xFF2D5016),
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                lesson.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: const Color(0xFF2D5016).withOpacity(0.6),
+                  fontSize: 12,
+                ),
+              ),
+
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 11),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: colors,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors[0].withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
-                    
-                    const SizedBox(height: 14),
-                    
-                    // Start button
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 11),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: colors,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors[0].withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      l10n.startButton,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            l10n.startButton,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ],
-                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ],
                 ),
@@ -721,105 +684,19 @@ class _HomeContentState extends State<_HomeContent>
       ),
     );
   }
-
-  List<Color> _getLessonColors(int lessonId) {
+  List<Color> _getLessonColors(String lessonId) {
     final colorSets = [
-      [const Color(0xFFDA291C), const Color(0xFFFD0000)], // Đỏ cờ VN
-      [const Color(0xFFD4AF37), const Color(0xFFB8941E)], // Vàng gold
-      [const Color(0xFF4A7C2C), const Color(0xFF5E9A3A)], // Xanh tre
-      [const Color(0xFFFF6B35), const Color(0xFFFF8C50)], // Cam
-      [const Color(0xFF667eea), const Color(0xFF764ba2)], // Tím
-      [const Color(0xFF43e97b), const Color(0xFF38f9d7)], // Xanh mint
-    ];
-    return colorSets[(lessonId - 1) % colorSets.length];
+  [const Color(0xFFB22222), const Color(0xFF8B0000)], // đỏ tối
+  [const Color(0xFFB8860B), const Color(0xFF8B7500)], // vàng gold tối
+  [const Color(0xFF2E4D1B), const Color(0xFF3A6622)], // xanh tre tối
+  [const Color(0xFFCC4B2B), const Color(0xFFB04A35)], // cam tối
+  [const Color(0xFF5056C0), const Color(0xFF4B3B8C)], // tím tối
+  [const Color(0xFF2DBE5D), const Color(0xFF26A48F)], // xanh mint tối
+  [const Color(0xFF6A1B9A), const Color(0xFF4A148C)], // tím đậm
+  [const Color(0xFF1E88E5), const Color(0xFF1565C0)], // xanh dương tối
+  [const Color(0xFF00897B), const Color(0xFF00695C)], // xanh teal tối
+  [const Color(0xFFEF6C00), const Color(0xFFE65100)], // cam đất tối
+];
+    return colorSets[lessonId.hashCode % colorSets.length];
   }
-
-  String _getLessonIcon(int lessonId) {
-    final icons = ['📚', '✍️', '🗣️', '👂', '🎯', '⭐'];
-    return icons[(lessonId - 1) % icons.length];
-  }
-
-  String _getLessonTitle(int lessonId) {
-    final titles = [
-      'Từ vựng cơ bản',
-      'Chào hỏi',
-      'Gia đình',
-      'Thức ăn',
-      'Động vật',
-      'Màu sắc',
-    ];
-    return titles[(lessonId - 1) % titles.length];
-  }
-}
-
-// Bamboo Painter - vẽ cây tre
-class BambooPainter extends CustomPainter {
-  final double animationValue;
-
-  BambooPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2D5016).withOpacity(0.12)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    // Vẽ cây tre bên trái
-    _drawBamboo(canvas, size, 30, paint, animationValue);
-    // Vẽ cây tre bên phải
-    _drawBamboo(canvas, size, size.width - 30, paint, -animationValue);
-  }
-
-  void _drawBamboo(Canvas canvas, Size size, double x, Paint paint, double sway) {
-    final path = Path();
-    final segments = 6;
-    final segmentHeight = size.height / segments;
-    
-    for (int i = 0; i < segments; i++) {
-      final y = i * segmentHeight;
-      final swayOffset = sway * 10 * (i / segments);
-      
-      // Thân tre
-      path.moveTo(x + swayOffset, y);
-      path.lineTo(x + swayOffset, y + segmentHeight - 10);
-      
-      // Đốt tre
-      canvas.drawCircle(
-        Offset(x + swayOffset, y + segmentHeight - 10),
-        5,
-        paint,
-      );
-      
-      // Lá tre
-      if (i > 2) {
-        final leafPaint = Paint()
-          ..color = const Color(0xFF6DB33F).withOpacity(0.15)
-          ..style = PaintingStyle.fill;
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset + 15, y + segmentHeight / 2),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-        
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: Offset(x + swayOffset - 15, y + segmentHeight / 2 + 5),
-            width: 30,
-            height: 10,
-          ),
-          leafPaint,
-        );
-      }
-    }
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(BambooPainter oldDelegate) => true;
 }
