@@ -35,7 +35,7 @@ class AppRoutes {
 class AppRouter {
   static GoRouter createRouter() {
     return GoRouter(
-      initialLocation: AppRoutes.splash,
+      initialLocation: AppRoutes.home,
       debugLogDiagnostics: true,
       redirect: (context, state) async {
         final prefs = await SharedPreferences.getInstance();
