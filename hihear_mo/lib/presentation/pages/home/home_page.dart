@@ -8,6 +8,7 @@ import 'package:hihear_mo/core/helper/lesson_helper.dart';
 import 'package:hihear_mo/domain/entities/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
+import 'package:hihear_mo/presentation/pages/HearuAi/ai_chat_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final pages = [
       const _HomeContent(),
       const SpeakPage(),
+      const AiChatPage(),
       const SavedVocabPage(),
       ProfilePage(),
     ];
@@ -187,7 +189,7 @@ class _FloatingNavBar extends StatelessWidget {
                 _NavItem(
                   icon: Icons.home_rounded,
                   index: 0,
-                  label: "Trang chủ",
+                  label: "Nhà",
                   isSelected: selectedIndex == 0,
                   onTap: () => onItemTapped(0),
                 ),
@@ -199,18 +201,25 @@ class _FloatingNavBar extends StatelessWidget {
                   onTap: () => onItemTapped(1),
                 ),
                 _NavItem(
-                  icon: Icons.bookmark_rounded,
+                  icon: Icons.smart_toy,
                   index: 2,
-                  label: "Đã lưu",
+                  label: "HearAI",
                   isSelected: selectedIndex == 2,
                   onTap: () => onItemTapped(2),
                 ),
                 _NavItem(
-                  icon: Icons.person_rounded,
+                  icon: Icons.bookmark_rounded,
                   index: 3,
-                  label: "Tài khoản",
+                  label: "Lưu",
                   isSelected: selectedIndex == 3,
                   onTap: () => onItemTapped(3),
+                ),
+                _NavItem(
+                  icon: Icons.person_rounded,
+                  index:4 ,
+                  label: "Hồ sơ",
+                  isSelected: selectedIndex == 4,
+                  onTap: () => onItemTapped(4),
                 ),
               ],
             ),
