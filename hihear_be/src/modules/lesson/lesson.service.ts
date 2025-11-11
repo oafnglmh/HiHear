@@ -22,20 +22,19 @@ export class LessonService {
     private readonly mediaService: MediaService,
   ) {}
 
+  private readonly lessonRelations = ['media', 'prerequisiteLesson'];
+
   async create(
     currentUser: UserEntity,
     lessonCreate: LessonCreate,
   ): Promise<Lesson> {
     await this.verifyLessonNotExisting(lessonCreate.title);
 
-    let prerequisiteLesson: LessonEntity | null = null;
-    if (lessonCreate.prerequisiteLesson) {
-      prerequisiteLesson = await this.findPrerequisiteLesson(
-        lessonCreate.prerequisiteLesson,
-      );
-    }
+    const prerequisiteLesson = lessonCreate.prerequisiteLesson
+      ? await this.findPrerequisiteLesson(lessonCreate.prerequisiteLesson)
+      : null;
 
-    const lesson = await this.lessonRepository.save(
+    const lessonEntity = await this.lessonRepository.save(
       this.lessonRepository.create({
         ...lessonCreate,
         prerequisiteLesson,
@@ -44,8 +43,13 @@ export class LessonService {
     );
 
     if (lessonCreate.mediaId) {
-      await this.mediaService.assignMediaToLesson(lessonCreate.mediaId, lesson);
+      await this.mediaService.assignMediaToLesson(
+        lessonCreate.mediaId,
+        lessonEntity,
+      );
     }
+
+    const lesson = await this.getLessonOrThrow(lessonEntity.id);
 
     return Lesson.fromEntity(lesson);
   }
@@ -55,18 +59,11 @@ export class LessonService {
     id: Uuid,
     lessonUpdate: LessonUpdate,
   ): Promise<Lesson> {
-    const lessonEntity = await this.findLessonById(id);
+    await this.getLessonOrThrow(id);
 
-    if (!lessonEntity) {
-      throw new NotFoundException(`Lesson with id ${id} not found`);
-    }
-
-    let prerequisiteLesson: LessonEntity | null = null;
-    if (lessonUpdate.prerequisiteLesson) {
-      prerequisiteLesson = await this.findPrerequisiteLesson(
-        lessonUpdate.prerequisiteLesson,
-      );
-    }
+    const prerequisiteLesson = lessonUpdate.prerequisiteLesson
+      ? await this.findPrerequisiteLesson(lessonUpdate.prerequisiteLesson)
+      : null;
 
     return Lesson.fromEntity(
       await this.lessonRepository.save({
@@ -79,36 +76,33 @@ export class LessonService {
   }
 
   async findAll(): Promise<Lesson[]> {
-    const lessons = await this.lessonRepository.find();
+    const lessons = await this.lessonRepository.find({
+      relations: this.lessonRelations,
+    });
 
     return Lesson.fromEntities(lessons);
   }
 
   async findById(id: Uuid): Promise<Lesson> {
-    const lessonEntity = await this.findLessonById(id);
-
-    if (!lessonEntity) {
-      throw new NotFoundException(`Lesson with id ${id} not found`);
-    }
+    const lessonEntity = await this.getLessonOrThrow(id);
 
     return Lesson.fromEntity(lessonEntity);
   }
 
   async remove(id: Uuid): Promise<void> {
-    const lessonEntity = await this.findLessonById(id);
-
-    if (!lessonEntity) {
-      throw new NotFoundException(`Lesson with id ${id} not found`);
-    }
+    const lessonEntity = await this.getLessonOrThrow(id);
 
     await this.lessonRepository.remove(lessonEntity);
   }
 
-  private async findLessonById(id: Uuid): Promise<LessonEntity | null> {
-    const lessonEntity = await this.lessonRepository.findOneBy({ id });
+  private async getLessonOrThrow(id: Uuid): Promise<LessonEntity> {
+    const lessonEntity = await this.lessonRepository.findOne({
+      where: { id },
+      relations: this.lessonRelations,
+    });
 
     if (!lessonEntity) {
-      return null;
+      throw new NotFoundException(`Lession with id ${id} not found`);
     }
 
     return lessonEntity;
