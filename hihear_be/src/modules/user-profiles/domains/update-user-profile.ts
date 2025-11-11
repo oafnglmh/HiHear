@@ -1,4 +1,4 @@
-import { Language } from 'src/utils/language.enum';
+import { Language } from 'src/utils/enums/language.enum';
 import { UserProfileEntity } from '../entities/user-profile.entity';
 
 export class UserProfileUpdate {

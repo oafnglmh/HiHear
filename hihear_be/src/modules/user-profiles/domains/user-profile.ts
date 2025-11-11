@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import { Uuid } from '../../../common/types';
 import { UserProfileEntity } from '../entities/user-profile.entity';
-import { Language } from 'src/utils/language.enum';
+import { Language } from 'src/utils/enums/language.enum';
 
 export class UserProfile {
   id: Uuid;

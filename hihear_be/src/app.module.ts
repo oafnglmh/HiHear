@@ -13,7 +13,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserProfilesModule } from './modules/user-profiles/user-profile.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { LessionModule } from './modules/lession/lession.module';
+import { LessonModule } from './modules/lesson/lesson.module';
+import { MediaModule } from './modules/media/media.module';
+import { MinioClientModule } from './modules/minio/minio.module';
 
 @Module({
   imports: [
@@ -50,7 +52,9 @@ import { LessionModule } from './modules/lession/lession.module';
     UsersModule,
     AuthModule,
     UserProfilesModule,
-    LessionModule,
+    LessonModule,
+    MediaModule,
+    MinioClientModule,
   ],
 })
 export class AppModule {}

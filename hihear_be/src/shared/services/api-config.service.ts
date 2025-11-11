@@ -73,6 +73,25 @@ export class ApiConfigService {
     return this.getString('NODE_ENV');
   }
 
+  get minioConfig() {
+    const endPoint = this.getString('MINIO_ENDPOINT');
+    const useSSL = this.get('MINIO_USE_SSL') === 'true';
+    const accessKey = this.getString('MINIO_ACCESS_KEY');
+    const secretKey = this.getString('MINIO_SECRET_KEY');
+    const port = this.getNumber('MINIO_PORT');
+    const bucketName = this.getString('MINIO_BUCKET_NAME');
+    const url = `${useSSL ? 'https' : 'http'}://${endPoint}:${port}/${bucketName}/`;
+    return {
+      endPoint,
+      port,
+      accessKey,
+      secretKey,
+      useSSL,
+      bucketName,
+      url,
+    };
+  }
+
   private getStringArray(key: string): string[] {
     const value = this.get(key);
 

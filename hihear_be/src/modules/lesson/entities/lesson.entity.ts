@@ -1,9 +1,10 @@
 import { AbstractEntity } from 'src/common/abstract.entity';
+import { MediaEntity } from 'src/modules/media/entities/media.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
-@Entity('lession')
-export class LessionEntity extends AbstractEntity {
+@Entity('lessons')
+export class LessonEntity extends AbstractEntity {
   @Column()
   title: string;
 
@@ -22,10 +23,13 @@ export class LessionEntity extends AbstractEntity {
   @Column({ type: 'int', default: 0 })
   xpReward: number;
 
-  @ManyToOne(() => LessionEntity, { nullable: true, onDelete: 'SET NULL' })
-  prerequisiteLesson: LessionEntity;
+  @ManyToOne(() => LessonEntity, { nullable: true, onDelete: 'SET NULL' })
+  prerequisiteLesson: LessonEntity;
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   user: UserEntity;
+
+  @OneToMany(() => MediaEntity, (media) => media.lesson, { cascade: true })
+  media: MediaEntity[];
 }

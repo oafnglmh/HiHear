@@ -1,6 +1,6 @@
 import { AbstractEntity } from 'src/common/abstract.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { Language } from 'src/utils/language.enum';
+import { Language } from 'src/utils/enums/language.enum';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity('user_profiles')
