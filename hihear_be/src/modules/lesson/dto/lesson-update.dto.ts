@@ -7,9 +7,9 @@ import {
   MaxLength,
 } from 'class-validator';
 import type { Uuid } from 'src/common/types';
-import { LessionUpdate } from '../domain/lession-update.domain';
+import { LessonUpdate } from '../domain/lesson-update.domain';
 
-export class LessionUpdateDto {
+export class LessonUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -47,15 +47,15 @@ export class LessionUpdateDto {
   @IsUUID()
   prerequisiteLesson?: Uuid;
 
-  static toLessionUpdate(lessionUpdateDto: LessionUpdateDto): LessionUpdate {
+  static toLessonUpdate(lessonUpdateDto: LessonUpdateDto): LessonUpdate {
     return {
-      title: lessionUpdateDto.title,
-      description: lessionUpdateDto.description,
-      category: lessionUpdateDto.category,
-      level: lessionUpdateDto.level,
-      durationSeconds: lessionUpdateDto.durationSeconds ?? 0,
-      prerequisiteLesson: lessionUpdateDto.prerequisiteLesson,
-      xpReward: lessionUpdateDto.xpReward ?? 0,
+      title: lessonUpdateDto.title,
+      description: lessonUpdateDto.description,
+      category: lessonUpdateDto.category,
+      level: lessonUpdateDto.level,
+      durationSeconds: lessonUpdateDto.durationSeconds ?? 0,
+      prerequisiteLesson: lessonUpdateDto.prerequisiteLesson,
+      xpReward: lessonUpdateDto.xpReward ?? 0,
     };
   }
 }
