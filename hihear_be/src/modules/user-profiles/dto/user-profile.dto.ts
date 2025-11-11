@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserProfile } from '../domains/user-profile';
 import type { Uuid } from 'src/common/types';
-import { Language } from 'src/utils/language.enum';
+import { Language } from 'src/utils/enums/language.enum';
 
 export class UserProfileDto {
   @ApiProperty({

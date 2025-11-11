@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserProfileUpdate } from '../domains/update-user-profile';
 import { IsInt, IsOptional, IsString, IsEnum } from 'class-validator';
-import { Language } from 'src/utils/language.enum';
+import { Language } from 'src/utils/enums/language.enum';
 
 export class UserProfileUpdateDto {
   @ApiProperty()
