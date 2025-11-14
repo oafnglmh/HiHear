@@ -3,6 +3,7 @@ class AppAssets {
   static const String imagesPath = "assets/images";
   static const String videosPath = "assets/video";
   static const String gifsPath = "assets/gif";
+  static const String animationGif = "assets/animation";
 
   // --------------------- IMAGES -------------------- //
   static const String logo = "$imagesPath/logo.png";
@@ -30,4 +31,9 @@ class AppAssets {
   static const String welcomeGif = "$gifsPath/wc.gif";
   static const String graduateGif = "$gifsPath/graduate.gif";
   static const String celebrationGif = "$gifsPath/celebration.gif";
+
+  // --------------------- Animation ---------------------- //
+  static const String successAnimation = "$animationGif/success.json";
+  static const String errorAnimation = "$animationGif/error.json";
+  static const String passAnimation = "$animationGif/pass.json";
 }
