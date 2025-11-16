@@ -6,6 +6,7 @@ import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
 import 'package:hihear_mo/presentation/pages/Goal/start_app_page.dart';
 import 'package:hihear_mo/presentation/pages/country/country_selection_page.dart';
 import 'package:hihear_mo/presentation/pages/home/home_page.dart';
+import 'package:hihear_mo/presentation/pages/lession/vocabulary/vocab_lesson_page.dart';
 import 'package:hihear_mo/presentation/pages/login/login_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/setting/about_page.dart';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const speaking = '/speaking';
   static const profile = '/profile';
   static const languageCountry = '/languageCountry';
+  static const vocab = '/vocab';
 }
 
 class AppRouter {
@@ -109,6 +111,11 @@ class AppRouter {
           path: AppRoutes.languageCountry,
           name: 'languageCountry',
           builder: (context, state) => const CountrySelectionPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.vocab,
+          name: 'vocab',
+          builder: (context, state) => const VocabLessonPage(),
         ),
       ],
     );
