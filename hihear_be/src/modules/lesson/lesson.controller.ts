@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { LessonCreateDto } from './dto/lesson-create.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -9,8 +17,8 @@ import { AuthUser } from 'src/decorator/auth-user.decorator';
 import { LessonUpdateDto } from './dto/lesson-update.dto';
 import type { Uuid } from 'src/common/types';
 
-@ApiTags('lesson')
-@Controller('lesson')
+@ApiTags('lessons')
+@Controller('lessons')
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 

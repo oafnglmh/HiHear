@@ -1,13 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsInt,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { LessonCreate } from '../domain/lesson-create.domain';
 import type { Uuid } from 'src/common/types';
+import { ExercisesCreateDto } from 'src/modules/exercises/dto/exercises-create.dto';
+import { Type } from 'class-transformer';
+import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 export class LessonCreateDto {
   @ApiProperty()
@@ -22,7 +27,7 @@ export class LessonCreateDto {
   @ApiProperty()
   @IsString()
   @MaxLength(100)
-  category: string | null;
+  category: LessonCategory | null;
 
   @ApiProperty()
   @IsString()
@@ -47,7 +52,14 @@ export class LessonCreateDto {
   @ApiProperty({ description: 'ID của media đã upload', required: false })
   @IsOptional()
   @IsUUID()
-  readonly mediaId?: Uuid;
+  readonly mediaId?: Uuid | null;
+
+  @ApiPropertyOptional({ type: () => [ExercisesCreateDto], isArray: true })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ExercisesCreateDto)
+  @IsOptional()
+  exercises?: ExercisesCreateDto[];
 
   static toLessonCreate(lessonCreateDto: LessonCreateDto): LessonCreate {
     return {
@@ -59,6 +71,7 @@ export class LessonCreateDto {
       prerequisiteLesson: lessonCreateDto.prerequisiteLesson ?? null,
       xpReward: lessonCreateDto.xpReward ?? 0,
       mediaId: lessonCreateDto.mediaId,
+      exercises: lessonCreateDto.exercises ?? [],
     };
   }
 }

@@ -4,6 +4,7 @@ import { Lesson } from '../domain/lesson.domain';
 import type { Uuid } from 'src/common/types';
 import { timeStamp } from 'console';
 import { Media } from 'src/modules/media/domain/media';
+import { Exercises } from 'src/modules/exercises/domain/exercises.domain';
 
 export class LessonDto {
   @ApiProperty()
@@ -28,11 +29,14 @@ export class LessonDto {
   @ApiPropertyOptional()
   xpReward: number | null;
 
-  @ApiPropertyOptional({ type: () => Lesson, isArray: true })
+  @ApiPropertyOptional({ type: () => Lesson })
   prerequisiteLesson: Lesson | null;
 
   @ApiPropertyOptional({ type: () => Media, isArray: true })
   media: Media[] | null;
+
+  @ApiPropertyOptional({ type: () => Exercises, isArray: true })
+  exercises: Exercises[] | null;
 
   @ApiProperty({ type: timeStamp })
   createdAt: Date;
@@ -50,6 +54,7 @@ export class LessonDto {
       durationSeconds: lesson.durationSeconds,
       prerequisiteLesson: lesson.prerequisiteLesson,
       media: lesson.media,
+      exercises: lesson.exercises ?? [],
       xpReward: lesson.xpReward,
       createdAt: lesson.createdAt,
       updatedAt: lesson.updatedAt,

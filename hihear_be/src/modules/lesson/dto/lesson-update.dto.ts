@@ -24,13 +24,13 @@ export class LessonUpdateDto {
   @IsOptional()
   @IsString()
   @MaxLength(100)
-  category: string;
+  category?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
   @MaxLength(10)
-  level: string;
+  level?: string;
 
   @ApiProperty({ default: 0 })
   @IsOptional()
