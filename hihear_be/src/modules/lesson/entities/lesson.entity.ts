@@ -1,7 +1,9 @@
 import { AbstractEntity } from 'src/common/abstract.entity';
+import { ExercisesEntity } from 'src/modules/exercises/entities/exercises.entity';
 import { MediaEntity } from 'src/modules/media/entities/media.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 @Entity('lessons')
 export class LessonEntity extends AbstractEntity {
@@ -11,8 +13,12 @@ export class LessonEntity extends AbstractEntity {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ length: 100, nullable: true })
-  category: string;
+  @Column({
+    type: 'enum',
+    enum: LessonCategory,
+    default: LessonCategory.VOCABULARY,
+  })
+  category: LessonCategory;
 
   @Column({ length: 10, nullable: true })
   level: string;
@@ -32,4 +38,10 @@ export class LessonEntity extends AbstractEntity {
 
   @OneToMany(() => MediaEntity, (media) => media.lesson, { cascade: true })
   media: MediaEntity[];
+
+  @OneToMany(() => ExercisesEntity, (exercise) => exercise.lesson, {
+    cascade: ['insert', 'update'],
+    eager: true,
+  })
+  exercises: ExercisesEntity[];
 }

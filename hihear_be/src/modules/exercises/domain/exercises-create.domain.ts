@@ -1,0 +1,22 @@
+import { ExerciseType } from 'src/utils/enums/exercise-type.enum';
+import { ExercisesCreateDto } from '../dto/exercises-create.dto';
+import { Nationality } from 'src/utils/enums/nationality.enum';
+import { VocabularyCreate } from 'src/modules/exercise-vocabulary/domain/vocabulary-create.domain';
+
+export class ExercisesCreate {
+  type: ExerciseType;
+
+  points: number;
+
+  vocabularies?: VocabularyCreate[];
+
+  national: Nationality;
+
+  static toEntity(exercisesCreate: ExercisesCreate): ExercisesCreateDto {
+    return {
+      type: exercisesCreate.type,
+      points: exercisesCreate.points,
+      national: exercisesCreate.national,
+    };
+  }
+}

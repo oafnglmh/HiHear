@@ -12,6 +12,8 @@ import { LessonCreate } from './domain/lesson-create.domain';
 import { Uuid } from 'src/common/types';
 import { LessonUpdate } from './domain/lesson-update.domain';
 import { MediaService } from '../media/media.service';
+import { ExerciseService } from '../exercises/exercises.service';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LessonService {
@@ -20,38 +22,66 @@ export class LessonService {
     private readonly lessonRepository: Repository<LessonEntity>,
 
     private readonly mediaService: MediaService,
+
+    private readonly exerciseService: ExerciseService,
+    private readonly dataSource: DataSource,
   ) {}
 
-  private readonly lessonRelations = ['media', 'prerequisiteLesson'];
+  private readonly lessonRelations = [
+    'media',
+    'prerequisiteLesson',
+    'exercises',
+  ];
 
   async create(
     currentUser: UserEntity,
     lessonCreate: LessonCreate,
   ): Promise<Lesson> {
-    await this.verifyLessonNotExisting(lessonCreate.title);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    const prerequisiteLesson = lessonCreate.prerequisiteLesson
-      ? await this.findPrerequisiteLesson(lessonCreate.prerequisiteLesson)
-      : null;
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const lessonEntity = await this.lessonRepository.save(
-      this.lessonRepository.create({
+    try {
+      await this.verifyLessonNotExisting(lessonCreate.title);
+
+      const prerequisiteLesson = lessonCreate.prerequisiteLesson
+        ? await this.findPrerequisiteLesson(lessonCreate.prerequisiteLesson)
+        : null;
+
+      const lessonEntity = queryRunner.manager.create(LessonEntity, {
         ...lessonCreate,
         prerequisiteLesson,
         user: currentUser,
-      } as Partial<LessonEntity>),
-    );
+      } as Partial<LessonEntity>);
 
-    if (lessonCreate.mediaId) {
-      await this.mediaService.assignMediaToLesson(
-        lessonCreate.mediaId,
-        lessonEntity,
-      );
+      if (lessonCreate.mediaId) {
+        await this.mediaService.assignMediaToLesson(
+          lessonCreate.mediaId,
+          lessonEntity,
+        );
+      }
+
+      if (lessonCreate.exercises?.length) {
+        await this.exerciseService.createExerciseToLesson(
+          queryRunner,
+          lessonEntity,
+          lessonCreate.exercises,
+        );
+      }
+
+      await queryRunner.manager.save(lessonEntity);
+
+      await queryRunner.commitTransaction();
+
+      const lesson = await this.getLessonOrThrow(lessonEntity.id);
+      return Lesson.fromEntity(lesson);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    const lesson = await this.getLessonOrThrow(lessonEntity.id);
-
-    return Lesson.fromEntity(lesson);
   }
 
   async update(

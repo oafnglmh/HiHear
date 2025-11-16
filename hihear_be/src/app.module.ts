@@ -16,6 +16,8 @@ import { join } from 'path';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { MediaModule } from './modules/media/media.module';
 import { MinioClientModule } from './modules/minio/minio.module';
+import { ExercisesModule } from './modules/exercises/exercises.module';
+import { ExerciseVocabularyModule } from './modules/exercise-vocabulary/exercise-vocabulary.module';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { MinioClientModule } from './modules/minio/minio.module';
     LessonModule,
     MediaModule,
     MinioClientModule,
+    ExercisesModule,
+    ExerciseVocabularyModule,
   ],
 })
 export class AppModule {}

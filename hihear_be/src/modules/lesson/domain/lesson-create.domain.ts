@@ -1,12 +1,14 @@
 import { Uuid } from 'src/common/types';
 import { LessonCreateDto } from '../dto/lesson-create.dto';
+import { ExercisesCreate } from 'src/modules/exercises/domain/exercises-create.domain';
+import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 export class LessonCreate {
   title: string;
 
   description: string | null;
 
-  category: string | null;
+  category: LessonCategory | null;
 
   level: string | null;
 
@@ -17,6 +19,8 @@ export class LessonCreate {
   prerequisiteLesson: Uuid | null;
 
   mediaId?: Uuid | null;
+
+  exercises?: ExercisesCreate[];
 
   static toEntity(lessonCreate: LessonCreate): Partial<LessonCreateDto> {
     return {

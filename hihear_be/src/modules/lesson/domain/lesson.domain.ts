@@ -2,6 +2,7 @@ import { Uuid } from 'src/common/types';
 import { LessonEntity } from '../entities/lesson.entity';
 import _ from 'lodash';
 import { Media } from 'src/modules/media/domain/media';
+import { Exercises } from 'src/modules/exercises/domain/exercises.domain';
 
 export class Lesson {
   id: Uuid;
@@ -22,6 +23,8 @@ export class Lesson {
 
   media: Media[] | null;
 
+  exercises: Exercises[] | null;
+
   createdAt: Date;
 
   updatedAt: Date;
@@ -39,6 +42,9 @@ export class Lesson {
         ? Lesson.fromEntity(lessonEntity.prerequisiteLesson)
         : null,
       media: Media.fromEntities(lessonEntity.media),
+      exercises: lessonEntity.exercises
+        ? Exercises.fromEntities(lessonEntity.exercises)
+        : [],
       createdAt: lessonEntity.createdAt,
       updatedAt: lessonEntity.updatedAt,
     };
