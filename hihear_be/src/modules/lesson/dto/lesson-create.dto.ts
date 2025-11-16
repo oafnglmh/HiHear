@@ -15,41 +15,68 @@ import { Type } from 'class-transformer';
 import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 export class LessonCreateDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Ngữ pháp cơ bản: Câu đơn – câu ghép',
+    description: 'Tiêu đề của bài học',
+  })
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional({
+    example: 'Bài học giới thiệu các loại câu trong ngữ pháp tiếng Việt.',
+    description: 'Mô tả bài học',
+  })
   @IsOptional()
   @IsString()
   description?: string | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: LessonCategory.GRAMMAR,
+    description: 'Danh mục bài học',
+  })
   @IsString()
   @MaxLength(100)
   category: LessonCategory | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'BEGINNER',
+    description: 'Trình độ bài học',
+  })
   @IsString()
   @MaxLength(10)
   level: string | null;
 
-  @ApiProperty({ default: 0 })
+  @ApiPropertyOptional({
+    example: 900,
+    description: 'Thời gian học (tính bằng giây)',
+    default: 0,
+  })
   @IsOptional()
   @IsInt()
   durationSeconds?: number | null;
 
-  @ApiProperty({ default: 0 })
+  @ApiPropertyOptional({
+    example: 30,
+    description: 'Điểm kinh nghiệm (XP) thưởng khi hoàn thành bài học',
+    default: 0,
+  })
   @IsOptional()
   @IsInt()
   xpReward?: number | null;
 
-  @ApiProperty()
+   @ApiPropertyOptional({
+    example: '550e8400-e29b-41d4-a716-446655440000',
+    description: 'ID bài học tiên quyết (nếu có)',
+  })
   @IsOptional()
   @IsUUID()
   prerequisiteLesson?: Uuid | null;
 
-  @ApiProperty({ description: 'ID của media đã upload', required: false })
+  @ApiPropertyOptional({
+    example: '1dfb3be1-5a60-44cd-a0cf-45c35d123abc',
+    description: 'ID của media đã upload',
+    required: false,
+  })
   @IsOptional()
   @IsUUID()
   readonly mediaId?: Uuid | null;
