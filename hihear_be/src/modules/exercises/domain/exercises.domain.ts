@@ -3,6 +3,8 @@ import { ExerciseType } from 'src/utils/enums/exercise-type.enum';
 import { Uuid } from 'src/common/types';
 import { Nationality } from 'src/utils/enums/nationality.enum';
 import { Vocabulary } from 'src/modules/exercise-vocabulary/domain/vocabulary.domain';
+import { Grammar } from 'src/modules/exercise-gramma/domain/grammar.domain';
+import { Listening } from 'src/modules/exercise-listening/domain/listening.domain';
 
 export class Exercises {
   id: Uuid;
@@ -17,6 +19,10 @@ export class Exercises {
 
   vocabularies?: Vocabulary[];
 
+  grammars?: Grammar[];
+
+  listenings?: Listening[];
+
   createdAt: Date;
 
   updatedAt: Date;
@@ -30,6 +36,10 @@ export class Exercises {
       national: entity.national,
       vocabularies: entity.vocabularies
         ? Vocabulary.fromEntities(entity.vocabularies)
+        : [],
+      grammars: entity.grammars ? Grammar.fromEntities(entity.grammars) : [],
+      listenings: entity.listenings
+        ? Listening.fromEntities(entity.listenings)
         : [],
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,

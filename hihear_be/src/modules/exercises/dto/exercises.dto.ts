@@ -5,6 +5,8 @@ import type { Uuid } from 'src/common/types';
 import { timeStamp } from 'console';
 import { Nationality } from 'src/utils/enums/nationality.enum';
 import { VocabularyDto } from 'src/modules/exercise-vocabulary/dto/vocabulary.dto';
+import { GrammarDto } from 'src/modules/exercise-gramma/dto/grammar.dto';
+import { ListeningDto } from 'src/modules/exercise-listening/dto/listening.dto';
 
 export class ExercisesDto {
   @ApiProperty()
@@ -23,7 +25,13 @@ export class ExercisesDto {
   readonly national: Nationality;
 
   @ApiProperty({ type: () => [VocabularyDto], required: false })
-  vocabularies?: VocabularyDto[];
+  readonly vocabularies?: VocabularyDto[];
+
+  @ApiProperty({ type: () => [GrammarDto], required: false })
+  readonly grammars?: GrammarDto[];
+
+  @ApiProperty({ type: () => [ListeningDto], required: false })
+  readonly listenings?: ListeningDto[];
 
   @ApiProperty({ type: timeStamp })
   readonly createdAt: Date;
@@ -39,6 +47,8 @@ export class ExercisesDto {
       points: exercise.points,
       national: exercise.national,
       vocabularies: exercise.vocabularies,
+      grammars: exercise.grammars,
+      listenings: exercise.listenings,
       createdAt: exercise.createdAt,
       updatedAt: exercise.updatedAt,
     };

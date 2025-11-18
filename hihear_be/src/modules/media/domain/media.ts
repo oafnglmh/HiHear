@@ -6,6 +6,8 @@ export class Media {
 
   readonly lessonId: string | null;
 
+  readonly listeningId: string | null;
+
   readonly fileType: string;
 
   readonly fileName: string;
@@ -20,6 +22,7 @@ export class Media {
     return {
       id: mediaEntity.id,
       lessonId: mediaEntity.lesson?.id ?? null,
+      listeningId: mediaEntity.listening?.id ?? null,
       fileType: mediaEntity.fileType,
       fileName: mediaEntity.fileName,
       fileUrl: mediaEntity.fileUrl,

@@ -4,6 +4,8 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { LessonEntity } from 'src/modules/lesson/entities/lesson.entity';
 import { Nationality } from 'src/utils/enums/nationality.enum';
 import { VocabularyEntity } from 'src/modules/exercise-vocabulary/entities/vocabulary.entity';
+import { GrammarEntity } from 'src/modules/exercise-gramma/entities/grammar.entity';
+import { ListeningEntity } from 'src/modules/exercise-listening/entities/listening.entity';
 
 @Entity('exercises')
 export class ExercisesEntity extends AbstractEntity {
@@ -28,11 +30,17 @@ export class ExercisesEntity extends AbstractEntity {
   })
   vocabularies: VocabularyEntity[];
 
-  // @OneToMany(() => GrammarEntity, (g) => g.exercise, { cascade: true })
-  // grammars?: GrammarEntity[];
+  @OneToMany(() => GrammarEntity, (grammars) => grammars.exercise, {
+    cascade: true,
+    eager: true,
+  })
+  grammars?: GrammarEntity[];
 
-  // @OneToMany(() => ListeningEntity, (l) => l.exercise, { cascade: true })
-  // listenings?: ListeningEntity[];
+  @OneToMany(() => ListeningEntity, (l) => l.exercise, {
+    cascade: true,
+    eager: true,
+  })
+  listenings?: ListeningEntity[];
 
   // @OneToMany(() => SpeakingEntity, (s) => s.exercise, { cascade: true })
   // speakings?: SpeakingEntity[];

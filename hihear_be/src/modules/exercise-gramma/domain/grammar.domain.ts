@@ -1,4 +1,5 @@
 import { Uuid } from 'src/common/types';
+import { GrammarEntity } from '../entities/grammar.entity';
 
 export class Grammar {
   id: Uuid;
@@ -13,7 +14,7 @@ export class Grammar {
 
   updatedAt: Date;
 
-  static fromEntity(entity: Grammar): Grammar {
+  static fromEntity(entity: GrammarEntity): Grammar {
     return {
       id: entity.id,
       grammarRule: entity.grammarRule,
@@ -24,7 +25,7 @@ export class Grammar {
     };
   }
 
-  static fromEntities(entities: Grammar[]): Grammar[] {
+  static fromEntities(entities: GrammarEntity[]): Grammar[] {
     return entities.map((d) => this.fromEntity(d));
   }
 }
