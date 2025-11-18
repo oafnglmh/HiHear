@@ -12,6 +12,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { GrammarCreateDto } from 'src/modules/exercise-gramma/dto/grammar-create.domain';
+import { ListeningCreateDto } from 'src/modules/exercise-listening/dto/listening-create.dto';
 
 export class ExercisesCreateDto {
   @ApiProperty({ enum: ExerciseType })
@@ -34,12 +36,27 @@ export class ExercisesCreateDto {
   @Type(() => VocabularyCreateDto)
   vocabularies?: VocabularyCreateDto[];
 
+  @ApiProperty({ type: () => [GrammarCreateDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GrammarCreateDto)
+  grammars?: GrammarCreateDto[];
+
+  @ApiProperty({ type: () => [GrammarCreateDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GrammarCreateDto)
+  lisnings?: ListeningCreateDto[];
+
   static toExerciseCreate(exercisesDto: ExercisesCreateDto): ExercisesCreate {
     return {
       type: exercisesDto.type,
       points: exercisesDto.points,
       national: exercisesDto.national,
       vocabularies: exercisesDto.vocabularies,
+      grammars: exercisesDto.grammars,
     };
   }
 }

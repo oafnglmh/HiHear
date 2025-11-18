@@ -10,8 +10,20 @@ import { QueryRunner } from 'typeorm';
 import { VocabularyEntity } from '../exercise-vocabulary/entities/vocabulary.entity';
 import { VocabularyCreate } from '../exercise-vocabulary/domain/vocabulary-create.domain';
 import { Uuid } from 'src/common/types';
+import { GrammarEntity } from '../exercise-gramma/entities/grammar.entity';
+import { GrammarCreate } from '../exercise-gramma/domain/grammar-create.domain';
+import { ListeningEntity } from '../exercise-listening/entities/listening.entity';
+import { ListeningCreate } from '../exercise-listening/domain/listening-create.domain';
+import { MediaService } from '../media/media.service';
 
 export class ExerciseService {
+  constructor(
+    @InjectRepository(ExercisesEntity)
+    private readonly exerciseRepository: Repository<ExercisesEntity>,
+    private readonly vocabularyService: VocabularyService,
+    private readonly mediaService: MediaService,
+  ) {}
+
   private readonly handlers: Record<
     LessonCategory,
     (
@@ -28,20 +40,44 @@ export class ExerciseService {
         return Promise.resolve();
       }
     },
-    [LessonCategory.GRAMMAR]: async () => {},
-    [LessonCategory.LISTENING]: async () => {},
+    [LessonCategory.GRAMMAR]: async (qr, exercise, ex) => {
+      if (ex.grammars?.length) {
+        exercise.grammars = ex.grammars.map((grammar) =>
+          qr.manager.create(GrammarEntity, GrammarCreate.toEntity(grammar)),
+        );
+        return Promise.resolve();
+      }
+    },
+    [LessonCategory.LISTENING]: async (qr, exercise, ex) => {
+      if (ex.listenings?.length) {
+        exercise.listenings = await Promise.all(
+          ex.listenings.map(async (listening) => {
+            const listeningEntity = qr.manager.create(ListeningEntity, {
+              ...ListeningCreate.toEntity(listening),
+            });
+
+            if (listening.mediaId) {
+              const media = await this.mediaService.assignMediaToListening(
+                listening.mediaId,
+                listeningEntity,
+              );
+
+              listeningEntity.media = media;
+            }
+
+            return listeningEntity;
+          }),
+        );
+      }
+
+      return Promise.resolve();
+    },
     [LessonCategory.SPEAKING]: async () => {},
     [LessonCategory.READING]: async () => {},
     [LessonCategory.WRITING]: async () => {},
   };
 
   private readonly lessonRelations = ['vocabularies', 'lesson'];
-
-  constructor(
-    @InjectRepository(ExercisesEntity)
-    private readonly exerciseRepository: Repository<ExercisesEntity>,
-    private readonly vocabularyService: VocabularyService,
-  ) {}
 
   async createExerciseToLesson(
     queryRunner: QueryRunner,
