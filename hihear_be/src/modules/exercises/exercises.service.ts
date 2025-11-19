@@ -91,17 +91,20 @@ export class ExerciseService {
     for (const ex of exerciseCreate) {
       const exercise = queryRunner.manager.create(ExercisesEntity, {
         ...ExercisesCreate.toEntity(ex),
-        lesson: lesson.category === LessonCategory.SPEAKING ? null : lesson,
       });
-
       const handler = this.handlers[lesson.category];
-
       if (handler) {
         await handler(queryRunner, exercise, ex);
       }
+      if (lesson.category !== LessonCategory.SPEAKING) {
+        exercise.lesson = lesson;
+      }
       exercises.push(exercise);
     }
-
+    if (!lesson.exercises) {
+      lesson.exercises = [];
+    }
+    lesson.exercises = exercises;
     return Exercises.fromEntities(exercises);
   }
 
