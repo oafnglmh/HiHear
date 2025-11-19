@@ -9,11 +9,14 @@ export async function saveLesson(lesson) {
     durationSeconds: lesson.durationSeconds ?? 0,
     xpReward: lesson.xpReward ?? 0,
     prerequisiteLesson: lesson.prerequisiteLesson ?? null,
+    mediaId: lesson.mediaId ?? null,
+    exercises: lesson.exercises ?? [],
   };
 
   const res = await createLesson(payload);
   return res.data;
 }
+
 
 export async function editLesson(lesson, id) {
   const payload = {

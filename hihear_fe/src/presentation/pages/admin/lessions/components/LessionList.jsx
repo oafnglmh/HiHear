@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Book, Edit3, Trash2, X } from "lucide-react";
+import { Plus, Book, Edit3, Trash2 } from "lucide-react";
 import AddLesson from "./AddLesson";
-import apiClient from "../../../../../Core/config/apiClient";
 import "../css/Lessons.css";
 import { getLesson } from "../api/lessonApi";
 import { deleteLesson } from "../services/lessonService";
-
 import toast from "react-hot-toast";
 
 export default function LessonsList() {
@@ -18,13 +16,57 @@ export default function LessonsList() {
   const fetchLessons = async () => {
     try {
       const res = await getLesson();
-      const lessonsWithQuestions = res.data.map((l) => ({
-        ...l,
-        questions: l.questions || [],
-      }));
-      console.log("jdvnkvn",res)
-      setLessons(lessonsWithQuestions);
-      setLessonOptions(lessonsWithQuestions);
+
+      const lessonsWithMapping = res.data.map((l) => {
+        // Map Từ vựng
+        const mcqExercise = l.exercises?.find((ex) => ex.type === "mcq");
+        const questions =
+          mcqExercise?.vocabularies?.map((v, idx) => ({
+            id: v.id || idx,
+            text: v.question,
+            optionA: v.choices[0] || "",
+            optionB: v.choices[1] || "",
+            correct: v.correctAnswer === v.choices[0] ? "A" : "B",
+          })) || [];
+
+        // Map Ngữ pháp
+        const grammarExercise = l.exercises?.filter(
+          (ex) => ex.type === "grammar"
+        );
+        const grammarExamples =
+          grammarExercise?.flatMap(
+            (ex) =>
+              ex.grammars?.map((g, idx) => ({
+                id: g.id || idx,
+                grammarRule: g.grammarRule || "",
+                example: g.example || "",
+                meaning: g.meaning || "",
+              })) || []
+          ) || [];
+
+        // Map Phát Âm
+        const listeningExercise = l.exercises?.filter(
+          (ex) => ex.type === "listening"
+        );
+        const pronunciationExamples =
+          listeningExercise?.flatMap(
+            (ex) =>
+              ex.listenings?.map((p, idx) => ({
+                id: p.id || idx,
+                text: p.example || "",
+              })) || []
+          ) || [];
+
+        return {
+          ...l,
+          questions,
+          grammarExamples,
+          pronunciationExamples,
+        };
+      });
+
+      setLessons(lessonsWithMapping);
+      setLessonOptions(lessonsWithMapping);
     } catch (err) {
       console.error("Fetch lessons error:", err);
     }
@@ -35,17 +77,8 @@ export default function LessonsList() {
   }, []);
 
   const handleAddLesson = (newLesson) => {
-    if (!newLesson) return;
-
-    if (editingLesson) {
-      setLessons((prev) =>
-        prev.map((l) => (l.id === newLesson.id ? newLesson : l))
-      );
-    } else {
-      setLessons((prev) => [...prev, newLesson]);
-    }
+    fetchLessons() ;
   };
-
 
   const confirmDeleteLesson = (lesson) => {
     setLessonToDelete(lesson);
@@ -80,7 +113,6 @@ export default function LessonsList() {
             key={l.id}
             className="lesson-card"
             style={{ background: l.color || "#93c5fd" }}
-            onClick={() => setSelectedLesson(l)}
           >
             <div className="lesson-icon">
               <Book size={32} color="#fff" />

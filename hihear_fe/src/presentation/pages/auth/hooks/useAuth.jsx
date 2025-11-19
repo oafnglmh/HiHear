@@ -18,17 +18,16 @@ export const useAuth = () => {
   const loginWithGoogle = async (idToken) => {
     try {
       setLoading(true);
-
       const res = await authService.loginWithGoogle(idToken);
-      console.log("Google login response:", res);
       saveToken(res.token.accessToken);
+      localStorage.setItem("role", res.user.role);
 
       toast.success("Đăng nhập Google thành công!");
-       if(res.user.role == "USER"){
+      console.log("adbc",res.user.role)
+      if (res.user.role === "USER") {
         navigate("/admin/dashboard");
-      }
-      else{
-        navigate("/admin/dashboard");
+      } else {
+        navigate("/404");
       }
     } catch (err) {
       toast.error("Đăng nhập Google thất bại");

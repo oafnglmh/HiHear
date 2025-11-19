@@ -7,11 +7,17 @@ import AdminLayout from "../layouts/AdminLayout";
 import Lession from "../pages/admin/lessions/Lessons";
 import Dashboard from "../pages/admin/dashboard/Dashboard";
 import Users from "../pages/admin/users/Users";
+import ProtectedAdminRoute from "./ProtectedAdminRoute";
+
+const NotFoundPage = () => (
+  <PageWrapper>
+    <h1>404 - Trang không tồn tại</h1>
+  </PageWrapper>
+);
 
 const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
-      {/* Public routes */}
       <Route
         path="/"
         element={
@@ -28,20 +34,35 @@ const AppRoutes = () => (
           </PageWrapper>
         }
       />
+      <Route element={<ProtectedAdminRoute />}>
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminLayout>
+              <Dashboard />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminLayout>
+              <Users />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/lession"
+          element={
+            <AdminLayout>
+              <Lession />
+            </AdminLayout>
+          }
+        />
+      </Route>
 
-      {/* Admin routes */}
-      <Route
-        path="/admin/*"
-        element={
-          <AdminLayout>
-            <Routes>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="users" element={<Users />} />
-              <Route path="lession" element={<Lession />} />
-            </Routes>
-          </AdminLayout>
-        }
-      />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   </BrowserRouter>
 );

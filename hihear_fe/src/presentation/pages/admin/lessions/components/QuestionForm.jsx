@@ -11,7 +11,6 @@ export default function QuestionForm({ q, onChange, onDelete }) {
         onChange={(e) => onChange(q.id, "text", e.target.value)}
         required
       />
-
       <div className="options">
         <input
           type="text"
@@ -26,18 +25,13 @@ export default function QuestionForm({ q, onChange, onDelete }) {
           onChange={(e) => onChange(q.id, "optionB", e.target.value)}
         />
       </div>
-
       <label>
         Đáp án đúng:
-        <select
-          value={q.correct}
-          onChange={(e) => onChange(q.id, "correct", e.target.value)}
-        >
+        <select value={q.correct} onChange={(e) => onChange(q.id, "correct", e.target.value)}>
           <option value="A">A</option>
           <option value="B">B</option>
         </select>
       </label>
-
       <button type="button" onClick={() => onDelete(q.id)} className="delete-question-btn">
         <Trash2 size={16} />
       </button>

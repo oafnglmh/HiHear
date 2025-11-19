@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState } from "react";
 
 export function useLessonForm() {
   const [id, setId] = useState("");
@@ -10,33 +10,18 @@ export function useLessonForm() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // Câu hỏi cho Vocabulary
+  // ================== VOCABULARY ==================
   const [questions, setQuestions] = useState([
     { id: 1, text: "", optionA: "", optionB: "", correct: "A" },
   ]);
 
-  // Grammar
-  const [grammarDescription, setGrammarDescription] = useState("");
-  const [grammarExamples, setGrammarExamples] = useState([]);
-
-  // Pronunciation
-  const [pronunciationOrder, setPronunciationOrder] = useState("");
-  const [pronunciationExamples, setPronunciationExamples] = useState([]);
-
-  // ================== IMAGE ==================
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  // ================== VOCAB QUESTIONS ==================
   const handleAddQuestion = () => {
+    const newId = questions.length
+      ? Math.max(...questions.map((q) => q.id)) + 1
+      : 1;
     setQuestions((prev) => [
       ...prev,
-      { id: prev.length + 1, text: "", optionA: "", optionB: "", correct: "A" },
+      { id: newId, text: "", optionA: "", optionB: "", correct: "A" },
     ]);
   };
 
@@ -50,6 +35,9 @@ export function useLessonForm() {
   };
 
   // ================== GRAMMAR ==================
+  const [grammarExamples, setGrammarExamples] = useState([]);
+  const [grammarDescription, setGrammarDescription] = useState("");
+
   const handleAddGrammarExample = (example) => {
     setGrammarExamples((prev) => [...prev, example]);
   };
@@ -65,6 +53,9 @@ export function useLessonForm() {
   };
 
   // ================== PRONUNCIATION ==================
+  const [pronunciationExamples, setPronunciationExamples] = useState([]);
+  const [pronunciationOrder, setPronunciationOrder] = useState(1);
+
   const handleAddPronunciationExample = (example) => {
     setPronunciationExamples((prev) => [...prev, example]);
   };
@@ -77,6 +68,15 @@ export function useLessonForm() {
     setPronunciationExamples((prev) =>
       prev.map((ex, i) => (i === index ? value : ex))
     );
+  };
+
+  // ================== IMAGE ==================
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
   return {
@@ -96,18 +96,21 @@ export function useLessonForm() {
     preview,
     handleImageChange,
     questions,
+    setQuestions,
     handleAddQuestion,
     handleDeleteQuestion,
     handleChangeQuestion,
     grammarDescription,
     setGrammarDescription,
     grammarExamples,
+    setGrammarExamples,
     handleAddGrammarExample,
     handleDeleteGrammarExample,
     handleChangeGrammarExample,
     pronunciationOrder,
     setPronunciationOrder,
     pronunciationExamples,
+    setPronunciationExamples,
     handleAddPronunciationExample,
     handleDeletePronunciationExample,
     handleChangePronunciationExample,

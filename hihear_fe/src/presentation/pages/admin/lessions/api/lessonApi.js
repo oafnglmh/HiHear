@@ -1,17 +1,17 @@
 import apiClient from "../../../../../Core/config/apiClient";
 
 export function createLesson(data) {
-  return apiClient.post("/lession", data);
+  return apiClient.post("/lessons", data);
 }
 
 export function getLesson() {
-  return apiClient.get("/lession");
+  return apiClient.get("/lessons");
 }
 
 export function editLessonApi(data, id) {
-  return apiClient.patch(`/lession/${id}`, data);
+  return apiClient.patch(`/lessons/${id}`, data);
 }
 
 export function deleteLessonApi(id) {
-  return apiClient.delete(`/lession/${id}`);
+  return apiClient.delete(`/lessons/${id}`);
 }
