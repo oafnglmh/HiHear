@@ -1,11 +1,12 @@
 import { AbstractEntity } from 'src/common/abstract.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ExercisesEntity } from 'src/modules/exercises/entities/exercises.entity';
 import { MediaEntity } from 'src/modules/media/entities/media.entity';
 
 @Entity('listenings')
 export class ListeningEntity extends AbstractEntity {
-  @ManyToOne(() => MediaEntity, { nullable: false, eager: true })
+  @ManyToOne(() => MediaEntity, { nullable: true })
+  @JoinColumn({ name: 'media_id' })
   media: MediaEntity;
 
   @Column({ type: 'text', nullable: true })

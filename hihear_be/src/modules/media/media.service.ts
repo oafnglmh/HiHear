@@ -9,7 +9,6 @@ import { FileUploadResponse } from './domain/file-upload-response';
 import { FileCompletedUploadUrl } from './domain/file-completed-upload-url';
 import { Uuid } from 'src/common/types';
 import { LessonEntity } from '../lesson/entities/lesson.entity';
-import { ListeningEntity } from '../exercise-listening/entities/listening.entity';
 
 @Injectable()
 export class MediaService {
@@ -74,13 +73,8 @@ export class MediaService {
     return Media.fromEntity(await this.mediaRepository.save(media));
   }
 
-  async assignMediaToListening(
-    mediaId: Uuid,
-    listening: ListeningEntity,
-  ): Promise<MediaEntity> {
+  async findOne(mediaId: Uuid): Promise<MediaEntity> {
     const media = await this.findMediaOrThrow(mediaId);
-
-    media.listening = listening;
 
     return await this.mediaRepository.save(media);
   }

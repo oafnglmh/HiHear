@@ -43,12 +43,12 @@ export class ExercisesCreateDto {
   @Type(() => GrammarCreateDto)
   grammars?: GrammarCreateDto[];
 
-  @ApiProperty({ type: () => [GrammarCreateDto], required: false })
+  @ApiProperty({ type: () => [ListeningCreateDto], required: false })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => GrammarCreateDto)
-  lisnings?: ListeningCreateDto[];
+  @Type(() => ListeningCreateDto)
+  listenings?: ListeningCreateDto[];
 
   static toExerciseCreate(exercisesDto: ExercisesCreateDto): ExercisesCreate {
     return {

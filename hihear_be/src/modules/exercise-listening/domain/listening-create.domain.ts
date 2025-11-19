@@ -9,9 +9,10 @@ export class ListeningCreate {
 
   correctAnswer: string;
 
-  static toEntity(listeningCreate: ListeningCreate): ListeningCreateDto {
+  static toEntity(
+    listeningCreate: ListeningCreate,
+  ): Partial<ListeningCreateDto> {
     return {
-      mediaId: listeningCreate.mediaId,
       transcript: listeningCreate.transcript ?? null,
       choices: listeningCreate.choices,
       correctAnswer: listeningCreate.correctAnswer,

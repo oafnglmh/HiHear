@@ -7,9 +7,7 @@ export class ListeningCreateDto {
   @ApiPropertyOptional({
     example: '1dfb3be1-5a60-44cd-a0cf-45c35d123abc',
     description: 'ID của media đã upload',
-    required: false,
   })
-  @IsOptional()
   @IsUUID()
   readonly mediaId: Uuid;
 

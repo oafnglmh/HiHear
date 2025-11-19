@@ -9,9 +9,6 @@ export class MediaDto {
   readonly lessonId: string | null;
 
   @ApiProperty()
-  readonly listeningId: string | null;
-
-  @ApiProperty()
   readonly fileType: string;
 
   @ApiProperty()
@@ -30,7 +27,6 @@ export class MediaDto {
     return {
       id: media.id,
       lessonId: media.lessonId ?? null,
-      listeningId: media.listeningId ?? null,
       fileType: media.fileType,
       fileName: media.fileName,
       fileUrl: media.fileUrl,

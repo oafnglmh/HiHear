@@ -15,6 +15,7 @@ import { GrammarCreate } from '../exercise-gramma/domain/grammar-create.domain';
 import { ListeningEntity } from '../exercise-listening/entities/listening.entity';
 import { ListeningCreate } from '../exercise-listening/domain/listening-create.domain';
 import { MediaService } from '../media/media.service';
+import { MediaEntity } from '../media/entities/media.entity';
 
 export class ExerciseService {
   constructor(
@@ -50,24 +51,25 @@ export class ExerciseService {
     },
     [LessonCategory.LISTENING]: async (qr, exercise, ex) => {
       if (ex.listenings?.length) {
-        exercise.listenings = await Promise.all(
-          ex.listenings.map(async (listening) => {
-            const listeningEntity = qr.manager.create(ListeningEntity, {
-              ...ListeningCreate.toEntity(listening),
-            });
+        exercise.listenings = [];
+        for (const listeningData of ex.listenings) {
+          const media = await qr.manager.findOne(MediaEntity, {
+            where: { id: listeningData.mediaId },
+          });
 
-            if (listening.mediaId) {
-              const media = await this.mediaService.assignMediaToListening(
-                listening.mediaId,
-                listeningEntity,
-              );
+          if (!media)
+            throw new Error(`Media ${listeningData.mediaId} not found`);
 
-              listeningEntity.media = media;
-            }
+          const listening = qr.manager.create(ListeningEntity, {
+            ...ListeningCreate.toEntity(listeningData),
+            media,
+          });
 
-            return listeningEntity;
-          }),
-        );
+          listening.media = media;
+
+          exercise.listenings.push(listening);
+          console.log('exercise created:', exercise);
+        }
       }
 
       return Promise.resolve();

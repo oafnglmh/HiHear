@@ -36,7 +36,7 @@ export class ExercisesEntity extends AbstractEntity {
   })
   grammars?: GrammarEntity[];
 
-  @OneToMany(() => ListeningEntity, (l) => l.exercise, {
+  @OneToMany(() => ListeningEntity, (listenings) => listenings.exercise, {
     cascade: true,
     eager: true,
   })
