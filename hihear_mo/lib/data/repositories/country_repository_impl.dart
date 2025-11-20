@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:hihear_mo/core/error/failures.dart';
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 import 'package:hihear_mo/data/models/countryModel.dart';
-import 'package:hihear_mo/domain/entities/country_entity.dart';
-import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/entities/country/country_entity.dart';
+import 'package:hihear_mo/domain/entities/user/user_entity.dart';
 import 'package:hihear_mo/domain/repositories/country_repository.dart';
 
 class CountryRepositoryImpl implements CountryRepository {

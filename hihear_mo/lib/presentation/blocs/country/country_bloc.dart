@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hihear_mo/domain/entities/country_entity.dart';
+import 'package:hihear_mo/domain/entities/country/country_entity.dart';
 import 'package:hihear_mo/domain/repositories/country_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

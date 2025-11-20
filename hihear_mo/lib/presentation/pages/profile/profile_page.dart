@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
-import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/entities/user/user_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/auth/auth_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';

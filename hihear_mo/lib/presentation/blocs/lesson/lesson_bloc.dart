@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hihear_mo/domain/entities/lession_entity.dart';
+import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/domain/repositories/lession_repository.dart';
 import 'package:hihear_mo/core/error/failures.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -13,6 +13,7 @@ class LessonBloc extends Bloc<LessionEvent, LessonState> {
 
   LessonBloc({required this.repository}) : super(const LessonState.initial()) {
     on<_LoadLession>(_onLoadLession);
+    on<_LoadLessonById>(_onLoadLessonById);
   }
 
   Future<void> _onLoadLession(
@@ -34,6 +35,27 @@ class LessonBloc extends Bloc<LessionEvent, LessonState> {
       );
     } catch (e, s) {
       emit(LessonState.error('Load lessons failed: $e'));
+      addError(e, s);
+    }
+  }
+
+  Future<void> _onLoadLessonById(
+    _LoadLessonById event,
+    Emitter<LessonState> emit,
+  ) async {
+    emit(const LessonState.loading());
+    try {
+      final result = await repository.getLessonById(event.id);
+      result.fold(
+        (failure) {
+          emit(LessonState.error(failure.toString()));
+        },
+        (lesson) {
+          emit(LessonState.data([lesson]));
+        },
+      );
+    } catch (e, s) {
+      emit(LessonState.error('Load lesson by id failed: $e'));
       addError(e, s);
     }
   }

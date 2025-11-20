@@ -1,11 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/helper/lesson_helper.dart';
-import 'package:hihear_mo/domain/entities/lession_entity.dart';
+import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/pages/HearuAi/ai_chat_page.dart';
@@ -75,10 +76,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       extendBody: true,
       body: Stack(
         children: [
-          // Background Gradient
           const _GradientBackground(),
-          
-          // Bamboo Animation
+
           AnimatedBuilder(
             animation: _bambooController,
             builder: (context, child) => CustomPaint(
@@ -87,7 +86,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
 
-          // Content
           SafeArea(
             child: PageView(
               controller: _pageController,
@@ -97,7 +95,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
 
-          // Navigation Bar
           Positioned(
             left: 0,
             right: 0,
@@ -125,11 +122,7 @@ class _GradientBackground extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.bamboo1,
-              AppColors.bamboo2,
-              AppColors.bamboo3,
-            ],
+            colors: [AppColors.bamboo1, AppColors.bamboo2, AppColors.bamboo3],
           ),
         ),
       ),
@@ -216,7 +209,7 @@ class _FloatingNavBar extends StatelessWidget {
                 ),
                 _NavItem(
                   icon: Icons.person_rounded,
-                  index:4 ,
+                  index: 4,
                   label: "Hồ sơ",
                   isSelected: selectedIndex == 4,
                   onTap: () => onItemTapped(4),
@@ -571,23 +564,20 @@ class _LessonGrid extends StatelessWidget {
         mainAxisSpacing: 16,
         childAspectRatio: 0.85,
       ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final lesson = lessons[index];
-          return TweenAnimationBuilder<double>(
-            duration: Duration(milliseconds: 400 + (index * 100)),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) => Transform.scale(
-              scale: 0.8 + (value * 0.2),
-              child: Opacity(
-                opacity: value,
-                child: _LessonCard(lesson: lesson),
-              ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final lesson = lessons[index];
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 400 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) => Transform.scale(
+            scale: 0.8 + (value * 0.2),
+            child: Opacity(
+              opacity: value,
+              child: _LessonCard(lesson: lesson),
             ),
-          );
-        },
-        childCount: lessons.length,
-      ),
+          ),
+        );
+      }, childCount: lessons.length),
     );
   }
 }
@@ -617,11 +607,19 @@ class _LessonCard extends StatelessWidget {
                 children: [
                   _LessonIcon(icon: icon, colors: colors),
                   const Spacer(),
-                  _LessonBadge(title: lesson.title ?? 'Bài học', color: colors[0]),
+                  _LessonBadge(
+                    title: lesson.category ?? 'Bài học',
+                    color: colors[0],
+                  ),
                 ],
               ),
               const Spacer(),
-              Text(lesson.title ?? 'Bài học', style: AppTextStyles.cardTitle),
+              Text(
+                lesson.title ?? 'Bài học',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.cardTitle,
+              ),
               SizedBox(height: AppPadding.small - 2),
               Text(
                 lesson.description,
@@ -630,7 +628,7 @@ class _LessonCard extends StatelessWidget {
                 style: AppTextStyles.cardDescription,
               ),
               SizedBox(height: AppPadding.medium + 2),
-              _StartButton(l10n: l10n, colors: colors),
+              _StartButton(l10n: l10n, colors: colors, lesson: lesson),
             ],
           ),
         ),
@@ -682,10 +680,7 @@ class _LessonBadge extends StatelessWidget {
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(AppRadius.small),
       ),
-      child: Text(
-        title,
-        style: AppTextStyles.smallText.copyWith(color: color),
-      ),
+      child: Text(title, style: AppTextStyles.smallText.copyWith(color: color)),
     );
   }
 }
@@ -693,8 +688,8 @@ class _LessonBadge extends StatelessWidget {
 class _StartButton extends StatelessWidget {
   final AppLocalizations l10n;
   final List<Color> colors;
-
-  const _StartButton({required this.l10n, required this.colors});
+  final LessionEntity lesson;
+  const _StartButton({required this.l10n, required this.colors, required this.lesson});
 
   @override
   Widget build(BuildContext context) {
@@ -712,17 +707,23 @@ class _StartButton extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(l10n.startButton, style: AppTextStyles.button),
-          SizedBox(width: AppPadding.small - 2),
-          Icon(
-            Icons.arrow_forward_rounded,
-            color: Colors.white,
-            size: AppSizes.iconSizeSmall,
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          context.go('/vocab/${lesson.id}');
+
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(l10n.startButton, style: AppTextStyles.button),
+            SizedBox(width: AppPadding.small - 2),
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: AppSizes.iconSizeSmall,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/entities/user/user_entity.dart';
 import 'package:hihear_mo/domain/repositories/auth_repository.dart';
 
 part 'auth_bloc.freezed.dart';

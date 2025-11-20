@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hihear_mo/domain/entities/country_entity.dart';
+import 'package:hihear_mo/domain/entities/country/country_entity.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
 import 'package:hihear_mo/presentation/painter/bamboo_painter.dart';
 

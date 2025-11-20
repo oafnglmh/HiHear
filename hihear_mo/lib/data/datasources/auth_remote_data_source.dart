@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hihear_mo/core/network/api_client.dart';
-import 'package:hihear_mo/domain/entities/country_entity.dart';
-import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/entities/country/country_entity.dart';
+import 'package:hihear_mo/domain/entities/user/user_entity.dart';
 import 'package:hihear_mo/share/TokenStorage.dart';
+import 'package:hihear_mo/share/UserShare.dart';
 
 class AuthRemoteDataSource {
   final Dio _dioLogin = Dio(BaseOptions(baseUrl: ApiClient.auth_url));
@@ -26,7 +27,9 @@ class AuthRemoteDataSource {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCred = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
       final user = userCred.user;
       if (user == null) throw Exception('Không thể xác thực người dùng.');
 
@@ -43,6 +46,13 @@ class AuthRemoteDataSource {
       final accessToken = response.data['token']['accessToken'];
       await TokenStorage.saveToken(accessToken);
       final profile = response.data['profile'];
+      await UserShare().saveUser(
+        id: user.uid,
+        name: user.displayName ?? '',
+        email: user.email ?? '',
+        photoUrl: user.photoURL ?? '',
+        national: profile['language'],
+      );
       return UserEntity(
         id: user.uid,
         name: user.displayName ?? '',
@@ -54,7 +64,6 @@ class AuthRemoteDataSource {
       throw Exception('Lỗi đăng nhập Google: $e');
     }
   }
-
 
   /// Update language
   Future<UserEntity> addOrUpdateCountry(CountryEntity country) async {
@@ -70,10 +79,12 @@ class AuthRemoteDataSource {
       final response = await _dioProfile.patch(
         '/me',
         data: payload,
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {

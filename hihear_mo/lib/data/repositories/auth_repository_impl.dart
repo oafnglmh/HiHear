@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:hihear_mo/core/error/failures.dart';
-import 'package:hihear_mo/domain/entities/user_entity.dart';
+import 'package:hihear_mo/domain/entities/user/user_entity.dart';
 import 'package:hihear_mo/domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 

@@ -202,12 +202,12 @@ _$AddOrUpdateCountryCopyWith<_AddOrUpdateCountry> get copyWith => __$AddOrUpdate
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddOrUpdateCountry&&(identical(other.countryEntity, countryEntity) || other.countryEntity == countryEntity));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddOrUpdateCountry&&const DeepCollectionEquality().equals(other.countryEntity, countryEntity));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,countryEntity);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(countryEntity));
 
 @override
 String toString() {
@@ -226,7 +226,7 @@ $Res call({
 });
 
 
-$CountryEntityCopyWith<$Res> get countryEntity;
+
 
 }
 /// @nodoc
@@ -239,23 +239,14 @@ class __$AddOrUpdateCountryCopyWithImpl<$Res>
 
 /// Create a copy of CountryEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? countryEntity = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? countryEntity = freezed,}) {
   return _then(_AddOrUpdateCountry(
-null == countryEntity ? _self.countryEntity : countryEntity // ignore: cast_nullable_to_non_nullable
+freezed == countryEntity ? _self.countryEntity : countryEntity // ignore: cast_nullable_to_non_nullable
 as CountryEntity,
   ));
 }
 
-/// Create a copy of CountryEvent
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CountryEntityCopyWith<$Res> get countryEntity {
-  
-  return $CountryEntityCopyWith<$Res>(_self.countryEntity, (value) {
-    return _then(_self.copyWith(countryEntity: value));
-  });
-}
+
 }
 
 /// @nodoc

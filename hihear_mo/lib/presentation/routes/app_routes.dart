@@ -31,7 +31,7 @@ class AppRoutes {
   static const speaking = '/speaking';
   static const profile = '/profile';
   static const languageCountry = '/languageCountry';
-  static const vocab = '/vocab';
+  static const vocab = '/vocab/:id';
 }
 
 class AppRouter {
@@ -115,7 +115,10 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.vocab,
           name: 'vocab',
-          builder: (context, state) => const VocabLessonPage(),
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return VocabLessonPage(id: id);
+          },
         ),
       ],
     );
