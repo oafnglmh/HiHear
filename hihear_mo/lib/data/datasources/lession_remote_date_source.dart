@@ -14,7 +14,7 @@ class LessionRemoteDataSource {
       throw Exception('User chưa login hoặc token chưa được lưu.');
     }
     // final national = UserShare().national;`
-    final national = "Korea";
+    final national = "UK";
     print("National from UserShare: $national");
     final response = await _dio.get(
       'lessons',

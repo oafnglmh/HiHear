@@ -6,6 +6,7 @@ import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
 import 'package:hihear_mo/presentation/pages/Goal/start_app_page.dart';
 import 'package:hihear_mo/presentation/pages/country/country_selection_page.dart';
 import 'package:hihear_mo/presentation/pages/home/home_page.dart';
+import 'package:hihear_mo/presentation/pages/lession/grammar/grammar_lesson_page.dart';
 import 'package:hihear_mo/presentation/pages/lession/vocabulary/vocab_lesson_page.dart';
 import 'package:hihear_mo/presentation/pages/login/login_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const profile = '/profile';
   static const languageCountry = '/languageCountry';
   static const vocab = '/vocab/:id';
+  static const grammar = '/grammar/:id';
 }
 
 class AppRouter {
@@ -118,6 +120,14 @@ class AppRouter {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return VocabLessonPage(id: id);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.grammar,
+          name: 'grammar',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return GrammarLessonPage(id: id);
           },
         ),
       ],

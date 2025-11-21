@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
+import 'package:hihear_mo/core/constants/category.dart';
 import 'package:hihear_mo/core/helper/lesson_helper.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
@@ -13,6 +14,7 @@ import 'package:hihear_mo/presentation/pages/HearuAi/ai_chat_page.dart';
 import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
 import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
+import 'package:hihear_mo/share/UserShare.dart';
 import '../../../../core/constants/app_assets.dart';
 
 class HomePage extends StatefulWidget {
@@ -689,10 +691,15 @@ class _StartButton extends StatelessWidget {
   final AppLocalizations l10n;
   final List<Color> colors;
   final LessionEntity lesson;
-  const _StartButton({required this.l10n, required this.colors, required this.lesson});
+  const _StartButton({
+    required this.l10n,
+    required this.colors,
+    required this.lesson,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final national = UserShare().national;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: AppPadding.small + 3),
@@ -709,8 +716,11 @@ class _StartButton extends StatelessWidget {
       ),
       child: GestureDetector(
         onTap: () {
-          context.go('/vocab/${lesson.id}');
-
+          if (lesson.category == Category.grammar) {
+            context.go('/grammar/${lesson.id}');
+          } else if (lesson.category == Category.vocab) {
+            context.go('/vocab/${lesson.id}');
+          }
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

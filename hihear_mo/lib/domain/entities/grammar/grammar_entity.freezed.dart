@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GrammarEntity {
 
- String get id; String get question; String get answer;
+ String get id; String get grammarRule; String get example; String get meaning; DateTime get createdAt; DateTime get updatedAt;
 /// Create a copy of GrammarEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $GrammarEntityCopyWith<GrammarEntity> get copyWith => _$GrammarEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrammarEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrammarEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.grammarRule, grammarRule) || other.grammarRule == grammarRule)&&(identical(other.example, example) || other.example == example)&&(identical(other.meaning, meaning) || other.meaning == meaning)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,question,answer);
+int get hashCode => Object.hash(runtimeType,id,grammarRule,example,meaning,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'GrammarEntity(id: $id, question: $question, answer: $answer)';
+  return 'GrammarEntity(id: $id, grammarRule: $grammarRule, example: $example, meaning: $meaning, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $GrammarEntityCopyWith<$Res>  {
   factory $GrammarEntityCopyWith(GrammarEntity value, $Res Function(GrammarEntity) _then) = _$GrammarEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String question, String answer
+ String id, String grammarRule, String example, String meaning, DateTime createdAt, DateTime updatedAt
 });
 
 
@@ -65,12 +65,15 @@ class _$GrammarEntityCopyWithImpl<$Res>
 
 /// Create a copy of GrammarEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? question = null,Object? answer = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? grammarRule = null,Object? example = null,Object? meaning = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
-as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
-as String,
+as String,grammarRule: null == grammarRule ? _self.grammarRule : grammarRule // ignore: cast_nullable_to_non_nullable
+as String,example: null == example ? _self.example : example // ignore: cast_nullable_to_non_nullable
+as String,meaning: null == meaning ? _self.meaning : meaning // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 
@@ -155,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String question,  String answer)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String grammarRule,  String example,  String meaning,  DateTime createdAt,  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GrammarEntity() when $default != null:
-return $default(_that.id,_that.question,_that.answer);case _:
+return $default(_that.id,_that.grammarRule,_that.example,_that.meaning,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -176,10 +179,10 @@ return $default(_that.id,_that.question,_that.answer);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String question,  String answer)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String grammarRule,  String example,  String meaning,  DateTime createdAt,  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _GrammarEntity():
-return $default(_that.id,_that.question,_that.answer);case _:
+return $default(_that.id,_that.grammarRule,_that.example,_that.meaning,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +199,10 @@ return $default(_that.id,_that.question,_that.answer);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String question,  String answer)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String grammarRule,  String example,  String meaning,  DateTime createdAt,  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _GrammarEntity() when $default != null:
-return $default(_that.id,_that.question,_that.answer);case _:
+return $default(_that.id,_that.grammarRule,_that.example,_that.meaning,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -211,12 +214,15 @@ return $default(_that.id,_that.question,_that.answer);case _:
 @JsonSerializable()
 
 class _GrammarEntity implements GrammarEntity {
-  const _GrammarEntity({required this.id, required this.question, required this.answer});
+  const _GrammarEntity({required this.id, required this.grammarRule, required this.example, required this.meaning, required this.createdAt, required this.updatedAt});
   factory _GrammarEntity.fromJson(Map<String, dynamic> json) => _$GrammarEntityFromJson(json);
 
 @override final  String id;
-@override final  String question;
-@override final  String answer;
+@override final  String grammarRule;
+@override final  String example;
+@override final  String meaning;
+@override final  DateTime createdAt;
+@override final  DateTime updatedAt;
 
 /// Create a copy of GrammarEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GrammarEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GrammarEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.grammarRule, grammarRule) || other.grammarRule == grammarRule)&&(identical(other.example, example) || other.example == example)&&(identical(other.meaning, meaning) || other.meaning == meaning)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,question,answer);
+int get hashCode => Object.hash(runtimeType,id,grammarRule,example,meaning,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'GrammarEntity(id: $id, question: $question, answer: $answer)';
+  return 'GrammarEntity(id: $id, grammarRule: $grammarRule, example: $example, meaning: $meaning, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -251,7 +257,7 @@ abstract mixin class _$GrammarEntityCopyWith<$Res> implements $GrammarEntityCopy
   factory _$GrammarEntityCopyWith(_GrammarEntity value, $Res Function(_GrammarEntity) _then) = __$GrammarEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String question, String answer
+ String id, String grammarRule, String example, String meaning, DateTime createdAt, DateTime updatedAt
 });
 
 
@@ -268,12 +274,15 @@ class __$GrammarEntityCopyWithImpl<$Res>
 
 /// Create a copy of GrammarEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? question = null,Object? answer = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? grammarRule = null,Object? example = null,Object? meaning = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_GrammarEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
-as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
-as String,
+as String,grammarRule: null == grammarRule ? _self.grammarRule : grammarRule // ignore: cast_nullable_to_non_nullable
+as String,example: null == example ? _self.example : example // ignore: cast_nullable_to_non_nullable
+as String,meaning: null == meaning ? _self.meaning : meaning // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 
