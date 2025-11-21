@@ -12,6 +12,7 @@ _UserEntity _$UserEntityFromJson(Map<String, dynamic> json) => _UserEntity(
   email: json['email'] as String?,
   photoUrl: json['photoUrl'] as String?,
   national: json['national'] as String?,
+  streakDays: (json['streakDays'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$UserEntityToJson(_UserEntity instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$UserEntityToJson(_UserEntity instance) =>
       'email': instance.email,
       'photoUrl': instance.photoUrl,
       'national': instance.national,
+      'streakDays': instance.streakDays,
     };

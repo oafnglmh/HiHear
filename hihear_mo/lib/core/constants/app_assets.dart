@@ -36,4 +36,5 @@ class AppAssets {
   static const String successAnimation = "$animationGif/success.json";
   static const String errorAnimation = "$animationGif/error.json";
   static const String passAnimation = "$animationGif/pass.json";
+  static const String streakAnimation ="$animationGif/streak.json";
 }

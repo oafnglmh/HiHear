@@ -98,6 +98,39 @@ class AuthRemoteDataSource {
     }
   }
 
+  /// Update streak
+  Future<UserEntity> addStreak(int streak) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User chưa login hoặc token chưa được lưu.');
+    }
+
+    try {
+      final payload = {'streakDays': streak};
+      print('Payload gửi lên backend: $payload');
+
+      final response = await _dioProfile.patch(
+        '/me',
+        data: payload,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Backend trả về lỗi: ${response.statusCode}');
+      }
+
+      return UserEntity.fromJson(response.data);
+    } catch (e) {
+      print('Lỗi gọi backend: $e');
+      throw Exception('Lỗi khi gọi backend: $e');
+    }
+  }
+
   /// Login Facebook
   Future<UserEntity> loginWithFacebook() async {
     try {
