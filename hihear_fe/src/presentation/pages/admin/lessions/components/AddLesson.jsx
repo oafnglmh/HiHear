@@ -5,6 +5,7 @@ import QuestionForm from "./QuestionForm";
 import GrammarForm from "./GrammarForm";
 import PronunciationForm from "./PronunciationForm";
 import ListeningForm from "./ListeningForm";
+import VideoForm from "./VideoForm";
 import { saveLesson, editLesson } from "../services/lessonService";
 import toast from "react-hot-toast";
 import "../css/Lessons.css";
@@ -15,6 +16,7 @@ const CATEGORIES = {
   GRAMMAR: "Ngữ pháp",
   PRONUNCIATION: "Phát Âm",
   LISTENING: "Nghe hiểu",
+  VIDEO: "Video",
 };
 
 const LEVELS = ["Dễ", "Trung bình", "Khó"];
@@ -44,7 +46,6 @@ const translateText = async (text, targetLangCode) => {
   }
 };
 
-// Batch translate multiple texts
 const batchTranslate = async (texts, targetLangCode) => {
   return Promise.all(texts.map((text) => translateText(text, targetLangCode)));
 };
@@ -150,6 +151,15 @@ const ListeningContent = memo(({ listenings, setListenings }) => (
   </div>
 ));
 
+const VideoContent = memo(({ videoData, setVideoData }) => (
+  <div className="category-content-wrapper">
+    <VideoForm
+      videoData={videoData}
+      setVideoData={setVideoData}
+    />
+  </div>
+));
+
 // ============= MAIN COMPONENT =============
 export default function AddLesson({
   onClose,
@@ -187,6 +197,7 @@ export default function AddLesson({
   const [description, setDescription] = useState("");
   const [prerequisiteLesson, setPrerequisiteLesson] = useState(null);
   const [listenings, setListenings] = useState([]);
+  const [videoData, setVideoData] = useState(null);
 
   const {
     isTranslating,
@@ -212,6 +223,7 @@ export default function AddLesson({
     setPronunciationExamples(editingLesson.pronunciationExamples || []);
     setPronunciationOrder(editingLesson.pronunciationOrder || 1);
     setListenings(editingLesson.listenings || []);
+    setVideoData(editingLesson.videoData || null);
   }, [editingLesson]);
 
   // ============= BUILD EXERCISES =============
@@ -286,6 +298,35 @@ export default function AddLesson({
           ];
         }
 
+        case CATEGORIES.VIDEO: {
+          if (!videoData?.transcriptions) return [];
+          
+          // Get transcriptions for the specific language
+          const transcriptions = videoData.transcriptions.map(item => {
+            const langKey = langCode === "vi" ? "vi" : 
+                           langCode === "en" ? "en" : "ko";
+            return {
+              text: item[langKey],
+              timestamp: item.timestamp || ""
+            };
+          });
+
+          return [
+            {
+              type: "video",
+              points: 0,
+              national: langCode,
+              vocabularies: [],
+              grammars: [],
+              listenings: [],
+              videoContent: {
+                fileName: videoData.fileName,
+                transcriptions: transcriptions
+              }
+            },
+          ];
+        }
+
         default:
           return [];
       }
@@ -296,6 +337,7 @@ export default function AddLesson({
       grammarExamples,
       listenings,
       pronunciationExamples,
+      videoData,
       description,
     ]
   );
@@ -318,6 +360,10 @@ export default function AddLesson({
             choices: l.choices || [],
             correctAnswer: l.correctAnswer || "",
           }));
+
+        case CATEGORIES.VIDEO:
+          // Video already has all language transcriptions
+          return null;
 
         default:
           return null;
@@ -484,6 +530,14 @@ export default function AddLesson({
           />
         );
 
+      case CATEGORIES.VIDEO:
+        return (
+          <VideoContent
+            videoData={videoData}
+            setVideoData={setVideoData}
+          />
+        );
+
       default:
         return null;
     }
@@ -495,6 +549,7 @@ export default function AddLesson({
     pronunciationOrder,
     pronunciationExamples,
     listenings,
+    videoData,
     handleChangeQuestion,
     handleDeleteQuestion,
     handleAddQuestion,
@@ -502,6 +557,7 @@ export default function AddLesson({
     setPronunciationOrder,
     setPronunciationExamples,
     setListenings,
+    setVideoData,
   ]);
 
   // ============= CATEGORY TITLE =============
@@ -515,6 +571,8 @@ export default function AddLesson({
         return "🗣️ Nội dung phát âm";
       case CATEGORIES.LISTENING:
         return "👂 Nội dung nghe hiểu";
+      case CATEGORIES.VIDEO:
+        return "🎥 Nội dung video";
       default:
         return "";
     }
