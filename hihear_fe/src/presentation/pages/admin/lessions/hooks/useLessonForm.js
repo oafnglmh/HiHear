@@ -9,7 +9,7 @@ export function useLessonForm() {
   const [level, setLevel] = useState("Dễ");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-
+  const [listenings, setListenings] = useState([]);
   // ================== VOCABULARY ==================
   const [questions, setQuestions] = useState([
     { id: 1, text: "", optionA: "", optionB: "", correct: "A" },
@@ -114,5 +114,7 @@ export function useLessonForm() {
     handleAddPronunciationExample,
     handleDeletePronunciationExample,
     handleChangePronunciationExample,
+    listenings,
+    setListenings
   };
 }

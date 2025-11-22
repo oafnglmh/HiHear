@@ -25,20 +25,19 @@
 
 /* Background pattern tre */
 .lesson-admin-container::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 50px,
-      rgba(107, 142, 35, 0.02) 50px,
-      rgba(107, 142, 35, 0.02) 52px
-    );
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 50px,
+    rgba(107, 142, 35, 0.02) 50px,
+    rgba(107, 142, 35, 0.02) 52px
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -52,7 +51,11 @@
 /* Header Section */
 /* ==================== */
 .lesson-header {
-  background: linear-gradient(135deg, var(--bamboo-green) 0%, var(--bamboo-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bamboo-green) 0%,
+    var(--bamboo-light) 100%
+  );
   padding: 32px;
   border-radius: 20px;
   margin-bottom: 32px;
@@ -66,7 +69,7 @@
 }
 
 .lesson-header::before {
-  content: '📚';
+  content: "📚";
   position: absolute;
   font-size: 120px;
   right: -20px;
@@ -86,7 +89,7 @@
 }
 
 .lesson-header h2::before {
-  content: '🎋 ';
+  content: "🎋 ";
   animation: bambooSway 3s ease-in-out infinite;
 }
 
@@ -137,31 +140,35 @@
 }
 
 .lesson-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 20px,
-      rgba(255, 255, 255, 0.05) 20px,
-      rgba(255, 255, 255, 0.05) 22px
-    );
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    rgba(255, 255, 255, 0.05) 20px,
+    rgba(255, 255, 255, 0.05) 22px
+  );
   pointer-events: none;
 }
 
 .lesson-card::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, transparent, var(--vietnam-gold) 50%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--vietnam-gold) 50%,
+    transparent
+  );
   transform: scaleX(0);
   transition: transform 0.4s ease;
 }
@@ -324,7 +331,7 @@
 }
 
 .modal-header::before {
-  content: '🎋';
+  content: "🎋";
   position: absolute;
   font-size: 100px;
   right: -20px;
@@ -381,7 +388,7 @@
 }
 
 .lesson-detail-modal h4::before {
-  content: '📝 ';
+  content: "📝 ";
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -426,7 +433,7 @@
 }
 
 .question-list .question-item p::before {
-  content: '▸';
+  content: "▸";
   position: absolute;
   left: 0;
   color: var(--bamboo-light);
@@ -443,7 +450,7 @@
 }
 
 .correct-answer::before {
-  content: '✓' !important;
+  content: "✓" !important;
   color: #16a34a !important;
   font-size: 18px;
 }
@@ -511,7 +518,7 @@
 }
 
 .lesson-form label::before {
-  content: '🎋';
+  content: "🎋";
   position: absolute;
   left: 0;
   font-size: 16px;
@@ -570,7 +577,7 @@
 
 .lesson-form h4::before,
 .section-title::before {
-  content: '📝';
+  content: "📝";
   position: absolute;
   left: 0;
   animation: bounce 2s ease-in-out infinite;
@@ -667,7 +674,7 @@
 }
 
 .question-item label::before {
-  content: '' !important;
+  content: "" !important;
 }
 
 .question-item select {
@@ -824,8 +831,12 @@
 /* Animations */
 /* ==================== */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideDown {
@@ -851,19 +862,36 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 @keyframes bambooSway {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-5deg); }
-  75% { transform: rotate(5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .animate-slide-up {
@@ -962,7 +990,7 @@
 .delete-popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -999,4 +1027,24 @@
   border-radius: 8px;
   border: none;
   cursor: pointer;
+}
+/* Tắt animations khi typing */
+.lesson-form input:focus,
+.lesson-form textarea:focus,
+.lesson-form select:focus {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  /* Giảm thời gian transition từ 0.3s xuống 0.15s */
+}
+
+/* Smooth scroll cho modal */
+.add-lesson-modal {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  will-change: transform;
+}
+
+/* Performance optimization */
+.category-content-wrapper {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }

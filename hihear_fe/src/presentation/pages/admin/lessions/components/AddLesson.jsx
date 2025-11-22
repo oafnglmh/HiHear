@@ -1,30 +1,156 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { X, Save, Plus } from "lucide-react";
 import { useLessonForm } from "../hooks/useLessonForm";
 import QuestionForm from "./QuestionForm";
 import GrammarForm from "./GrammarForm";
 import PronunciationForm from "./PronunciationForm";
+import ListeningForm from "./ListeningForm";
 import { saveLesson, editLesson } from "../services/lessonService";
 import toast from "react-hot-toast";
 import "../css/Lessons.css";
 
-const translateText = async (text, targetLang) => {
-  try {
-    const langCode = targetLang === "Tiếng Hàn" ? "ko" : "en";
-    const encodedText = encodeURIComponent(text);
-    const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=vi|${langCode}`;
+// ============= CONSTANTS =============
+const CATEGORIES = {
+  VOCABULARY: "Từ vựng",
+  GRAMMAR: "Ngữ pháp",
+  PRONUNCIATION: "Phát Âm",
+  LISTENING: "Nghe hiểu",
+};
 
+const LEVELS = ["Dễ", "Trung bình", "Khó"];
+
+const LANGUAGES = [
+  { code: "Vietnam", name: "Tiếng Việt", langCode: "vi" },
+  { code: "Korea", name: "Tiếng Hàn", langCode: "ko" },
+  { code: "UK", name: "Tiếng Anh", langCode: "en" },
+];
+
+// ============= UTILITIES =============
+const translateText = async (text, targetLangCode) => {
+  if (!text?.trim()) return text;
+
+  try {
+    const encodedText = encodeURIComponent(text);
+    const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=vi|${targetLangCode}`;
     const response = await fetch(url);
     const data = await response.json();
 
-    if (data.responseStatus === 200) return data.responseData.translatedText;
-    return text;
+    return data.responseStatus === 200
+      ? data.responseData.translatedText
+      : text;
   } catch (error) {
     console.error("Translation error:", error);
     return text;
   }
 };
 
+// Batch translate multiple texts
+const batchTranslate = async (texts, targetLangCode) => {
+  return Promise.all(texts.map((text) => translateText(text, targetLangCode)));
+};
+
+// ============= CUSTOM HOOKS =============
+const useTranslation = () => {
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const translateVocabulary = useCallback(async (questions, langCode) => {
+    const allOptions = questions.flatMap((q) => [q.optionA, q.optionB]);
+    const translated = await batchTranslate(allOptions, langCode);
+
+    return questions.map((q, idx) => ({
+      ...q,
+      optionA: translated[idx * 2],
+      optionB: translated[idx * 2 + 1],
+    }));
+  }, []);
+
+  const translateGrammar = useCallback(async (examples, langCode) => {
+    const meanings = examples.map((ex) => ex.meaning);
+    const translated = await batchTranslate(meanings, langCode);
+
+    return examples.map((ex, idx) => ({
+      ...ex,
+      meaning: translated[idx],
+    }));
+  }, []);
+
+  return {
+    isTranslating,
+    setIsTranslating,
+    translateVocabulary,
+    translateGrammar,
+  };
+};
+
+// ============= MEMOIZED COMPONENTS =============
+const VocabularyContent = memo(({ 
+  questions, 
+  handleChangeQuestion, 
+  handleDeleteQuestion, 
+  handleAddQuestion 
+}) => (
+  <div className="category-content-wrapper">
+    {questions.map((q) => (
+      <QuestionForm
+        key={q.id}
+        q={q}
+        onChange={handleChangeQuestion}
+        onDelete={handleDeleteQuestion}
+      />
+    ))}
+    <button
+      type="button"
+      className="add-question-btn"
+      onClick={handleAddQuestion}
+    >
+      <Plus size={20} />
+      Thêm câu hỏi
+    </button>
+  </div>
+));
+
+const GrammarContent = memo(({ 
+  description, 
+  setDescription, 
+  grammarExamples, 
+  setGrammarExamples 
+}) => (
+  <div className="category-content-wrapper">
+    <GrammarForm
+      grammarRule={description}
+      setGrammarRule={setDescription}
+      examples={grammarExamples}
+      setExamples={setGrammarExamples}
+    />
+  </div>
+));
+
+const PronunciationContent = memo(({ 
+  pronunciationOrder, 
+  setPronunciationOrder, 
+  pronunciationExamples, 
+  setPronunciationExamples 
+}) => (
+  <div className="category-content-wrapper">
+    <PronunciationForm
+      order={pronunciationOrder}
+      setOrder={setPronunciationOrder}
+      examples={pronunciationExamples}
+      setExamples={setPronunciationExamples}
+    />
+  </div>
+));
+
+const ListeningContent = memo(({ listenings, setListenings }) => (
+  <div className="category-content-wrapper">
+    <ListeningForm
+      listenings={listenings}
+      setListenings={setListenings}
+    />
+  </div>
+));
+
+// ============= MAIN COMPONENT =============
 export default function AddLesson({
   onClose,
   onSave,
@@ -47,14 +173,10 @@ export default function AddLesson({
     handleAddQuestion,
     handleDeleteQuestion,
     handleChangeQuestion,
-
-    // Grammar
     grammarExamples,
     setGrammarExamples,
     grammarRule,
     setGrammarRule,
-
-    // Pronunciation
     pronunciationExamples,
     setPronunciationExamples,
     pronunciationOrder,
@@ -64,9 +186,16 @@ export default function AddLesson({
   const [type, setType] = useState("Từ vựng");
   const [description, setDescription] = useState("");
   const [prerequisiteLesson, setPrerequisiteLesson] = useState(null);
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [listenings, setListenings] = useState([]);
 
-  // =============== LOAD EDITING LESSON ===================
+  const {
+    isTranslating,
+    setIsTranslating,
+    translateVocabulary,
+    translateGrammar,
+  } = useTranslation();
+
+  // ============= LOAD EDITING LESSON =============
   useEffect(() => {
     if (!editingLesson) return;
 
@@ -77,298 +206,411 @@ export default function AddLesson({
     setDescription(editingLesson.description || "");
     setPrerequisiteLesson(editingLesson.prerequisiteLesson || null);
     setType(editingLesson.type || "Từ vựng");
-
     setQuestions(editingLesson.questions || []);
-
     setGrammarRule(editingLesson.grammarRule || "");
     setGrammarExamples(editingLesson.grammarExamples || []);
-
     setPronunciationExamples(editingLesson.pronunciationExamples || []);
     setPronunciationOrder(editingLesson.pronunciationOrder || 1);
+    setListenings(editingLesson.listenings || []);
   }, [editingLesson]);
 
-  // ==========================================================
-  // BUILD EXERCISES
-  // ==========================================================
-  const buildExercises = (lang = "Vietnam", translatedData = null) => {
-    if (category === "Từ vựng") {
-      const questionsToUse = translatedData || questions;
-      return [
-        {
-          type: "mcq",
-          points: 5,
-          national: lang,
-          vocabularies: questionsToUse.map((q) => ({
-            question: q.text,
-            choices: [q.optionA, q.optionB],
-            correctAnswer: q.correct === "A" ? q.optionA : q.optionB,
-          })),
-        },
-      ];
-    }
-
-    if (category === "Ngữ pháp") {
-      const examplesToUse = translatedData || grammarExamples;
-
-      return [
-        {
-          type: "mcq",
-          points: 0,
-          national: lang,
-          vocabularies: [],
-          grammars: examplesToUse.map((ex) => ({
-            grammarRule: description, // mô tả chung
-            example: ex.example, // 1 ví dụ
-            meaning: ex.meaning, // ý nghĩa ví dụ
-          })),
-        },
-      ];
-    }
-
-    if (category === "Phát Âm") {
-      return [
-        {
-          type: "listening",
-          points: 0,
-          national: lang,
-          vocabularies: [],
-          grammars: [],
-          listenings: pronunciationExamples.map((ex) => ({
-            example: ex.text,
-            meaning: "",
-          })),
-        },
-      ];
-    }
-
-    return [];
-  };
-
-  // ============= TRANSLATION HELPERS =======================
-
-  const translateVocabularyQuestions = async (targetLang) => {
-    return Promise.all(
-      questions.map(async (q) => {
-        const translatedOptionA = await translateText(q.optionA, targetLang);
-        const translatedOptionB = await translateText(q.optionB, targetLang);
-
-        return {
-          ...q,
-          optionA: translatedOptionA,
-          optionB: translatedOptionB,
-        };
-      })
-    );
-  };
-
-  const translateGrammarExamples = async (targetLang) => {
-    return Promise.all(
-      grammarExamples.map(async (ex) => {
-        const translatedMeaning = await translateText(ex.meaning, targetLang);
-        return {
-          ...ex,
-          meaning: translatedMeaning,
-        };
-      })
-    );
-  };
-
-  // ==========================================================
-  // SUBMIT
-  // ==========================================================
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // UPDATE LESSON
-    if (editingLesson) {
-      const payload = {
-        title,
-        description,
-        category,
-        level,
-        prerequisiteLesson,
-        mediaId: preview || null,
-        exercises: buildExercises("Vietnam"),
+  // ============= BUILD EXERCISES =============
+  const buildExercises = useCallback(
+    (langCode, translatedData = null) => {
+      const baseExercise = {
+        type: "mcq",
+        points: 0,
+        national: langCode,
+        vocabularies: [],
+        grammars: [],
+        listenings: [],
       };
 
-      try {
-        const result = await editLesson(payload, id);
-        toast.success("Cập nhật thành công!");
-        onSave(result.data);
-        onClose();
-      } catch (err) {
-        toast.error("Cập nhật thất bại!");
-        console.error(err);
-      }
-      return;
-    }
-
-    // CREATE MULTI-LANG
-    setIsTranslating(true);
-    toast.loading("Đang tạo bài học đa ngôn ngữ...");
-
-    try {
-      const languages = [
-        { code: "Vietnam", name: "Tiếng Việt" },
-        { code: "Korea", name: "Tiếng Hàn" },
-        { code: "UK", name: "Tiếng Anh" },
-      ];
-
-      for (const lang of languages) {
-        let translatedData = null;
-        let translatedTitle = title;
-
-        if (lang.code !== "Vietnam") {
-          translatedTitle = await translateText(title, lang.name);
-
-          if (category === "Từ vựng") {
-            translatedData = await translateVocabularyQuestions(lang.name);
-          } else if (category === "Ngữ pháp") {
-            translatedData = await translateGrammarExamples(lang.name);
-          }
+      switch (category) {
+        case CATEGORIES.VOCABULARY: {
+          const questionsToUse = translatedData || questions;
+          return [
+            {
+              ...baseExercise,
+              points: 5,
+              vocabularies: questionsToUse.map((q) => ({
+                question: q.text,
+                choices: [q.optionA, q.optionB],
+                correctAnswer: q.correct === "A" ? q.optionA : q.optionB,
+              })),
+            },
+          ];
         }
 
-        const payload = {
-          title: translatedTitle,
-          description,
-          category,
-          level,
-          prerequisiteLesson,
-          mediaId: preview || null,
-          exercises: buildExercises(lang.code, translatedData),
-        };
-        console.log("payload",payload);
-        await saveLesson(payload);
-      }
+        case CATEGORIES.GRAMMAR: {
+          const examplesToUse = translatedData || grammarExamples;
+          return [
+            {
+              ...baseExercise,
+              grammars: examplesToUse.map((ex) => ({
+                grammarRule: description,
+                example: ex.example,
+                meaning: ex.meaning,
+              })),
+            },
+          ];
+        }
 
-      toast.dismiss();
-      toast.success("Tạo thành công 3 phiên bản ngôn ngữ!");
+        case CATEGORIES.LISTENING: {
+          return [
+            {
+              ...baseExercise,
+              listenings: listenings.map((l) => ({
+                transcript: l.transcript,
+                choices: l.choices,
+                correctAnswer: l.correctAnswer,
+                mediaId: null,
+              })),
+            },
+          ];
+        }
+
+        case CATEGORIES.PRONUNCIATION: {
+          return [
+            {
+              type: "listening",
+              points: 0,
+              national: langCode,
+              vocabularies: [],
+              grammars: [],
+              listenings: pronunciationExamples.map((ex) => ({
+                example: ex.text,
+                meaning: "",
+              })),
+            },
+          ];
+        }
+
+        default:
+          return [];
+      }
+    },
+    [
+      category,
+      questions,
+      grammarExamples,
+      listenings,
+      pronunciationExamples,
+      description,
+    ]
+  );
+
+  // ============= GET TRANSLATED DATA =============
+  const getTranslatedData = useCallback(
+    async (langCode) => {
+      if (langCode === "vi") return null;
+
+      switch (category) {
+        case CATEGORIES.VOCABULARY:
+          return await translateVocabulary(questions, langCode);
+
+        case CATEGORIES.GRAMMAR:
+          return await translateGrammar(grammarExamples, langCode);
+
+        case CATEGORIES.LISTENING:
+          return listenings.map((l) => ({
+            transcript: l.transcript || "",
+            choices: l.choices || [],
+            correctAnswer: l.correctAnswer || "",
+          }));
+
+        default:
+          return null;
+      }
+    },
+    [
+      category,
+      questions,
+      grammarExamples,
+      listenings,
+      translateVocabulary,
+      translateGrammar,
+    ]
+  );
+
+  // ============= CREATE LESSON PAYLOAD =============
+  const createLessonPayload = useCallback(
+    (translatedTitle, langCode, translatedData) => ({
+      title: translatedTitle,
+      description,
+      category,
+      level,
+      prerequisiteLesson,
+      mediaId: preview || null,
+      exercises: buildExercises(langCode, translatedData),
+    }),
+    [description, category, level, prerequisiteLesson, preview, buildExercises]
+  );
+
+  // ============= HANDLE UPDATE =============
+  const handleUpdate = useCallback(async () => {
+    const payload = createLessonPayload(title, "Vietnam", null);
+
+    try {
+      const result = await editLesson(payload, id);
+      toast.success("Cập nhật thành công!");
+      onSave(result.data);
+      onClose();
+    } catch (err) {
+      toast.error("Cập nhật thất bại!");
+      console.error(err);
+    }
+  }, [createLessonPayload, title, id, onSave, onClose]);
+
+  // ============= HANDLE CREATE =============
+  const handleCreate = useCallback(async () => {
+    setIsTranslating(true);
+    const toastId = toast.loading("Đang tạo bài học đa ngôn ngữ...");
+
+    try {
+      await Promise.all(
+        LANGUAGES.map(async (lang) => {
+          const translatedTitle =
+            lang.langCode === "vi"
+              ? title
+              : await translateText(title, lang.langCode);
+
+          const translatedData = await getTranslatedData(lang.langCode);
+          const payload = createLessonPayload(
+            translatedTitle,
+            lang.code,
+            translatedData
+          );
+
+          console.log(`Payload for ${lang.name}:`, payload);
+          return saveLesson(payload);
+        })
+      );
+
+      toast.success("Tạo thành công 3 phiên bản ngôn ngữ!", { id: toastId });
       onSave({ success: true });
       onClose();
     } catch (err) {
-      toast.dismiss();
-      toast.error("Có lỗi xảy ra khi tạo bài học!");
+      toast.error("Có lỗi xảy ra khi tạo bài học!", { id: toastId });
       console.error(err);
     } finally {
       setIsTranslating(false);
     }
-  };
+  }, [
+    title,
+    getTranslatedData,
+    createLessonPayload,
+    onSave,
+    onClose,
+    setIsTranslating,
+  ]);
 
-  // ==========================================================
-  // RENDER
-  // ==========================================================
+  // ============= HANDLE SUBMIT =============
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (editingLesson) {
+        await handleUpdate();
+      } else {
+        await handleCreate();
+      }
+    },
+    [editingLesson, handleUpdate, handleCreate]
+  );
 
+  // ============= MEMOIZED HANDLERS =============
+  const handleTitleChange = useCallback((e) => {
+    setTitle(e.target.value);
+  }, [setTitle]);
+
+  const handleDescriptionChange = useCallback((e) => {
+    setDescription(e.target.value);
+  }, []);
+
+  const handleTypeChange = useCallback((e) => {
+    setType(e.target.value);
+  }, []);
+
+  const handleLevelChange = useCallback((e) => {
+    setLevel(e.target.value);
+  }, [setLevel]);
+
+  const handlePrerequisiteChange = useCallback((e) => {
+    setPrerequisiteLesson(e.target.value || null);
+  }, []);
+
+  const handleCategoryChange = useCallback((e) => {
+    setCategory(e.target.value);
+  }, [setCategory]);
+
+  // ============= RENDER CATEGORY CONTENT =============
+  const renderCategoryContent = useMemo(() => {
+    switch (category) {
+      case CATEGORIES.VOCABULARY:
+        return (
+          <VocabularyContent
+            questions={questions}
+            handleChangeQuestion={handleChangeQuestion}
+            handleDeleteQuestion={handleDeleteQuestion}
+            handleAddQuestion={handleAddQuestion}
+          />
+        );
+
+      case CATEGORIES.GRAMMAR:
+        return (
+          <GrammarContent
+            description={description}
+            setDescription={setDescription}
+            grammarExamples={grammarExamples}
+            setExamples={setGrammarExamples}
+          />
+        );
+
+      case CATEGORIES.PRONUNCIATION:
+        return (
+          <PronunciationContent
+            pronunciationOrder={pronunciationOrder}
+            setPronunciationOrder={setPronunciationOrder}
+            pronunciationExamples={pronunciationExamples}
+            setPronunciationExamples={setPronunciationExamples}
+          />
+        );
+
+      case CATEGORIES.LISTENING:
+        return (
+          <ListeningContent
+            listenings={listenings}
+            setListenings={setListenings}
+          />
+        );
+
+      default:
+        return null;
+    }
+  }, [
+    category,
+    questions,
+    description,
+    grammarExamples,
+    pronunciationOrder,
+    pronunciationExamples,
+    listenings,
+    handleChangeQuestion,
+    handleDeleteQuestion,
+    handleAddQuestion,
+    setGrammarExamples,
+    setPronunciationOrder,
+    setPronunciationExamples,
+    setListenings,
+  ]);
+
+  // ============= CATEGORY TITLE =============
+  const categoryTitle = useMemo(() => {
+    switch (category) {
+      case CATEGORIES.VOCABULARY:
+        return "📝 Nội dung từ vựng";
+      case CATEGORIES.GRAMMAR:
+        return "📚 Nội dung ngữ pháp";
+      case CATEGORIES.PRONUNCIATION:
+        return "🗣️ Nội dung phát âm";
+      case CATEGORIES.LISTENING:
+        return "👂 Nội dung nghe hiểu";
+      default:
+        return "";
+    }
+  }, [category]);
+
+  // ============= RENDER =============
   return (
     <div className="add-lesson-overlay">
-      <div className="add-lesson-modal animate-slide-up">
+      <div className="add-lesson-modal">
         <div className="modal-header">
-          <h3>{editingLesson ? "Cập nhật bài học" : "Thêm bài học mới"}</h3>
-          <button className="close-btn" onClick={onClose}>
-            <X size={20} />
+          <h2>{editingLesson ? "Cập nhật bài học" : "Thêm bài học mới"}</h2>
+          <button className="close-btn" onClick={onClose} type="button">
+            <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="lesson-form">
-          {/* Title */}
-          <label>Tên bài học:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+          <div className="form-section">
+            <label>Tên bài học:</label>
+            <input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              required
+              placeholder="Nhập tên bài học..."
+            />
+          </div>
 
-          {/* Description */}
-          <label>Mô tả:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
+          <div className="form-section">
+            <label>Mô tả:</label>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              rows={3}
+              placeholder="Nhập mô tả bài học..."
+            />
+          </div>
 
-          {/* Type */}
-          <label>Phân loại chi tiết:</label>
-          <input
-            type="text"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            required
-          />
-
-          {/* Level */}
-          <label>Độ khó:</label>
-          <select value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option>Dễ</option>
-            <option>Trung bình</option>
-            <option>Khó</option>
-          </select>
-
-          {/* Prerequisite */}
-          <label>Bài học yêu cầu trước:</label>
-          <select
-            value={prerequisiteLesson || ""}
-            onChange={(e) => setPrerequisiteLesson(e.target.value || null)}
-          >
-            <option value="">Không</option>
-            {lessonOptions.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.title}
-              </option>
-            ))}
-          </select>
-
-          {/* Category */}
-          <label>Loại:</label>
-          <select
-            className="mb-2"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Chọn Loại</option>
-            <option value="Từ vựng">Từ vựng</option>
-            <option value="Ngữ pháp">Ngữ pháp</option>
-            <option value="Phát Âm">Phát Âm</option>
-          </select>
-
-          {/* Vocabulary UI */}
-          {category === "Từ vựng" &&
-            questions.map((q) => (
-              <QuestionForm
-                key={q.id}
-                q={q}
-                onChange={handleChangeQuestion}
-                onDelete={handleDeleteQuestion}
+          <div className="form-row">
+            <div className="form-section">
+              <label>Phân loại chi tiết:</label>
+              <input
+                type="text"
+                value={type}
+                onChange={handleTypeChange}
+                required
+                placeholder="Ví dụ: Giao tiếp cơ bản"
               />
-            ))}
+            </div>
 
-          {category === "Từ vựng" && (
-            <button
-              type="button"
-              className="add-question-btn"
-              onClick={handleAddQuestion}
-            >
-              <Plus size={20} /> Thêm câu hỏi
-            </button>
-          )}
+            <div className="form-section">
+              <label>Độ khó:</label>
+              <select value={level} onChange={handleLevelChange}>
+                {LEVELS.map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {lvl}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-          {/* Grammar UI */}
-          {category === "Ngữ pháp" && (
-            <GrammarForm
-              grammarRule={description}
-              setGrammarRule={setDescription}
-              examples={grammarExamples}
-              setExamples={setGrammarExamples}
-            />
-          )}
+          <div className="form-row">
+            <div className="form-section">
+              <label>Bài học yêu cầu trước:</label>
+              <select
+                value={prerequisiteLesson || ""}
+                onChange={handlePrerequisiteChange}
+              >
+                <option value="">Không</option>
+                {lessonOptions.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.title}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Pronunciation UI */}
-          {category === "Phát Âm" && (
-            <PronunciationForm
-              order={pronunciationOrder}
-              setOrder={setPronunciationOrder}
-              examples={pronunciationExamples}
-              setExamples={setPronunciationExamples}
-            />
+            <div className="form-section">
+              <label>Loại bài học:</label>
+              <select value={category} onChange={handleCategoryChange}>
+                <option value="">Chọn Loại</option>
+                {Object.values(CATEGORIES).map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {category && (
+            <div className="category-section">
+              <h4 className="section-title">{categoryTitle}</h4>
+              {renderCategoryContent}
+            </div>
           )}
 
           <button type="submit" className="save-btn" disabled={isTranslating}>
