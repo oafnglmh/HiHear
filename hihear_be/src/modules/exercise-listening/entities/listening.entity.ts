@@ -7,7 +7,7 @@ import { MediaEntity } from 'src/modules/media/entities/media.entity';
 export class ListeningEntity extends AbstractEntity {
   @ManyToOne(() => MediaEntity, { nullable: true })
   @JoinColumn({ name: 'media_id' })
-  media: MediaEntity;
+  media: MediaEntity | null;
 
   @Column({ type: 'text', nullable: true })
   transcript: string | null;

@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsArray, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  IsUUID,
+  ValidateIf,
+} from 'class-validator';
 import { ListeningCreate } from '../domain/listening-create.domain';
 import type { Uuid } from 'src/common/types';
 
@@ -8,8 +14,9 @@ export class ListeningCreateDto {
     example: '1dfb3be1-5a60-44cd-a0cf-45c35d123abc',
     description: 'ID của media đã upload',
   })
+  @ValidateIf((o) => o.mediaId != null)
   @IsUUID()
-  readonly mediaId: Uuid;
+  readonly mediaId?: Uuid | null;
 
   @ApiPropertyOptional({ description: 'Bản transcript của audio' })
   @IsOptional()

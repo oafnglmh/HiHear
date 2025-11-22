@@ -53,18 +53,21 @@ export class ExerciseService {
       if (ex.listenings?.length) {
         exercise.listenings = [];
         for (const listeningData of ex.listenings) {
-          const media = await qr.manager.findOne(MediaEntity, {
-            where: { id: listeningData.mediaId },
-          });
+          let media: MediaEntity | null = null;
 
-          if (!media)
-            throw new Error(`Media ${listeningData.mediaId} not found`);
+          if (listeningData.mediaId) {
+            media = await qr.manager.findOne(MediaEntity, {
+              where: { id: listeningData.mediaId },
+            });
+
+            if (!media) {
+              throw new Error(`Media ${listeningData.mediaId} not found`);
+            }
+          }
 
           const listening = qr.manager.create(ListeningEntity, {
             ...ListeningCreate.toEntity(listeningData),
-            media,
           });
-
           listening.media = media;
 
           exercise.listenings.push(listening);
@@ -74,6 +77,7 @@ export class ExerciseService {
 
       return Promise.resolve();
     },
+
     [LessonCategory.SPEAKING]: async () => {},
     [LessonCategory.READING]: async () => {},
     [LessonCategory.WRITING]: async () => {},

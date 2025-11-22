@@ -10,6 +10,7 @@ export class ListeningDto {
   readonly id: Uuid;
 
   @ApiProperty({ type: () => Media })
+  @IsOptional()
   media: Media | null;
 
   @ApiPropertyOptional({})

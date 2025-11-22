@@ -3,7 +3,7 @@ import { ListeningCreateDto } from '../dto/listening-create.dto';
 export class ListeningCreate {
   transcript?: string | null;
 
-  mediaId: Uuid;
+  mediaId?: Uuid | null;
 
   choices: string[];
 
