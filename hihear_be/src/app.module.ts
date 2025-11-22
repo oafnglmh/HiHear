@@ -19,6 +19,7 @@ import { MinioClientModule } from './modules/minio/minio.module';
 import { ExercisesModule } from './modules/exercises/exercises.module';
 import { ExerciseGrammaModule } from './modules/exercise-gramma/exercise-gramma.module';
 import { ExerciseVocabularyModule } from './modules/exercise-vocabulary/exercise-vocabulary.module';
+import { VideoModule } from './modules/video/video.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { ExerciseVocabularyModule } from './modules/exercise-vocabulary/exercise
     LessonModule,
     MediaModule,
     MinioClientModule,
+    VideoModule,
     ExercisesModule,
     ExerciseGrammaModule,
     ExerciseVocabularyModule,
