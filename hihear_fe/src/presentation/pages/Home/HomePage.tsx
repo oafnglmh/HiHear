@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import "./css/home.css";
 import { AppAssets } from "../../../Core/constant/AppAssets";
+import Header from "../layout/header";
 const TypingText = () => {
   const texts = ["Dễ dàng!", "Thú vị!", "Hiệu quả!"];
   const [textIndex, setTextIndex] = useState(0);
@@ -268,43 +269,7 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <header className={`header ${scrolled ? "scrolled" : ""}`}>
-        <div className="logo-section">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/3898/3898082.png"
-            alt="HiHear Logo"
-            className="logo-image"
-          />
-          <h1 className="brand-name">HiHear</h1>
-        </div>
-
-        <nav className="nav-links">
-          <a href="#home">
-            <Home size={18} /> Trang chủ
-          </a>
-          <a href="#features">
-            <BookOpen size={18} /> Tính năng
-          </a>
-          <a href="#culture">
-            <Coffee size={18} /> Văn hóa
-          </a>
-          <a href="#rewards">
-            <Award size={18} /> Thành tích
-          </a>
-          <a href="#contact">
-            <Mail size={18} /> Liên hệ
-          </a>
-        </nav>
-
-        <div className="auth-buttons">
-          <a href="/login" className="btn-login">
-            Đăng nhập
-          </a>
-          <a href="/login" className="btn-register">
-            Đăng ký
-          </a>
-        </div>
-      </header>
+      <Header />
       <section id="home" className="hero">
         <div className="hero-content">
           <h1 className="hero-title">

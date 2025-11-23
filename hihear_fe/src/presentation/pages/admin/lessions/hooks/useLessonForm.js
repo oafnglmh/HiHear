@@ -10,6 +10,8 @@ export function useLessonForm() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [listenings, setListenings] = useState([]);
+  const [grammarRule, setGrammarRule] = useState("");
+
   // ================== VOCABULARY ==================
   const [questions, setQuestions] = useState([
     { id: 1, text: "", optionA: "", optionB: "", correct: "A" },
@@ -115,6 +117,10 @@ export function useLessonForm() {
     handleDeletePronunciationExample,
     handleChangePronunciationExample,
     listenings,
-    setListenings
+    setListenings,
+    grammarRule,
+    setGrammarRule,
+    grammarExamples,
+    setGrammarExamples,
   };
 }

@@ -6,8 +6,8 @@ import LoginPage from "../pages/auth/pages/LoginPage";
 import AdminLayout from "../layouts/AdminLayout";
 import Lession from "../pages/admin/lessions/Lessons";
 import Dashboard from "../pages/admin/dashboard/Dashboard";
-import Users from "../pages/admin/users/Users";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
+import VietnameseLearningApp from "../pages/studyVideo/VietnameseLearningApp";
 
 const NotFoundPage = () => (
   <PageWrapper>
@@ -27,6 +27,14 @@ const AppRoutes = () => (
         }
       />
       <Route
+        path="/video"
+        element={
+          <PageWrapper>
+            <VietnameseLearningApp />
+          </PageWrapper>
+        }
+      />
+      <Route
         path="/login"
         element={
           <PageWrapper>
@@ -40,14 +48,6 @@ const AppRoutes = () => (
           element={
             <AdminLayout>
               <Dashboard />
-            </AdminLayout>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <AdminLayout>
-              <Users />
             </AdminLayout>
           }
         />

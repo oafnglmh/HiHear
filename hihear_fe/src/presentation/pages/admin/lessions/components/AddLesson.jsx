@@ -84,79 +84,74 @@ const useTranslation = () => {
 };
 
 // ============= MEMOIZED COMPONENTS =============
-const VocabularyContent = memo(({ 
-  questions, 
-  handleChangeQuestion, 
-  handleDeleteQuestion, 
-  handleAddQuestion 
-}) => (
-  <div className="category-content-wrapper">
-    {questions.map((q) => (
-      <QuestionForm
-        key={q.id}
-        q={q}
-        onChange={handleChangeQuestion}
-        onDelete={handleDeleteQuestion}
+const VocabularyContent = memo(
+  ({
+    questions,
+    handleChangeQuestion,
+    handleDeleteQuestion,
+    handleAddQuestion,
+  }) => (
+    <div className="category-content-wrapper">
+      {questions.map((q) => (
+        <QuestionForm
+          key={q.id}
+          q={q}
+          onChange={handleChangeQuestion}
+          onDelete={handleDeleteQuestion}
+        />
+      ))}
+      <button
+        type="button"
+        className="add-question-btn"
+        onClick={handleAddQuestion}
+      >
+        <Plus size={20} />
+        Thêm câu hỏi
+      </button>
+    </div>
+  )
+);
+
+const GrammarContent = memo(
+  ({ grammarRule, setGrammarRule, grammarExamples, setGrammarExamples }) => (
+    <div className="category-content-wrapper">
+      <GrammarForm
+        grammarRule={grammarRule}
+        setGrammarRule={setGrammarRule}
+        examples={grammarExamples}
+        setExamples={setGrammarExamples}
       />
-    ))}
-    <button
-      type="button"
-      className="add-question-btn"
-      onClick={handleAddQuestion}
-    >
-      <Plus size={20} />
-      Thêm câu hỏi
-    </button>
-  </div>
-));
+    </div>
+  )
+);
 
-const GrammarContent = memo(({ 
-  description, 
-  setDescription, 
-  grammarExamples, 
-  setGrammarExamples 
-}) => (
-  <div className="category-content-wrapper">
-    <GrammarForm
-      grammarRule={description}
-      setGrammarRule={setDescription}
-      examples={grammarExamples}
-      setExamples={setGrammarExamples}
-    />
-  </div>
-));
-
-const PronunciationContent = memo(({ 
-  pronunciationOrder, 
-  setPronunciationOrder, 
-  pronunciationExamples, 
-  setPronunciationExamples 
-}) => (
-  <div className="category-content-wrapper">
-    <PronunciationForm
-      order={pronunciationOrder}
-      setOrder={setPronunciationOrder}
-      examples={pronunciationExamples}
-      setExamples={setPronunciationExamples}
-    />
-  </div>
-));
+const PronunciationContent = memo(
+  ({
+    pronunciationOrder,
+    setPronunciationOrder,
+    pronunciationExamples,
+    setPronunciationExamples,
+  }) => (
+    <div className="category-content-wrapper">
+      <PronunciationForm
+        order={pronunciationOrder}
+        setOrder={setPronunciationOrder}
+        examples={pronunciationExamples}
+        setExamples={setPronunciationExamples}
+      />
+    </div>
+  )
+);
 
 const ListeningContent = memo(({ listenings, setListenings }) => (
   <div className="category-content-wrapper">
-    <ListeningForm
-      listenings={listenings}
-      setListenings={setListenings}
-    />
+    <ListeningForm listenings={listenings} setListenings={setListenings} />
   </div>
 ));
 
 const VideoContent = memo(({ videoData, setVideoData }) => (
   <div className="category-content-wrapper">
-    <VideoForm
-      videoData={videoData}
-      setVideoData={setVideoData}
-    />
+    <VideoForm videoData={videoData} setVideoData={setVideoData} />
   </div>
 ));
 
@@ -260,7 +255,7 @@ export default function AddLesson({
             {
               ...baseExercise,
               grammars: examplesToUse.map((ex) => ({
-                grammarRule: description,
+                grammarRule: ex.grammarRule,
                 example: ex.example,
                 meaning: ex.meaning,
               })),
@@ -300,29 +295,25 @@ export default function AddLesson({
 
         case CATEGORIES.VIDEO: {
           if (!videoData?.transcriptions) return [];
-          
-          // Get transcriptions for the specific language
-          const transcriptions = videoData.transcriptions.map(item => {
-            const langKey = langCode === "vi" ? "vi" : 
-                           langCode === "en" ? "en" : "ko";
-            return {
-              text: item[langKey],
-              timestamp: item.timestamp || ""
-            };
-          });
 
           return [
             {
-              type: "video",
+              type: "mcq",
               points: 0,
               national: langCode,
               vocabularies: [],
               grammars: [],
               listenings: [],
-              videoContent: {
-                fileName: videoData.fileName,
-                transcriptions: transcriptions
-              }
+              video: [
+                {
+                  linkVideo: videoData.fileName,
+                  transl: videoData.transcriptions.map((item) => ({
+                    vi: item.vi,
+                    en: item.en,
+                    ko: item.ko,
+                  })),
+                },
+              ],
             },
           ];
         }
@@ -465,9 +456,12 @@ export default function AddLesson({
   );
 
   // ============= MEMOIZED HANDLERS =============
-  const handleTitleChange = useCallback((e) => {
-    setTitle(e.target.value);
-  }, [setTitle]);
+  const handleTitleChange = useCallback(
+    (e) => {
+      setTitle(e.target.value);
+    },
+    [setTitle]
+  );
 
   const handleDescriptionChange = useCallback((e) => {
     setDescription(e.target.value);
@@ -477,17 +471,23 @@ export default function AddLesson({
     setType(e.target.value);
   }, []);
 
-  const handleLevelChange = useCallback((e) => {
-    setLevel(e.target.value);
-  }, [setLevel]);
+  const handleLevelChange = useCallback(
+    (e) => {
+      setLevel(e.target.value);
+    },
+    [setLevel]
+  );
 
   const handlePrerequisiteChange = useCallback((e) => {
     setPrerequisiteLesson(e.target.value || null);
   }, []);
 
-  const handleCategoryChange = useCallback((e) => {
-    setCategory(e.target.value);
-  }, [setCategory]);
+  const handleCategoryChange = useCallback(
+    (e) => {
+      setCategory(e.target.value);
+    },
+    [setCategory]
+  );
 
   // ============= RENDER CATEGORY CONTENT =============
   const renderCategoryContent = useMemo(() => {
@@ -505,10 +505,10 @@ export default function AddLesson({
       case CATEGORIES.GRAMMAR:
         return (
           <GrammarContent
-            description={description}
-            setDescription={setDescription}
+            grammarRule={grammarRule}
+            setGrammarRule={setGrammarRule}
             grammarExamples={grammarExamples}
-            setExamples={setGrammarExamples}
+            setGrammarExamples={setGrammarExamples}
           />
         );
 
@@ -532,10 +532,7 @@ export default function AddLesson({
 
       case CATEGORIES.VIDEO:
         return (
-          <VideoContent
-            videoData={videoData}
-            setVideoData={setVideoData}
-          />
+          <VideoContent videoData={videoData} setVideoData={setVideoData} />
         );
 
       default:

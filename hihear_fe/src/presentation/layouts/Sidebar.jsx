@@ -43,16 +43,6 @@ export default function Sidebar() {
         </NavLink>
 
         <NavLink
-          to="/admin/users"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <Users className="icon" />
-          <span>Người dùng</span>
-        </NavLink>
-
-        <NavLink
           to="/admin/lession"
           className={({ isActive }) =>
             `sidebar-link ${isActive ? "active" : ""}`
