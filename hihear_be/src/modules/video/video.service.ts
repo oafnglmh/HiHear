@@ -10,7 +10,6 @@ export class VideoService {
       const pyScript = join(__dirname, 'transcribe.py');
       const process = spawn('python', [pyScript, filePath]);
 
-
       let data = '';
       let error = '';
 
@@ -19,7 +18,18 @@ export class VideoService {
       });
 
       process.stderr.on('data', (chunk) => {
-        error += chunk.toString();
+        const text = chunk.toString();
+
+        if (
+          text.includes("FP16 is not supported on CPU") ||
+          text.toLowerCase().includes("userwarning") ||
+          text.toLowerCase().includes("warning")
+        ) {
+          console.warn("Whisper Warning:", text);
+          return;
+        }
+
+        error += text;
       });
 
       process.on('close', async (code) => {
@@ -29,9 +39,13 @@ export class VideoService {
           console.error('Failed to delete temp file:', err);
         }
 
-        if (code !== 0) {
+        if (code !== 0 && error.trim() !== '') {
           console.error('Python script error:', error);
-          return reject(new InternalServerErrorException(error || `Process exited with code ${code}`));
+          return reject(
+            new InternalServerErrorException(
+              error || `Process exited with code ${code}`
+            )
+          );
         }
 
         try {
@@ -39,12 +53,20 @@ export class VideoService {
           resolve(result);
         } catch (e) {
           console.error('Failed to parse JSON:', data);
-          reject(new InternalServerErrorException('Failed to parse transcription result'));
+          reject(
+            new InternalServerErrorException(
+              'Failed to parse transcription result'
+            )
+          );
         }
       });
 
       process.on('error', (err) => {
-        reject(new InternalServerErrorException(`Failed to start Python process: ${err.message}`));
+        reject(
+          new InternalServerErrorException(
+            `Failed to start Python process: ${err.message}`
+          )
+        );
       });
     });
   }
