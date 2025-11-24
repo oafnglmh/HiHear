@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       listener: (context, state) {
         state.whenOrNull(
           authenticated: (user) {
-            context.go(user.national == null ? '/goalSelector' : '/home');
+            context.go(user.national == null ? '/goalSelector' : '/goalSelector');
           },
           error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

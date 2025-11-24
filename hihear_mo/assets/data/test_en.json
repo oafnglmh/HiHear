@@ -1,0 +1,68 @@
+{
+  "language": "english",
+  "levels": [
+    {
+      "level": "A1",
+      "questions": [
+        {"id": 1, "question": "Trong tiếng Việt, 'Xin chào' nghĩa là gì?", "options": ["Hello", "Thank you", "Goodbye", "Sorry"], "answer": 0},
+        {"id": 2, "question": "Từ 'tôi' nghĩa là gì?", "options": ["You", "He", "I", "We"], "answer": 2},
+        {"id": 3, "question": "Số 'ba' là số nào?", "options": ["2", "3", "4", "5"], "answer": 1},
+        {"id": 4, "question": "'Cảm ơn' dùng khi nào?", "options": ["When angry", "When thanking someone", "When leaving", "When eating"], "answer": 1},
+        {"id": 5, "question": "Từ nào nghĩa là 'water'?", "options": ["Cơm", "Nước", "Bánh", "Sữa"], "answer": 1},
+        {"id": 6, "question": "Từ 'bạn' nghĩa là gì?", "options": ["Friend", "Family", "Teacher", "Child"], "answer": 0},
+        {"id": 7, "question": "'Tạm biệt' nghĩa là gì?", "options": ["Goodbye", "Hello", "Thanks", "Sorry"], "answer": 0},
+        {"id": 8, "question": "'Ăn' nghĩa là gì?", "options": ["To eat", "To drink", "To sleep", "To walk"], "answer": 0},
+        {"id": 9, "question": "Số 'năm' là số nào?", "options": ["4", "5", "6", "7"], "answer": 1},
+        {"id": 10, "question": "'Vâng' dùng khi nào?", "options": ["Yes", "No", "Maybe", "Sorry"], "answer": 0}
+      ]
+    },
+
+    {
+      "level": "A2",
+      "questions": [
+        {"id": 11, "question": "'Bạn đến từ đâu?' nghĩa là gì?", "options": ["Where are you from?", "How are you?", "Where do you live?", "What is your job?"], "answer": 0},
+        {"id": 12, "question": "Chọn câu đúng:", "options": ["Tôi ăn nước", "Tôi uống cơm", "Tôi uống nước", "Tôi ngủ nước"], "answer": 2},
+        {"id": 13, "question": "Từ 'rẻ' đối nghĩa với?", "options": ["Đắt", "Mới", "Nhanh", "Nặng"], "answer": 0},
+        {"id": 14, "question": "Từ nào nghĩa là 'family'?", "options": ["Bạn bè", "Gia đình", "Thức ăn", "Công việc"], "answer": 1},
+        {"id": 15, "question": "Câu nào đúng?", "options": ["Tôi đi bộ đến trường", "Tôi trường đến đi bộ", "Trường bộ tôi đi", "Đi tôi đến bộ trường"], "answer": 0},
+        {"id": 16, "question": "'Học' nghĩa là gì?", "options": ["To study", "To work", "To sleep", "To eat"], "answer": 0},
+        {"id": 17, "question": "Từ 'nhà' nghĩa là gì?", "options": ["House", "Car", "School", "Shop"], "answer": 0},
+        {"id": 18, "question": "'Đi đâu?' nghĩa là?", "options": ["Where are you going?", "What are you doing?", "Who are you?", "How are you?"], "answer": 0},
+        {"id": 19, "question": "Từ 'người' nghĩa là gì?", "options": ["Person", "Thing", "Place", "Animal"], "answer": 0},
+        {"id": 20, "question": "'Chào buổi sáng' nghĩa là gì?", "options": ["Good morning", "Good night", "Hello", "Goodbye"], "answer": 0}
+      ]
+    },
+
+    {
+      "level": "B1",
+      "questions": [
+        {"id": 21, "question": "Từ 'thời tiết' nghĩa là gì?", "options": ["Weather", "Season", "Temperature", "Climate"], "answer": 0},
+        {"id": 22, "question": "Câu nào diễn tả sở thích?", "options": ["Tôi thích nghe nhạc", "Tôi ăn cơm", "Tôi sống ở Hà Nội", "Tôi đi làm lúc 8 giờ"], "answer": 0},
+        {"id": 23, "question": ".'Tôi bị cảm' nghĩa là gì?", "options": ["I have a cold", "I am angry", "I am tired", "I am lost"], "answer": 0},
+        {"id": 24, "question": "'Giao thông' nghĩa là?", "options": ["Traffic", "Education", "Shopping", "Culture"], "answer": 0},
+        {"id": 25, "question": "Chọn câu đúng:", "options": ["Anh ấy cao hơn tôi", "Anh ấy tôi hơn cao", "Tôi hơn anh ấy cao", "Cao anh ấy hơn tôi"], "answer": 0},
+        {"id": 26, "question": "'Môn học' nghĩa là gì?", "options": ["Subject", "Lesson", "Classroom", "Teacher"], "answer": 0},
+        {"id": 27, "question": "Câu nào đúng?", "options": ["Tôi thường đi bộ vào buổi sáng", "Buổi sáng đi bộ tôi thường", "Đi bộ tôi thường buổi sáng", "Tôi đi buổi sáng thường bộ"], "answer": 0},
+        {"id": 28, "question": "'Bận' nghĩa là gì?", "options": ["Busy", "Free", "Tired", "Happy"], "answer": 0},
+        {"id": 29, "question": "Chọn câu hỏi đúng:", "options": ["Bạn học ở đâu?", "Bạn ở học đâu?", "Học bạn đâu ở?", "Ở đâu bạn học?"], "answer": 0},
+        {"id": 30, "question": "'Đẹp' nghĩa là gì?", "options": ["Beautiful", "Ugly", "Small", "Big"], "answer": 0}
+      ]
+    },
+
+    {
+      "level": "B2",
+      "questions": [
+        {"id": 31, "question": "'Kinh tế' nghĩa là gì?", "options": ["Economy", "Science", "Culture", "History"], "answer": 0},
+        {"id": 32, "question": "Câu nào mang nghĩa nguyên nhân – kết quả?", "options": ["Vì trời mưa nên tôi không đi làm", "Tôi thích bóng đá", "Hôm nay tôi bận", "Tôi sẽ đi du lịch"], "answer": 0},
+        {"id": 33, "question": "Từ nào nghĩa là 'development'?", "options": ["Phát triển", "Giảm bớt", "Dừng lại", "Bắt đầu"], "answer": 0},
+        {"id": 34, "question": "Câu nào có cấu trúc đúng?", "options": ["Nếu tôi biết sớm, tôi đã chuẩn bị tốt hơn", "Nếu tôi biết sớm, đã tôi chuẩn bị tốt hơn", "Tôi chuẩn bị tốt hơn nếu biết sớm tôi", "Biết sớm tôi nếu chuẩn bị tốt hơn"], "answer": 0},
+        {"id": 35, "question": "Từ 'quan điểm' nghĩa là?", "options": ["Opinion", "Permission", "Decision", "Agreement"], "answer": 0},
+        {"id": 36, "question": "'Phân tích' nghĩa là gì?", "options": ["Analyze", "Build", "Destroy", "Ignore"], "answer": 0},
+        {"id": 37, "question": "Câu nào mang ý kiến cá nhân?", "options": ["Theo tôi, học tập rất quan trọng", "Trường học mở lúc 7 giờ", "Tôi đi làm mỗi ngày", "Học sinh nhiều ở trường"], "answer": 0},
+        {"id": 38, "question": "'Hiệu quả' nghĩa là gì?", "options": ["Effective", "Expensive", "Difficult", "Interesting"], "answer": 0},
+        {"id": 39, "question": "Chọn câu có mệnh đề phụ:", "options": ["Mặc dù trời mưa, tôi vẫn đi học", "Tôi đi học mỗi ngày", "Học sinh vui vẻ", "Trường mở lúc 7 giờ"], "answer": 0},
+        {"id": 40, "question": "'Chiến lược' nghĩa là gì?", "options": ["Strategy", "Task", "Plan", "Method"], "answer": 0}
+      ]
+    }
+  ]
+}

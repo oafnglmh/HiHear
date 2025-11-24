@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   //------------------ Background ------------------//
-  static const Color background = Color(0xFFFF7C2B); // màu cam chủ đạo
+  static const Color background = Color(0xFFFF7C2B);
   static const Color bgDark = Color(0xFF1A1A1A);
   static const Color cardBg = Color(0xFFF7F7F7);
   static const Color bgWhite = Colors.white;

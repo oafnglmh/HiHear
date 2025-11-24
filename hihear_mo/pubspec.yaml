@@ -52,6 +52,7 @@ flutter:
     - assets/gif/
     - assets/animation/
     - assets/config/.env
+    - assets/data/
 
 flutter_icons:
   android: true

@@ -3,6 +3,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/painter/leaves_painter.dart';
+import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../painter/bamboo_painter.dart';
 
@@ -455,7 +456,8 @@ class _StudyTimePageState extends State<StudyTimePage>
               child: ElevatedButton(
                 onPressed: isEnabled
                     ? () {
-                        context.go('/languageCountry');
+                        // context.go('/languageCountry');
+                        context.go(AppRoutes.chooseLanguageTest);
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

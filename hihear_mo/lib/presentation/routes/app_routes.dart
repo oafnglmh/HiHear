@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
+import 'package:hihear_mo/presentation/pages/Goal/level_test_page.dart';
 import 'package:hihear_mo/presentation/pages/Goal/start_app_page.dart';
+import 'package:hihear_mo/presentation/pages/Goal/test_page.dart';
 import 'package:hihear_mo/presentation/pages/country/country_selection_page.dart';
 import 'package:hihear_mo/presentation/pages/home/home_page.dart';
 import 'package:hihear_mo/presentation/pages/lession/grammar/grammar_lesson_page.dart';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const home = '/home';
   static const goalSelector = '/goalSelector';
   static const start = '/start';
+  static const chooseLanguageTest = '/chooseLanguageTest';
+  static const test = '/test';
   static const about = '/about';
   static const help = '/help';
   static const language = '/language';
@@ -128,6 +132,22 @@ class AppRouter {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return GrammarLessonPage(id: id);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.chooseLanguageTest,
+          name: 'chooseLanguageTest',
+          builder: (context, state) {
+            return LanguageSelectionScreen();
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.test,
+          name: 'test',
+          builder: (context, state) {
+            var language = state.extra as String?;
+            language ??= "english";
+            return TestScreen(language: language);
           },
         ),
       ],
