@@ -12,6 +12,7 @@ abstract class UserEntity with _$UserEntity {
     String? photoUrl,
     String? national,
     int? streakDays,
+    String? level,
   }) = _UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>

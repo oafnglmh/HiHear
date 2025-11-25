@@ -31,13 +31,17 @@ class LessionRemoteDataSource {
 
     if (response.statusCode == 200) {
       final data = response.data as List<dynamic>;
+
       final filtered = data.where((lesson) {
+        if (lesson['category'] == "Nghe hiểu") return false;
+
         final exercises = lesson['exercises'] as List<dynamic>;
         return exercises.any((ex) => ex['national'] == national);
       }).toList();
 
       print("Filtered lessons count: ${filtered.length}");
-      print("data when filter: ${filtered}");
+      print("data when filter: $filtered");
+
       return filtered.map((json) => LessionEntity.fromJson(json)).toList();
     } else {
       throw Exception('Lấy dữ liệu thất bại với code: ${response.statusCode}');

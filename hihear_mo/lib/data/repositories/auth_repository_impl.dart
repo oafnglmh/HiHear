@@ -37,4 +37,14 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, UserEntity>> updateUserLevel(level) async{
+     try {
+      final user = await dataSource.updateUserLevel(level);
+      return Right(user);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

@@ -16,10 +16,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_LoginWithFacebook>(_onLoginWithFacebook);
     on<_Logout>(_onLogout);
     on<_LoadUser>(_onLoadUser);
+    on<_UpdateLevel>(_onUpdateLevel);
   }
 
   Future<void> _onLoginWithGoogle(
-      _LoginWithGoogle event, Emitter<AuthState> emit) async {
+    _LoginWithGoogle event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthState.loading());
     try {
       final result = await _repository.loginWithGoogle();
@@ -34,7 +37,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLoginWithFacebook(
-      _LoginWithFacebook event, Emitter<AuthState> emit) async {
+    _LoginWithFacebook event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthState.loading());
     try {
       final result = await _repository.loginWithFacebook();
@@ -44,6 +49,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     } catch (e, s) {
       emit(AuthState.error('Login with Facebook failed: $e'));
+      addError(e, s);
+    }
+  }
+
+  Future<void> _onUpdateLevel(
+    _UpdateLevel event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    try {
+      final result = await _repository.updateUserLevel(event.level);
+      result.fold(
+        (failure) => emit(AuthState.error(failure.message)),
+        (user) => emit(AuthState.authenticated(user)),
+      );
+    } catch (e, s) {
+      emit(AuthState.error('Update level failed: $e'));
       addError(e, s);
     }
   }
@@ -61,18 +83,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       addError(e, s);
     }
   }
+
   Future<void> _onLoadUser(_LoadUser event, Emitter<AuthState> emit) async {
     final fbUser = FirebaseAuth.instance.currentUser;
     if (fbUser != null) {
-      emit(AuthState.authenticated(
-        UserEntity(
-          id: fbUser.uid,
-          name: fbUser.displayName ?? "",
-          email: fbUser.email ?? "",
-          photoUrl: fbUser.photoURL ?? "",
-          national: "",
+      emit(
+        AuthState.authenticated(
+          UserEntity(
+            id: fbUser.uid,
+            name: fbUser.displayName ?? "",
+            email: fbUser.email ?? "",
+            photoUrl: fbUser.photoURL ?? "",
+            national: "",
+          ),
         ),
-      ));
+      );
     } else {
       emit(const AuthState.loggedOut());
     }

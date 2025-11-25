@@ -65,7 +65,6 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// Update language
   Future<UserEntity> addOrUpdateCountry(CountryEntity country) async {
     final token = await TokenStorage.getToken();
     if (token == null) {
@@ -98,7 +97,38 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// Update streak
+  Future<UserEntity> updateUserLevel(level) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User chưa login hoặc token chưa được lưu.');
+    }
+
+    try {
+      final payload = {'level': level};
+      print('Payload gửi lên backend: $payload');
+
+      final response = await _dioProfile.patch(
+        '/me',
+        data: payload,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Backend trả về lỗi: ${response.statusCode}');
+      }
+
+      return UserEntity.fromJson(response.data);
+    } catch (e) {
+      print('Lỗi gọi backend: $e');
+      throw Exception('Lỗi khi gọi backend: $e');
+    }
+  }
+
   Future<UserEntity> addStreak(int streak) async {
     final token = await TokenStorage.getToken();
     if (token == null) {
@@ -131,7 +161,6 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// Login Facebook
   Future<UserEntity> loginWithFacebook() async {
     try {
       final response = await _dioLogin.get('/facebook');
@@ -147,7 +176,6 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// Logout
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();

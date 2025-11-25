@@ -55,14 +55,15 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoginWithGoogle value)?  loginWithGoogle,TResult Function( _LoginWithFacebook value)?  loginWithFacebook,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoginWithGoogle value)?  loginWithGoogle,TResult Function( _LoginWithFacebook value)?  loginWithFacebook,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,TResult Function( _UpdateLevel value)?  updateLevel,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle(_that);case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateLevel() when updateLevel != null:
+return updateLevel(_that);case _:
   return orElse();
 
 }
@@ -80,14 +81,15 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoginWithGoogle value)  loginWithGoogle,required TResult Function( _LoginWithFacebook value)  loginWithFacebook,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoginWithGoogle value)  loginWithGoogle,required TResult Function( _LoginWithFacebook value)  loginWithFacebook,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,required TResult Function( _UpdateLevel value)  updateLevel,}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle():
 return loginWithGoogle(_that);case _LoginWithFacebook():
 return loginWithFacebook(_that);case _Logout():
 return logout(_that);case _LoadUser():
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateLevel():
+return updateLevel(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -104,14 +106,15 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoginWithGoogle value)?  loginWithGoogle,TResult? Function( _LoginWithFacebook value)?  loginWithFacebook,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoginWithGoogle value)?  loginWithGoogle,TResult? Function( _LoginWithFacebook value)?  loginWithFacebook,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,TResult? Function( _UpdateLevel value)?  updateLevel,}){
 final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle(_that);case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateLevel() when updateLevel != null:
+return updateLevel(_that);case _:
   return null;
 
 }
@@ -128,13 +131,14 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loginWithGoogle,TResult Function()?  loginWithFacebook,TResult Function()?  logout,TResult Function()?  loadUser,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loginWithGoogle,TResult Function()?  loginWithFacebook,TResult Function()?  logout,TResult Function()?  loadUser,TResult Function( String level)?  updateLevel,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle();case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook();case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
-return loadUser();case _:
+return loadUser();case _UpdateLevel() when updateLevel != null:
+return updateLevel(_that.level);case _:
   return orElse();
 
 }
@@ -152,13 +156,14 @@ return loadUser();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loginWithGoogle,required TResult Function()  loginWithFacebook,required TResult Function()  logout,required TResult Function()  loadUser,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loginWithGoogle,required TResult Function()  loginWithFacebook,required TResult Function()  logout,required TResult Function()  loadUser,required TResult Function( String level)  updateLevel,}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle():
 return loginWithGoogle();case _LoginWithFacebook():
 return loginWithFacebook();case _Logout():
 return logout();case _LoadUser():
-return loadUser();case _:
+return loadUser();case _UpdateLevel():
+return updateLevel(_that.level);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -175,13 +180,14 @@ return loadUser();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loginWithGoogle,TResult? Function()?  loginWithFacebook,TResult? Function()?  logout,TResult? Function()?  loadUser,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loginWithGoogle,TResult? Function()?  loginWithFacebook,TResult? Function()?  logout,TResult? Function()?  loadUser,TResult? Function( String level)?  updateLevel,}) {final _that = this;
 switch (_that) {
 case _LoginWithGoogle() when loginWithGoogle != null:
 return loginWithGoogle();case _LoginWithFacebook() when loginWithFacebook != null:
 return loginWithFacebook();case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
-return loadUser();case _:
+return loadUser();case _UpdateLevel() when updateLevel != null:
+return updateLevel(_that.level);case _:
   return null;
 
 }
@@ -316,6 +322,72 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _UpdateLevel implements AuthEvent {
+  const _UpdateLevel(this.level);
+  
+
+ final  String level;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateLevelCopyWith<_UpdateLevel> get copyWith => __$UpdateLevelCopyWithImpl<_UpdateLevel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateLevel&&(identical(other.level, level) || other.level == level));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,level);
+
+@override
+String toString() {
+  return 'AuthEvent.updateLevel(level: $level)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateLevelCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
+  factory _$UpdateLevelCopyWith(_UpdateLevel value, $Res Function(_UpdateLevel) _then) = __$UpdateLevelCopyWithImpl;
+@useResult
+$Res call({
+ String level
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateLevelCopyWithImpl<$Res>
+    implements _$UpdateLevelCopyWith<$Res> {
+  __$UpdateLevelCopyWithImpl(this._self, this._then);
+
+  final _UpdateLevel _self;
+  final $Res Function(_UpdateLevel) _then;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? level = null,}) {
+  return _then(_UpdateLevel(
+null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 mixin _$AuthState {
