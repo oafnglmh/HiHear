@@ -29,8 +29,11 @@ export class LessonDto {
   @ApiPropertyOptional()
   xpReward: number | null;
 
-  @ApiPropertyOptional({ type: () => Lesson })
-  prerequisiteLesson: Lesson | null;
+  // @ApiPropertyOptional({ type: () => Lesson })
+  // prerequisiteLesson: Lesson | null;
+
+  @ApiPropertyOptional()
+  prerequisiteLessonId: string | null;
 
   @ApiPropertyOptional({ type: () => Media, isArray: true })
   media: Media[] | null;
@@ -52,7 +55,7 @@ export class LessonDto {
       level: lesson.level,
       description: lesson.description,
       durationSeconds: lesson.durationSeconds,
-      prerequisiteLesson: lesson.prerequisiteLesson,
+      prerequisiteLessonId: lesson.prerequisiteLessonId,
       media: lesson.media,
       exercises: lesson.exercises ?? [],
       xpReward: lesson.xpReward,

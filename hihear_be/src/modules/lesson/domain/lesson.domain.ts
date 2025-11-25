@@ -19,7 +19,8 @@ export class Lesson {
 
   xpReward: number | null;
 
-  prerequisiteLesson: Lesson | null;
+  // prerequisiteLesson: Lesson | null;
+  prerequisiteLessonId: string | null;
 
   media: Media[] | null;
 
@@ -38,9 +39,7 @@ export class Lesson {
       durationSeconds: lessonEntity.durationSeconds,
       xpReward: lessonEntity.xpReward,
       level: lessonEntity.level,
-      prerequisiteLesson: lessonEntity.prerequisiteLesson
-        ? Lesson.fromEntity(lessonEntity.prerequisiteLesson)
-        : null,
+      prerequisiteLessonId: lessonEntity.prerequisiteLesson?.id ?? null,
       media: Media.fromEntities(lessonEntity.media),
       exercises: lessonEntity.exercises
         ? Exercises.fromEntities(lessonEntity.exercises)
