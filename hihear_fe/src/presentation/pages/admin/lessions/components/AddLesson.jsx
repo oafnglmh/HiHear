@@ -19,7 +19,7 @@ const CATEGORIES = {
   VIDEO: "Video",
 };
 
-const LEVELS = ["Dễ", "Trung bình", "Khó"];
+const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 const LANGUAGES = [
   { code: "Vietnam", name: "Tiếng Việt", langCode: "vi" },
@@ -208,7 +208,7 @@ export default function AddLesson({
     setId(editingLesson.id || "");
     setTitle(editingLesson.title || "");
     setCategory(editingLesson.category || "");
-    setLevel(editingLesson.level || "Dễ");
+    setLevel(editingLesson.level || "A1");
     setDescription(editingLesson.description || "");
     setPrerequisiteLesson(editingLesson.prerequisiteLesson || null);
     setType(editingLesson.type || "Từ vựng");
