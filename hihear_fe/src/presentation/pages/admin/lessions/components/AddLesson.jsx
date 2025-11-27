@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
-import { X, Save, Plus } from "lucide-react";
+import React, { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
+import { X, Save, Plus, Check } from "lucide-react";
 import { useLessonForm } from "../hooks/useLessonForm";
 import QuestionForm from "./QuestionForm";
 import GrammarForm from "./GrammarForm";
@@ -82,6 +82,107 @@ const useTranslation = () => {
     translateGrammar,
   };
 };
+
+// ============= PREREQUISITE POPUP COMPONENT =============
+const PrerequisitePopup = memo(
+  ({ languages, currentIndex, lessonOptions, onSelect, onClose }) => {
+    const [selectedLesson, setSelectedLesson] = useState("");
+    const currentLang = languages[currentIndex];
+
+    const handleConfirm = () => {
+      onSelect(selectedLesson || null);
+    };
+
+    return (
+      <div className="add-lesson-overlay" style={{ zIndex: 10000 }}>
+        <div className="add-lesson-modal" style={{ maxWidth: "500px" }}>
+          <div className="modal-header">
+            <h2>Chọn bài học yêu cầu trước</h2>
+            <button className="close-btn" onClick={onClose} type="button">
+              <X size={24} />
+            </button>
+          </div>
+
+          <div style={{ padding: "20px" }}>
+            <div
+              style={{
+                backgroundColor: "#f3f4f6",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "14px",
+                  color: "#6b7280",
+                  marginBottom: "4px",
+                }}
+              >
+                Ngôn ngữ:
+              </div>
+              <div
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                }}
+              >
+                {currentLang.name} ({currentIndex + 1}/{languages.length})
+              </div>
+            </div>
+
+            <div className="form-section">
+              <label>Bài học yêu cầu trước:</label>
+              <select
+                value={selectedLesson}
+                onChange={(e) => setSelectedLesson(e.target.value)}
+              >
+                <option value="">Không có</option>
+                {lessonOptions.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                justifyContent: "flex-end",
+                marginTop: "24px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                className="close-btn"
+                style={{ marginRight: "auto" }}
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                className="save-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <Check size={16} />
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
 
 // ============= MEMOIZED COMPONENTS =============
 const VocabularyContent = memo(
@@ -190,9 +291,17 @@ export default function AddLesson({
 
   const [type, setType] = useState("Từ vựng");
   const [description, setDescription] = useState("");
-  const [prerequisiteLesson, setPrerequisiteLesson] = useState(null);
   const [listenings, setListenings] = useState([]);
   const [videoData, setVideoData] = useState(null);
+
+  // ============= PREREQUISITE POPUP STATE =============
+  const [showPrerequisitePopup, setShowPrerequisitePopup] = useState(false);
+  const [currentLangIndex, setCurrentLangIndex] = useState(0);
+  const [prerequisiteLessons, setPrerequisiteLessons] = useState({
+    Vietnam: null,
+    Korea: null,
+    UK: null,
+  });
 
   const {
     isTranslating,
@@ -210,7 +319,6 @@ export default function AddLesson({
     setCategory(editingLesson.category || "");
     setLevel(editingLesson.level || "A1");
     setDescription(editingLesson.description || "");
-    setPrerequisiteLesson(editingLesson.prerequisiteLesson || null);
     setType(editingLesson.type || "Từ vựng");
     setQuestions(editingLesson.questions || []);
     setGrammarRule(editingLesson.grammarRule || "");
@@ -329,7 +437,6 @@ export default function AddLesson({
       listenings,
       pronunciationExamples,
       videoData,
-      description,
     ]
   );
 
@@ -353,7 +460,6 @@ export default function AddLesson({
           }));
 
         case CATEGORIES.VIDEO:
-          // Video already has all language transcriptions
           return null;
 
         default:
@@ -372,35 +478,48 @@ export default function AddLesson({
 
   // ============= CREATE LESSON PAYLOAD =============
   const createLessonPayload = useCallback(
-    (translatedTitle, langCode, translatedData) => ({
+    (translatedTitle, langCode, translatedData, prerequisiteId) => ({
       title: translatedTitle,
       description,
       category,
       level,
-      prerequisiteLesson,
+      prerequisiteLesson: prerequisiteId,
       mediaId: preview || null,
       exercises: buildExercises(langCode, translatedData),
     }),
-    [description, category, level, prerequisiteLesson, preview, buildExercises]
+    [description, category, level, preview, buildExercises]
   );
 
-  // ============= HANDLE UPDATE =============
-  const handleUpdate = useCallback(async () => {
-    const payload = createLessonPayload(title, "Vietnam", null);
+  const prerequisiteLessonsRef = useRef({
+    Vietnam: null,
+    Korea: null,
+    UK: null,
+  });
 
-    try {
-      const result = await editLesson(payload, id);
-      toast.success("Cập nhật thành công!");
-      onSave(result.data);
-      onClose();
-    } catch (err) {
-      toast.error("Cập nhật thất bại!");
-      console.error(err);
-    }
-  }, [createLessonPayload, title, id, onSave, onClose]);
+  // ============= HANDLE PREREQUISITE SELECTION =============
+  const handlePrerequisiteSelect = useCallback(
+    (selectedLesson) => {
+      const currentLang = LANGUAGES[currentLangIndex];
 
-  // ============= HANDLE CREATE =============
-  const handleCreate = useCallback(async () => {
+      const newValue = selectedLesson || null;
+      setPrerequisiteLessons((prev) => ({
+        ...prev,
+        [currentLang.code]: newValue,
+      }));
+      prerequisiteLessonsRef.current[currentLang.code] = newValue;
+
+      if (currentLangIndex < LANGUAGES.length - 1) {
+        setCurrentLangIndex(currentLangIndex + 1);
+      } else {
+        setShowPrerequisitePopup(false);
+        setTimeout(() => proceedWithCreation(), 100);
+      }
+    },
+    [currentLangIndex]
+  );
+
+  // ============= PROCEED WITH CREATION =============
+  const proceedWithCreation = useCallback(async () => {
     setIsTranslating(true);
     const toastId = toast.loading("Đang tạo bài học đa ngôn ngữ...");
 
@@ -413,10 +532,12 @@ export default function AddLesson({
               : await translateText(title, lang.langCode);
 
           const translatedData = await getTranslatedData(lang.langCode);
+          const prerequisiteId = prerequisiteLessonsRef.current[lang.code];
           const payload = createLessonPayload(
             translatedTitle,
             lang.code,
-            translatedData
+            translatedData,
+            prerequisiteId
           );
 
           console.log(`Payload for ${lang.name}:`, payload);
@@ -435,24 +556,42 @@ export default function AddLesson({
     }
   }, [
     title,
+    prerequisiteLessons,
     getTranslatedData,
     createLessonPayload,
     onSave,
     onClose,
-    setIsTranslating,
   ]);
+
+  // ============= HANDLE UPDATE =============
+  const handleUpdate = useCallback(async () => {
+    const payload = createLessonPayload(title, "Vietnam", null, null);
+
+    try {
+      const result = await editLesson(payload, id);
+      toast.success("Cập nhật thành công!");
+      onSave(result.data);
+      onClose();
+    } catch (err) {
+      toast.error("Cập nhật thất bại!");
+      console.error(err);
+    }
+  }, [createLessonPayload, title, id, onSave, onClose]);
 
   // ============= HANDLE SUBMIT =============
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
+
       if (editingLesson) {
         await handleUpdate();
       } else {
-        await handleCreate();
+        // Hiển thị popup để chọn prerequisite cho từng ngôn ngữ
+        setCurrentLangIndex(0);
+        setShowPrerequisitePopup(true);
       }
     },
-    [editingLesson, handleUpdate, handleCreate]
+    [editingLesson, handleUpdate]
   );
 
   // ============= MEMOIZED HANDLERS =============
@@ -477,10 +616,6 @@ export default function AddLesson({
     },
     [setLevel]
   );
-
-  const handlePrerequisiteChange = useCallback((e) => {
-    setPrerequisiteLesson(e.target.value || null);
-  }, []);
 
   const handleCategoryChange = useCallback(
     (e) => {
@@ -541,7 +676,6 @@ export default function AddLesson({
   }, [
     category,
     questions,
-    description,
     grammarExamples,
     pronunciationOrder,
     pronunciationExamples,
@@ -577,107 +711,109 @@ export default function AddLesson({
 
   // ============= RENDER =============
   return (
-    <div className="add-lesson-overlay">
-      <div className="add-lesson-modal">
-        <div className="modal-header">
-          <h2>{editingLesson ? "Cập nhật bài học" : "Thêm bài học mới"}</h2>
-          <button className="close-btn" onClick={onClose} type="button">
-            <X size={24} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="lesson-form">
-          <div className="form-section">
-            <label>Tên bài học:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={handleTitleChange}
-              required
-              placeholder="Nhập tên bài học..."
-            />
+    <>
+      <div className="add-lesson-overlay">
+        <div className="add-lesson-modal">
+          <div className="modal-header">
+            <h2>{editingLesson ? "Cập nhật bài học" : "Thêm bài học mới"}</h2>
+            <button className="close-btn" onClick={onClose} type="button">
+              <X size={24} />
+            </button>
           </div>
 
-          <div className="form-section">
-            <label>Mô tả:</label>
-            <textarea
-              value={description}
-              onChange={handleDescriptionChange}
-              rows={3}
-              placeholder="Nhập mô tả bài học..."
-            />
-          </div>
-
-          <div className="form-row">
+          <form onSubmit={handleSubmit} className="lesson-form">
             <div className="form-section">
-              <label>Phân loại chi tiết:</label>
+              <label>Tên bài học:</label>
               <input
                 type="text"
-                value={type}
-                onChange={handleTypeChange}
+                value={title}
+                onChange={handleTitleChange}
                 required
-                placeholder="Ví dụ: Giao tiếp cơ bản"
+                placeholder="Nhập tên bài học..."
               />
             </div>
 
             <div className="form-section">
-              <label>Độ khó:</label>
-              <select value={level} onChange={handleLevelChange}>
-                {LEVELS.map((lvl) => (
-                  <option key={lvl} value={lvl}>
-                    {lvl}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-section">
-              <label>Bài học yêu cầu trước:</label>
-              <select
-                value={prerequisiteLesson || ""}
-                onChange={handlePrerequisiteChange}
-              >
-                <option value="">Không</option>
-                {lessonOptions.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.title}
-                  </option>
-                ))}
-              </select>
+              <label>Mô tả:</label>
+              <textarea
+                value={description}
+                onChange={handleDescriptionChange}
+                rows={3}
+                placeholder="Nhập mô tả bài học..."
+              />
             </div>
 
-            <div className="form-section">
-              <label>Loại bài học:</label>
-              <select value={category} onChange={handleCategoryChange}>
-                <option value="">Chọn Loại</option>
-                {Object.values(CATEGORIES).map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+            <div className="form-row">
+              <div className="form-section">
+                <label>Phân loại chi tiết:</label>
+                <input
+                  type="text"
+                  value={type}
+                  onChange={handleTypeChange}
+                  required
+                  placeholder="Ví dụ: Giao tiếp cơ bản"
+                />
+              </div>
 
-          {category && (
-            <div className="category-section">
-              <h4 className="section-title">{categoryTitle}</h4>
-              {renderCategoryContent}
+              <div className="form-section">
+                <label>Độ khó:</label>
+                <select value={level} onChange={handleLevelChange}>
+                  {LEVELS.map((lvl) => (
+                    <option key={lvl} value={lvl}>
+                      {lvl}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          )}
 
-          <button type="submit" className="save-btn" disabled={isTranslating}>
-            <Save size={18} />
-            {isTranslating
-              ? "Đang xử lý..."
-              : editingLesson
-              ? "Cập nhật"
-              : "Thêm bài học (3 ngôn ngữ)"}
-          </button>
-        </form>
+            <div className="form-row">
+              <div className="form-section">
+                <label>Loại bài học:</label>
+                <select value={category} onChange={handleCategoryChange}>
+                  <option value="">Chọn Loại</option>
+                  {Object.values(CATEGORIES).map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {category && (
+              <div className="category-section">
+                <h4 className="section-title">{categoryTitle}</h4>
+                {renderCategoryContent}
+              </div>
+            )}
+
+            <button type="submit" className="save-btn" disabled={isTranslating}>
+              <Save size={18} />
+              {isTranslating
+                ? "Đang xử lý..."
+                : editingLesson
+                ? "Cập nhật"
+                : "Thêm bài học (3 ngôn ngữ)"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+
+      {/* Prerequisite Popup */}
+      {showPrerequisitePopup && (
+        <PrerequisitePopup
+          languages={LANGUAGES}
+          currentIndex={currentLangIndex}
+          lessonOptions={lessonOptions}
+          onSelect={handlePrerequisiteSelect}
+          onClose={() => {
+            setShowPrerequisitePopup(false);
+            setCurrentLangIndex(0);
+            setPrerequisiteLessons({ Vietnam: null, Korea: null, UK: null });
+          }}
+        />
+      )}
+    </>
   );
 }
