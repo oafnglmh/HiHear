@@ -20,7 +20,7 @@ import { ExercisesModule } from './modules/exercises/exercises.module';
 import { ExerciseGrammaModule } from './modules/exercise-gramma/exercise-gramma.module';
 import { ExerciseVocabularyModule } from './modules/exercise-vocabulary/exercise-vocabulary.module';
 import { VideoModule } from './modules/video/video.module';
-
+import { UserSavedVocabularyModule } from './modules/user-saved-vocabulary/user-saved-vocabulary.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -63,6 +63,7 @@ import { VideoModule } from './modules/video/video.module';
     ExercisesModule,
     ExerciseGrammaModule,
     ExerciseVocabularyModule,
+    UserSavedVocabularyModule
   ],
 })
 export class AppModule {}
