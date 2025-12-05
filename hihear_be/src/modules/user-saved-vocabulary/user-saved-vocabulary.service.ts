@@ -35,4 +35,9 @@ export class UserSavedVocabularyService {
       throw new BadRequestException('Có lỗi xảy ra khi thêm từ vựng.');
     }
   }
+  async getByUserId(userId: string): Promise<UserSavedVocabulary[]> {
+    return await this.vocabRepo.find({
+      where: { userId: userId },
+    });
+  }
 }
