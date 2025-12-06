@@ -3,21 +3,19 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
-import 'package:hihear_mo/core/constants/app_text_styles.dart';
-import 'package:hihear_mo/core/constants/category.dart';
-import 'package:hihear_mo/core/helper/lesson_helper.dart';
-import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
-import 'package:hihear_mo/l10n/app_localizations.dart';
-import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
-import 'package:hihear_mo/presentation/pages/HearuAi/ai_chat_page.dart';
-import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
-import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
-import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
-import 'package:hihear_mo/share/UserShare.dart';
 import 'package:lottie/lottie.dart';
-import '../../../../core/constants/app_assets.dart';
+
+import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/core/constants/app_colors.dart';
+import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
+import 'package:hihear_mo/presentation/pages/home/widgets/floating_nav_bar.dart';
+import 'package:hihear_mo/presentation/pages/home/widgets/streak_popup.dart';
+import 'package:hihear_mo/presentation/pages/home/widgets/home_content.dart';
+import 'package:hihear_mo/presentation/pages/speak/speak_page.dart';
+import 'package:hihear_mo/presentation/pages/HearuAi/ai_chat_page.dart';
+import 'package:hihear_mo/presentation/pages/saveVocab/saved_vocab_page.dart';
+import 'package:hihear_mo/presentation/pages/profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,25 +26,34 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
-  late AnimationController _navBarController;
-  late AnimationController _bambooController;
+  late final AnimationController _navBarController;
+  late final AnimationController _bambooController;
+  late final AnimationController _lotusController;
+  late final AnimationController _rippleController;
   int _selectedIndex = 0;
   bool _hasShownStreakPopup = false;
 
   @override
   void initState() {
     super.initState();
-    _navBarController = AnimationController(
+    _navBarController = AnimationController(vsync: this, duration: AppDuration.short);
+    _bambooController = AnimationController(vsync: this, duration: AppDuration.bamboo)
+      ..repeat(reverse: true);
+    
+    // Thêm animation controllers cho hoa sen
+    _lotusController = AnimationController(
       vsync: this,
-      duration: AppDuration.short,
-    );
-    _bambooController = AnimationController(
-      vsync: this,
-      duration: AppDuration.bamboo,
+      duration: const Duration(milliseconds: 4000),
     )..repeat(reverse: true);
+
+    _rippleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat();
+
     context.read<LessonBloc>().add(const LessionEvent.loadLession());
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted && !_hasShownStreakPopup) {
         _showStreakPopup();
         _hasShownStreakPopup = true;
@@ -59,68 +66,105 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pageController.dispose();
     _navBarController.dispose();
     _bambooController.dispose();
+    _lotusController.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
   void _onItemTapped(int index) {
-    if (_selectedIndex != index) {
-      setState(() => _selectedIndex = index);
-      _navBarController.forward(from: 0);
-      _pageController.animateToPage(
-        index,
-        duration: AppDuration.medium,
-        curve: Curves.easeInOutCubic,
-      );
-    }
+    if (_selectedIndex == index) return;
+    setState(() => _selectedIndex = index);
+    _navBarController.forward(from: 0);
+    _pageController.animateToPage(
+      index,
+      duration: AppDuration.medium,
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   void _showStreakPopup() {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.5),
-      builder: (context) => const _StreakPopup(streakDays: 1),
+      barrierColor: Colors.black54,
+      builder: (_) => const StreakPopup(streakDays: 1),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const _HomeContent(),
+      const HomeContent(),
       const SpeakPage(),
       const AiChatPage(),
       const SavedVocabPage(),
-      ProfilePage(),
+      const ProfilePage(),
     ];
 
     return Scaffold(
       extendBody: true,
       body: Stack(
         children: [
-          const _GradientBackground(),
-
-          AnimatedBuilder(
-            animation: _bambooController,
-            builder: (context, child) => CustomPaint(
-              painter: BambooPainter(animationValue: _bambooController.value),
-              size: Size.infinite,
+          // Gradient background - giống StartPage
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0A5C36), // Xanh lá sen đậm
+                    Color(0xFF1B7F4E), // Xanh lá sen
+                    Color(0xFF0D6B3D), // Xanh trung bình
+                    Color(0xFF0D4D2D), // Xanh đậm
+                  ],
+                ),
+              ),
             ),
           ),
 
+          // Lotus pattern background
+          AnimatedBuilder(
+            animation: _lotusController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: LotusPatternPainter(
+                  animationValue: _lotusController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          // Ripple effects
+          AnimatedBuilder(
+            animation: _rippleController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: RipplePainter(
+                  animationValue: _rippleController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          // Content
           SafeArea(
             child: PageView(
               controller: _pageController,
               physics: const BouncingScrollPhysics(),
-              onPageChanged: (index) => setState(() => _selectedIndex = index),
+              onPageChanged: (i) => setState(() => _selectedIndex = i),
               children: pages,
             ),
           ),
 
+          // Navigation bar
           Positioned(
             left: 0,
             right: 0,
             bottom: AppPadding.medium,
-            child: _FloatingNavBar(
+            child: FloatingNavBar(
               selectedIndex: _selectedIndex,
               onItemTapped: _onItemTapped,
             ),
@@ -131,896 +175,196 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 }
 
-// ========== STREAK POPUP ==========
-class _StreakPopup extends StatefulWidget {
-  final int streakDays;
+// Lotus Pattern Painter - giống StartPage
+class LotusPatternPainter extends CustomPainter {
+  final double animationValue;
 
-  const _StreakPopup({required this.streakDays});
-
-  @override
-  State<_StreakPopup> createState() => _StreakPopupState();
-}
-
-class _StreakPopupState extends State<_StreakPopup>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+  LotusPatternPainter({required this.animationValue});
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
+  void paint(Canvas canvas, Size size) {
+    // Vẽ hoa sen góc trên phải
+    _drawLotusFlower(
+      canvas,
+      Offset(size.width - 70, 80 + math.sin(animationValue * math.pi * 2) * 8),
+      90,
+      0.18 + animationValue * 0.06,
     );
 
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
+    // Vẽ hoa sen góc dưới trái
+    _drawLotusFlower(
+      canvas,
+      Offset(70, size.height - 120 + math.cos(animationValue * math.pi * 2) * 10),
+      110,
+      0.15 + animationValue * 0.04,
     );
 
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
+    // Vẽ hoa sen nhỏ góc trên trái
+    _drawLotusFlower(
+      canvas,
+      Offset(80, 100 + math.sin(animationValue * math.pi * 2 + 1) * 6),
+      70,
+      0.12 + animationValue * 0.03,
     );
 
-    _controller.forward();
-  }
+    // Vẽ lá sen góc dưới phải
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 90, size.height - 100 + math.sin(animationValue * math.pi * 2) * 7),
+      75,
+      0.12 + animationValue * 0.03,
+    );
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(AppPadding.xxLarge),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFE6F0), // hồng pastel rất nhẹ
-                  Color(0xFFFFB6D5), // hồng đậm hơn
-                ],
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(28)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.pinkAccent.withOpacity(0.3),
-                  blurRadius: 25,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Lottie.asset(
-                  AppAssets.streakAnimation,
-                  width: 260,
-                  height: 260,
-                  fit: BoxFit.contain,
-                  repeat: true,
-                ),
-
-                SizedBox(height: AppPadding.large),
-
-                Text(
-                  'Tuyệt vời! Tiếp tục phát huy nhé!',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.cardDescription.copyWith(
-                    color: Colors.pink.shade700,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                SizedBox(height: AppPadding.xLarge),
-
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: AppPadding.large),
-                    decoration: BoxDecoration(
-                      color: Colors.pink.shade400,
-                      borderRadius: BorderRadius.circular(AppRadius.large),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.pink.shade200.withOpacity(0.5),
-                          blurRadius: 15,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      'Tiếp tục học',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.button.copyWith(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    // Vẽ lá sen nhỏ góc trên phải
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 120, 140 + math.cos(animationValue * math.pi * 2) * 5),
+      55,
+      0.1,
     );
   }
-}
 
-// ========== BACKGROUND ==========
-class _GradientBackground extends StatelessWidget {
-  const _GradientBackground();
+  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(opacity);
 
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.bamboo1, AppColors.bamboo2, AppColors.bamboo3],
-          ),
-        ),
-      ),
-    );
-  }
-}
+    // Vẽ 8 cánh hoa
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (animationValue * 0.1);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
 
-// ========== NAVIGATION BAR ==========
-class _FloatingNavBar extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onItemTapped;
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(
+        size * 0.3, -size * 0.5,
+        0, -size * 0.8,
+      );
+      path.quadraticBezierTo(
+        -size * 0.3, -size * 0.5,
+        0, 0,
+      );
 
-  const _FloatingNavBar({
-    required this.selectedIndex,
-    required this.onItemTapped,
-  });
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(
-        AppPadding.large,
-        0,
-        AppPadding.large,
-        AppPadding.large,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.navBar),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.goldLight.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.navBar),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
-              borderRadius: BorderRadius.circular(AppRadius.navBar),
-              border: Border.all(
-                color: AppColors.goldLight.withOpacity(0.3),
-                width: 2,
-              ),
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: AppPadding.medium,
-              vertical: AppPadding.medium,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.home_rounded,
-                  index: 0,
-                  label: "Nhà",
-                  isSelected: selectedIndex == 0,
-                  onTap: () => onItemTapped(0),
-                ),
-                _NavItem(
-                  icon: Icons.mic_rounded,
-                  index: 1,
-                  label: "Nói",
-                  isSelected: selectedIndex == 1,
-                  onTap: () => onItemTapped(1),
-                ),
-                _NavItem(
-                  icon: Icons.smart_toy,
-                  index: 2,
-                  label: "HearAI",
-                  isSelected: selectedIndex == 2,
-                  onTap: () => onItemTapped(2),
-                ),
-                _NavItem(
-                  icon: Icons.bookmark_rounded,
-                  index: 3,
-                  label: "Lưu",
-                  isSelected: selectedIndex == 3,
-                  onTap: () => onItemTapped(3),
-                ),
-                _NavItem(
-                  icon: Icons.person_rounded,
-                  index: 4,
-                  label: "Hồ sơ",
-                  isSelected: selectedIndex == 4,
-                  onTap: () => onItemTapped(4),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+    // Nhụy hoa
+    final centerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
 
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final int index;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
+    canvas.drawCircle(center, size * 0.15, centerPaint);
 
-  const _NavItem({
-    required this.icon,
-    required this.index,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDuration.short,
-        curve: Curves.easeInOutCubic,
-        padding: EdgeInsets.symmetric(
-          horizontal: AppPadding.large,
-          vertical: AppPadding.medium,
-        ),
-        decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [AppColors.goldLight, AppColors.goldDark],
-                )
-              : null,
-          borderRadius: BorderRadius.circular(AppRadius.large),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.goldLight.withOpacity(0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
-              size: AppSizes.iconSizeLarge,
-            ),
-            if (isSelected) ...[
-              SizedBox(width: AppPadding.small),
-              Text(label, style: AppTextStyles.button),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ========== HOME CONTENT ==========
-class _HomeContent extends StatefulWidget {
-  const _HomeContent();
-
-  @override
-  State<_HomeContent> createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<_HomeContent>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _headerController;
-
-  @override
-  void initState() {
-    super.initState();
-    _headerController = AnimationController(
-      vsync: this,
-      duration: AppDuration.long,
-    )..forward();
+    // Chi tiết nhụy
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6;
+      final x = center.dx + math.cos(angle) * size * 0.1;
+      final y = center.dy + math.sin(angle) * size * 0.1;
+      canvas.drawCircle(
+        Offset(x, y),
+        size * 0.02,
+        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
+      );
+    }
   }
 
-  @override
-  void dispose() {
-    _headerController.dispose();
-    super.dispose();
-  }
+  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LessonBloc, LessonState>(
-      builder: (context, state) {
-        List<LessionEntity> lessons = [];
-        state.maybeWhen(
-          data: (data) => lessons = data,
-          orElse: () => lessons = [],
-        );
-
-        return CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  SizedBox(height: AppPadding.large),
-                  _HeaderCard(controller: _headerController),
-                  SizedBox(height: AppPadding.xxLarge),
-                  const _ProgressCard(),
-                  SizedBox(height: AppPadding.large),
-                ],
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: AppPadding.large),
-              sliver: _LessonGrid(lessons: lessons),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
-          ],
-        );
-      },
+    final path = Path();
+    
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy - size * 0.7,
+      center.dx + size, center.dy,
     );
-  }
-}
-
-// ========== HEADER CARD ==========
-class _HeaderCard extends StatelessWidget {
-  final AnimationController controller;
-
-  const _HeaderCard({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: controller,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppPadding.large),
-        child: Container(
-          padding: EdgeInsets.all(AppPadding.large),
-          decoration: _cardDecoration(AppColors.goldLight),
-          child: Row(
-            children: [
-              _VietnamFlagIcon(),
-              SizedBox(width: AppPadding.large),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Xin chào! 👋", style: AppTextStyles.header),
-                    SizedBox(height: AppPadding.small / 2),
-                    Text(
-                      "Học tiếng Việt thôi nào!",
-                      style: AppTextStyles.subHeader,
-                    ),
-                  ],
-                ),
-              ),
-              Image.asset(AppAssets.flowerIcon, fit: BoxFit.cover),
-            ],
-          ),
-        ),
-      ),
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
     );
-  }
-}
-
-class _VietnamFlagIcon extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(AppPadding.medium + 2),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.vietnamRed, AppColors.vietnamRedLight],
-        ),
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.vietnamRed.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: const Text('🇻🇳', style: TextStyle(fontSize: 28)),
+    path.lineTo(center.dx, center.dy);
+    
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy - size * 0.7,
+      center.dx - size, center.dy,
     );
-  }
-}
-
-// ========== PROGRESS CARD ==========
-class _ProgressCard extends StatelessWidget {
-  const _ProgressCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppPadding.large),
-      child: Container(
-        padding: EdgeInsets.all(AppPadding.xxLarge),
-        decoration: _cardDecoration(AppColors.goldLight),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const _CircularProgress(),
-                SizedBox(width: AppPadding.large),
-                const Expanded(child: _ProgressInfo()),
-              ],
-            ),
-          ],
-        ),
-      ),
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
     );
-  }
-}
+    path.lineTo(center.dx, center.dy);
 
-class _CircularProgress extends StatelessWidget {
-  const _CircularProgress();
+    canvas.drawPath(path, paint);
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          height: AppSizes.progressCircle,
-          width: AppSizes.progressCircle,
-          child: const CircularProgressIndicator(
-            value: 0.1,
-            strokeWidth: 8,
-            color: AppColors.vietnamRed,
-            backgroundColor: AppColors.progressBackground,
-          ),
-        ),
-        Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.local_fire_department,
-                  color: AppColors.fireIcon,
-                  size: AppSizes.iconSizeLarge,
-                ),
-                SizedBox(width: AppPadding.small / 2),
-                Text("1", style: AppTextStyles.header),
-              ],
-            ),
-            SizedBox(height: AppPadding.small / 4),
-            Text("ngày", style: AppTextStyles.smallText),
-          ],
-        ),
-      ],
-    );
-  }
-}
+    // Gân lá
+    final veinPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
 
-class _ProgressInfo extends StatelessWidget {
-  const _ProgressInfo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Chuỗi ngày học", style: AppTextStyles.cardDescription),
-        SizedBox(height: AppPadding.small - 2),
-        Text(
-          "Tuyệt vời!",
-          style: AppTextStyles.cardTitle.copyWith(
-            color: AppColors.vietnamRed,
-            fontSize: 20,
-          ),
-        ),
-        SizedBox(height: AppPadding.small / 2),
-        Text("Tiếp tục phát huy nhé!", style: AppTextStyles.cardDescription),
-      ],
-    );
-  }
-}
-
-// ========== LESSON GRID ==========
-class _LessonGrid extends StatelessWidget {
-  final List<LessionEntity> lessons;
-
-  const _LessonGrid({required this.lessons});
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverGrid(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.85,
-      ),
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final lesson = lessons[index];
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 400 + (index * 100)),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) => Transform.scale(
-            scale: 0.8 + (value * 0.2),
-            child: Opacity(
-              opacity: value,
-              child: _LessonCard(lesson: lesson),
-            ),
-          ),
-        );
-      }, childCount: lessons.length),
-    );
-  }
-}
-
-// ========== LESSON CARD với hiệu ứng xích ==========
-class _LessonCard extends StatefulWidget {
-  final LessionEntity lesson;
-
-  const _LessonCard({required this.lesson});
-
-  @override
-  State<_LessonCard> createState() => _LessonCardState();
-}
-
-class _LessonCardState extends State<_LessonCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _unlockController;
-  late Animation<double> _shakeAnimation;
-  late Animation<double> _lockFallAnimation;
-  late Animation<double> _lockRotationAnimation;
-  late Animation<double> _chainOpacityAnimation;
-  bool isLocked = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _unlockController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size),
+      Offset(center.dx, center.dy + size),
+      veinPaint,
     );
 
-    _shakeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _unlockController,
-        curve: const Interval(0.0, 0.2, curve: Curves.elasticIn),
-      ),
-    );
-
-    _lockFallAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _unlockController,
-        curve: const Interval(0.4, 0.8, curve: Curves.easeInQuart),
-      ),
-    );
-
-    _lockRotationAnimation = Tween<double>(begin: 0, end: 2).animate(
-      CurvedAnimation(
-        parent: _unlockController,
-        curve: const Interval(0.4, 0.8, curve: Curves.easeInQuart),
-      ),
-    );
-
-    _chainOpacityAnimation = Tween<double>(begin: 1, end: 0).animate(
-      CurvedAnimation(
-        parent: _unlockController,
-        curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
-    if (widget.lesson.id == '1' || widget.lesson.id == 1) {
-      isLocked = false;
+    for (int i = -3; i <= 3; i++) {
+      if (i == 0) continue;
+      final startY = center.dy + (i * size / 4);
+      final endX = center.dx + (size * 0.7);
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(endX, startY + size * 0.1),
+        veinPaint..strokeWidth = 1.0,
+      );
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(center.dx - endX, startY + size * 0.1),
+        veinPaint,
+      );
     }
   }
 
   @override
-  void dispose() {
-    _unlockController.dispose();
-    super.dispose();
+  bool shouldRepaint(LotusPatternPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
+}
 
-  void _handleUnlock() {
-    if (isLocked) {
-      _unlockController.forward().then((_) {
-        setState(() => isLocked = false);
-      });
+// Ripple Effect Painter - giống StartPage
+class RipplePainter extends CustomPainter {
+  final double animationValue;
+
+  RipplePainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = Colors.white.withOpacity(0.1);
+
+    for (int i = 0; i < 3; i++) {
+      final progress = (animationValue + (i * 0.33)) % 1.0;
+      final radius = progress * size.width * 0.6;
+      final opacity = (1 - progress) * 0.15;
+
+      canvas.drawCircle(
+        Offset(size.width / 2, size.height * 0.3),
+        radius,
+        paint..color = Colors.white.withOpacity(opacity),
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colors = LessonHelper.getLessonColors(widget.lesson.id);
-    final icon = LessonHelper.getIconForCategory(widget.lesson.category ?? '');
-
-    return GestureDetector(
-      onTap: isLocked ? _handleUnlock : () {},
-      child: Stack(
-        children: [
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: isLocked ? 0.6 : 1.0,
-            child: Container(
-              decoration: _cardDecoration(isLocked ? Colors.grey : colors[0]),
-              child: Padding(
-                padding: EdgeInsets.all(AppPadding.medium + 6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        _LessonIcon(
-                          icon: icon,
-                          colors: isLocked
-                              ? [Colors.grey.shade400, Colors.grey.shade600]
-                              : colors,
-                        ),
-                        const Spacer(),
-                        _LessonBadge(
-                          title: widget.lesson.category ?? 'Bài học',
-                          color: isLocked ? Colors.grey : colors[0],
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Text(
-                      widget.lesson.title ?? 'Bài học',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.cardTitle.copyWith(
-                        color: isLocked ? Colors.grey.shade600 : null,
-                      ),
-                    ),
-                    SizedBox(height: AppPadding.small - 2),
-                    Text(
-                      widget.lesson.description,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.cardDescription.copyWith(
-                        color: isLocked ? Colors.grey.shade500 : null,
-                      ),
-                    ),
-                    SizedBox(height: AppPadding.medium + 2),
-                    _StartButton(
-                      l10n: l10n,
-                      colors: isLocked
-                          ? [Colors.grey.shade400, Colors.grey.shade600]
-                          : colors,
-                      lesson: widget.lesson,
-                      isLocked: isLocked,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          if (isLocked)
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _unlockController,
-                builder: (context, child) {
-                  final shakeOffset = _shakeAnimation.value < 1
-                      ? math.sin(_shakeAnimation.value * math.pi * 4) * 5
-                      : 0.0;
-
-                  return Transform.translate(
-                    offset: Offset(shakeOffset, 0),
-                    child: Opacity(
-                      opacity: _chainOpacityAnimation.value,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(
-                            AppRadius.xLarge + 4,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Transform.translate(
-                                offset: Offset(
-                                  0,
-                                  _lockFallAnimation.value * 200,
-                                ),
-                                child: Transform.rotate(
-                                  angle: _lockRotationAnimation.value * math.pi,
-                                  child: Container(
-                                    padding: EdgeInsets.all(AppPadding.large),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          blurRadius: 15,
-                                          offset: const Offset(0, 5),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Icon(
-                                      Icons.lock_rounded,
-                                      size: 40,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
+  bool shouldRepaint(RipplePainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
-}
-
-class _LessonIcon extends StatelessWidget {
-  final String icon;
-  final List<Color> colors;
-
-  const _LessonIcon({required this.icon, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(AppPadding.small + 2),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: colors),
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        boxShadow: [
-          BoxShadow(
-            color: colors[0].withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Text(icon, style: const TextStyle(fontSize: 24)),
-    );
-  }
-}
-
-class _LessonBadge extends StatelessWidget {
-  final String title;
-  final Color color;
-
-  const _LessonBadge({required this.title, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.small + 2,
-        vertical: AppPadding.small - 3,
-      ),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(AppRadius.small),
-      ),
-      child: Text(title, style: AppTextStyles.smallText.copyWith(color: color)),
-    );
-  }
-}
-
-class _StartButton extends StatelessWidget {
-  final AppLocalizations l10n;
-  final List<Color> colors;
-  final LessionEntity lesson;
-  final bool isLocked;
-
-  const _StartButton({
-    required this.l10n,
-    required this.colors,
-    required this.lesson,
-    this.isLocked = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final national = UserShare().national;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: AppPadding.small + 3),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: colors),
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        boxShadow: [
-          BoxShadow(
-            color: colors[0].withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: GestureDetector(
-        onTap: isLocked
-            ? null
-            : () {
-                if (lesson.category == Category.grammar) {
-                  context.go('/grammar/${lesson.id}');
-                } else if (lesson.category == Category.vocab) {
-                  context.go('/vocab/${lesson.id}');
-                }
-              },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              isLocked ? 'Đã khóa' : l10n.startButton,
-              style: AppTextStyles.button,
-            ),
-            SizedBox(width: AppPadding.small - 2),
-            Icon(
-              isLocked ? Icons.lock_rounded : Icons.arrow_forward_rounded,
-              color: Colors.white,
-              size: AppSizes.iconSizeSmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ========== HELPER FUNCTION ==========
-BoxDecoration _cardDecoration(Color borderColor) {
-  return BoxDecoration(
-    color: Colors.white.withOpacity(0.95),
-    borderRadius: BorderRadius.circular(AppRadius.xLarge + 4),
-    border: Border.all(color: borderColor.withOpacity(0.3), width: 2),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.1),
-        blurRadius: 20,
-        offset: const Offset(0, 8),
-      ),
-    ],
-  );
 }

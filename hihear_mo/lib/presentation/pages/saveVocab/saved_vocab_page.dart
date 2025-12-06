@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
-import 'package:hihear_mo/core/constants/app_text_styles.dart';
-import 'package:hihear_mo/presentation/painter/bamboo_painter.dart';
+import 'dart:math' as math;
 
 class SavedVocabPage extends StatefulWidget {
   const SavedVocabPage({super.key});
@@ -16,22 +14,26 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     with TickerProviderStateMixin {
   final FlutterTts _tts = FlutterTts();
   final TextEditingController _searchController = TextEditingController();
-  late AnimationController _headerController;
-  late AnimationController _bambooController;
+  
+  late AnimationController _lotusController;
+  late AnimationController _rippleController;
+  late AnimationController _floatingController;
+  late AnimationController _fadeController;
 
   final List<Map<String, String>> _savedVocab = [
-    {'en': 'apple', 'vi': 'quả táo', 'category': 'Thức ăn', 'emoji': '🍎'},
-    {'en': 'book', 'vi': 'quyển sách', 'category': 'Học tập', 'emoji': '📚'},
-    {'en': 'computer', 'vi': 'máy tính', 'category': 'Công nghệ', 'emoji': '💻'},
-    {'en': 'friend', 'vi': 'người bạn', 'category': 'Xã hội', 'emoji': '👥'},
-    {'en': 'music', 'vi': 'âm nhạc', 'category': 'Nghệ thuật', 'emoji': '🎵'},
-    {'en': 'school', 'vi': 'trường học', 'category': 'Học tập', 'emoji': '🏫'},
-    {'en': 'teacher', 'vi': 'giáo viên', 'category': 'Học tập', 'emoji': '👨‍🏫'},
-    {'en': 'beautiful', 'vi': 'đẹp', 'category': 'Tính từ', 'emoji': '✨'},
+    {'en': 'apple', 'vi': 'quả táo'},
+    {'en': 'book', 'vi': 'quyển sách'},
+    {'en': 'computer', 'vi': 'máy tính'},
+    {'en': 'friend', 'vi': 'người bạn'},
+    {'en': 'music', 'vi': 'âm nhạc'},
+    {'en': 'school', 'vi': 'trường học'},
+    {'en': 'teacher', 'vi': 'giáo viên'},
+    {'en': 'beautiful', 'vi': 'đẹp'},
+    {'en': 'family', 'vi': 'gia đình'},
+    {'en': 'house', 'vi': 'ngôi nhà'},
   ];
 
   List<Map<String, String>> _filteredVocab = [];
-  String _selectedCategory = 'Tất cả';
 
   @override
   void initState() {
@@ -39,23 +41,35 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     _filteredVocab = List.from(_savedVocab);
     _searchController.addListener(_onSearchChanged);
     
-    _headerController = AnimationController(
+    _lotusController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..forward();
+      duration: const Duration(milliseconds: 4000),
+    )..repeat(reverse: true);
 
-    _bambooController = AnimationController(
+    _rippleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
+    )..repeat();
+
+    _floatingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2500),
     )..repeat(reverse: true);
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
   }
 
   @override
   void dispose() {
     _tts.stop();
     _searchController.dispose();
-    _headerController.dispose();
-    _bambooController.dispose();
+    _lotusController.dispose();
+    _rippleController.dispose();
+    _floatingController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -65,10 +79,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
       _filteredVocab = _savedVocab.where((vocab) {
         final en = vocab['en']!.toLowerCase();
         final vi = vocab['vi']!.toLowerCase();
-        final matchesSearch = en.contains(query) || vi.contains(query);
-        final matchesCategory = _selectedCategory == 'Tất cả' ||
-            vocab['category'] == _selectedCategory;
-        return matchesSearch && matchesCategory;
+        return en.contains(query) || vi.contains(query);
       }).toList();
     });
   }
@@ -84,27 +95,40 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient - màu tre xanh
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF4A7C2C),
-                  Color(0xFF5E9A3A),
-                  Color(0xFF3D6624),
+                  Color(0xFF0A5C36),
+                  Color(0xFF1B7F4E),
+                  Color(0xFF0D6B3D),
+                  Color(0xFF0D4D2D),
                 ],
               ),
             ),
           ),
 
+          // Lotus pattern background
           AnimatedBuilder(
-            animation: _bambooController,
+            animation: _lotusController,
             builder: (context, child) {
               return CustomPaint(
-                painter: BambooPainter(
-                  animationValue: _bambooController.value,
+                painter: LotusPatternPainter(
+                  animationValue: _lotusController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          AnimatedBuilder(
+            animation: _rippleController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: RipplePainter(
+                  animationValue: _rippleController.value,
                 ),
                 size: Size.infinite,
               );
@@ -112,15 +136,18 @@ class _SavedVocabPageState extends State<SavedVocabPage>
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildSearchBar(),
-                  _buildCategoryFilter(),
-                  _buildStatsBar(),
-                  _buildVocabGrid(),
-                ],
+            child: FadeTransition(
+              opacity: _fadeController,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildHeader(),
+                    _buildSearchBar(),
+                    _buildStatsBar(),
+                    _buildVocabGrid(),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ),
@@ -130,89 +157,88 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildHeader() {
-    return FadeTransition(
-      opacity: _headerController,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, -0.3),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: _headerController,
-          curve: Curves.easeOut,
-        )),
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color(0xFFD4AF37).withOpacity(0.3),
-              width: 2,
+    return AnimatedBuilder(
+      animation: _floatingController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2) * 4),
+          child: Container(
+            margin: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.95),
+                  Colors.white.withOpacity(0.9),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFFD4AF37),
+                width: 3,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFD4AF37).withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFD4AF37).withOpacity(0.4),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.bookmark,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(
-                          "Từ đã lưu",
-                          style: TextStyle(
-                            color: Color(0xFF2D5016),
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${_savedVocab.length} từ vựng",
-                      style: TextStyle(
-                        color: const Color(0xFF2D5016).withOpacity(0.6),
-                        fontSize: 14,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD4AF37).withOpacity(0.5),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.bookmark_rounded,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 18),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Từ đã lưu",
+                        style: TextStyle(
+                          color: Color(0xFF2D5016),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "${_savedVocab.length} từ vựng",
+                        style: TextStyle(
+                          color: const Color(0xFF2D5016).withOpacity(0.7),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -224,30 +250,35 @@ class _SavedVocabPageState extends State<SavedVocabPage>
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: const Color(0xFFD4AF37).withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: TextField(
           controller: _searchController,
-          style: const TextStyle(color: Color(0xFF2D5016)),
+          style: const TextStyle(
+            color: Color(0xFF2D5016),
+            fontSize: 16,
+          ),
           decoration: InputDecoration(
-            hintText: 'Tìm từ vựng... 🔍',
+            hintText: 'Tìm từ vựng...',
             hintStyle: TextStyle(
               color: const Color(0xFF2D5016).withOpacity(0.5),
+              fontSize: 16,
             ),
             prefixIcon: const Icon(
               Icons.search_rounded,
               color: Color(0xFFD4AF37),
-              size: 24,
+              size: 26,
             ),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(
                       Icons.clear_rounded,
                       color: const Color(0xFF2D5016).withOpacity(0.5),
+                      size: 24,
                     ),
                     onPressed: () {
                       _searchController.clear();
@@ -256,6 +287,10 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                 : null,
             filled: true,
             fillColor: Colors.white.withOpacity(0.95),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 18,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
@@ -263,7 +298,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
-                color: const Color(0xFFD4AF37).withOpacity(0.3),
+                color: const Color(0xFFD4AF37).withOpacity(0.4),
                 width: 2,
               ),
             ),
@@ -271,163 +306,99 @@ class _SavedVocabPageState extends State<SavedVocabPage>
               borderRadius: BorderRadius.circular(20),
               borderSide: const BorderSide(
                 color: Color(0xFFD4AF37),
-                width: 2,
+                width: 3,
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryFilter() {
-    final categories = [
-      {'name': 'Tất cả', 'emoji': '📚'},
-      {'name': 'Thức ăn', 'emoji': '🍎'},
-      {'name': 'Học tập', 'emoji': '📖'},
-      {'name': 'Công nghệ', 'emoji': '💻'},
-      {'name': 'Xã hội', 'emoji': '👥'},
-      {'name': 'Nghệ thuật', 'emoji': '🎨'},
-    ];
-    
-    return Container(
-      height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = category['name'] == _selectedCategory;
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedCategory = category['name']!;
-                  _onSearchChanged();
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? const LinearGradient(
-                          colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                        )
-                      : null,
-                  color: isSelected ? null : Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected
-                        ? const Color(0xFFD4AF37)
-                        : const Color(0xFFD4AF37).withOpacity(0.3),
-                    width: 2,
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFD4AF37).withOpacity(0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      category['emoji']!,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      category['name']!,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : const Color(0xFF2D5016),
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
 
   Widget _buildStatsBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFD4AF37).withOpacity(0.3),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+    return AnimatedBuilder(
+      animation: _floatingController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2 + 1) * 3),
+          child: Container(
+            margin: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.95),
+                  Colors.white.withOpacity(0.9),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFFD4AF37).withOpacity(0.4),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFD4AF37).withOpacity(0.2),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem(
+                  _filteredVocab.length.toString(),
+                  "Từ hiển thị",
+                  const Color(0xFFD4AF37),
+                ),
+                Container(
+                  width: 2,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0xFFD4AF37).withOpacity(0.1),
+                        const Color(0xFFD4AF37).withOpacity(0.3),
+                        const Color(0xFFD4AF37).withOpacity(0.1),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildStatItem(
+                  "7",
+                  "Ngày streak",
+                  const Color(0xFFDA291C),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem(
-            '📚',
-            _filteredVocab.length.toString(),
-            "Từ hiển thị",
-            const Color(0xFFD4AF37),
-          ),
-          Container(
-            width: 2,
-            height: 40,
-            color: const Color(0xFFD4AF37).withOpacity(0.3),
-          ),
-          _buildStatItem(
-            '🔥',
-            "7",
-            "Ngày streak",
-            const Color(0xFFDA291C),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildStatItem(String emoji, String value, String label, Color color) {
+  Widget _buildStatItem(String value, String label, Color color) {
     return Column(
       children: [
-        Text(
-          emoji,
-          style: const TextStyle(fontSize: 28),
-        ),
-        const SizedBox(height: 6),
         Text(
           value,
           style: TextStyle(
             color: color,
-            fontSize: 22,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
           ),
         ),
+        const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            color: const Color(0xFF2D5016).withOpacity(0.6),
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+            color: const Color(0xFF2D5016).withOpacity(0.7),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -436,42 +407,79 @@ class _SavedVocabPageState extends State<SavedVocabPage>
 
   Widget _buildVocabGrid() {
     if (_filteredVocab.isEmpty) {
-      return Center(
-        child: Container(
-          margin: const EdgeInsets.all(40),
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color(0xFFD4AF37).withOpacity(0.3),
-              width: 2,
+      return AnimatedBuilder(
+        animation: _floatingController,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(0, math.sin(_floatingController.value * math.pi * 2) * 5),
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.all(40),
+                padding: const EdgeInsets.all(40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.95),
+                      Colors.white.withOpacity(0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: const Color(0xFFD4AF37),
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFD4AF37).withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFD4AF37),
+                            Color(0xFFB8941E),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.search_off_rounded,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Không tìm thấy từ nào",
+                      style: TextStyle(
+                        color: Color(0xFF2D5016),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Thử tìm kiếm với từ khóa khác",
+                      style: TextStyle(
+                        color: const Color(0xFF2D5016).withOpacity(0.7),
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('🔍', style: TextStyle(fontSize: 64)),
-              const SizedBox(height: 16),
-              const Text(
-                "Không tìm thấy từ nào",
-                style: TextStyle(
-                  color: Color(0xFF2D5016),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Thử tìm kiếm với từ khóa khác",
-                style: TextStyle(
-                  color: const Color(0xFF2D5016).withOpacity(0.6),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
+          );
+        },
       );
     }
 
@@ -485,7 +493,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
           crossAxisCount: 2,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.8,
         ),
         itemBuilder: (context, index) {
           return TweenAnimationBuilder<double>(
@@ -512,9 +520,6 @@ class _SavedVocabPageState extends State<SavedVocabPage>
       speed: 500,
       front: _buildCardFace(
         title: vocab['en']!,
-        subtitle: "Nhấn để xem nghĩa",
-        category: vocab['category']!,
-        emoji: vocab['emoji']!,
         icon: Icons.volume_up_rounded,
         onIconPressed: () => _speak(vocab['en']!),
         index: index,
@@ -522,8 +527,6 @@ class _SavedVocabPageState extends State<SavedVocabPage>
       back: _buildCardFace(
         title: vocab['vi']!,
         subtitle: vocab['en'],
-        category: vocab['category']!,
-        emoji: vocab['emoji']!,
         isBack: true,
         index: index,
       ),
@@ -533,8 +536,6 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   Widget _buildCardFace({
     required String title,
     String? subtitle,
-    required String category,
-    required String emoji,
     IconData? icon,
     VoidCallback? onIconPressed,
     bool isBack = false,
@@ -550,136 +551,122 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                 end: Alignment.bottomRight,
                 colors: colors,
               )
-            : null,
-        color: isBack ? null : Colors.white.withOpacity(0.95),
+            : LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.95),
+                  Colors.white.withOpacity(0.9),
+                ],
+              ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isBack
-              ? colors[0].withOpacity(0.5)
-              : const Color(0xFFD4AF37).withOpacity(0.3),
+          color: colors[0].withOpacity(0.5),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: isBack
-                ? colors[0].withOpacity(0.3)
-                : Colors.black.withOpacity(0.1),
-            blurRadius: 12,
+            color: colors[0].withOpacity(0.3),
+            blurRadius: 15,
             offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Stack(
         children: [
-          // Decorative circle
-          if (!isBack)
+          if (!isBack) ...[
             Positioned(
-              top: -30,
-              right: -30,
+              top: -20,
+              right: -20,
               child: Container(
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
+                  gradient: RadialGradient(
                     colors: [
-                      colors[0].withOpacity(0.1),
-                      colors[1].withOpacity(0.05),
+                      colors[0].withOpacity(0.15),
+                      Colors.transparent,
                     ],
                   ),
                 ),
               ),
             ),
-          
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isBack
-                            ? Colors.white.withOpacity(0.2)
-                            : colors[0].withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        category,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: isBack ? Colors.white : colors[0],
-                        ),
-                      ),
-                    ),
-                    Text(
-                      emoji,
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ],
-                ),
-                
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (icon != null)
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: colors,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors[0].withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              icon,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                            onPressed: onIconPressed,
-                          ),
-                        ),
-                      const SizedBox(height: 12),
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: isBack ? Colors.white : const Color(0xFF2D5016),
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          subtitle,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isBack
-                                ? Colors.white.withOpacity(0.8)
-                                : const Color(0xFF2D5016).withOpacity(0.6),
-                          ),
-                        ),
-                      ],
+            Positioned(
+              bottom: -30,
+              left: -30,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      colors[1].withOpacity(0.1),
+                      Colors.transparent,
                     ],
                   ),
                 ),
+              ),
+            ),
+          ],
+          
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null)
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: colors,
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors[0].withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      onPressed: onIconPressed,
+                    ),
+                  ),
+                if (icon != null) const SizedBox(height: 16),
+                
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: isBack ? Colors.white : const Color(0xFF2D5016),
+                    letterSpacing: 0.5,
+                    height: 1.2,
+                  ),
+                ),
+                
+                if (subtitle != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isBack
+                          ? Colors.white.withOpacity(0.9)
+                          : const Color(0xFF2D5016).withOpacity(0.7),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -692,10 +679,186 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     final colorSets = [
       [const Color(0xFFDA291C), const Color(0xFFFD0000)],
       [const Color(0xFFD4AF37), const Color(0xFFB8941E)],
-      [const Color(0xFF4A7C2C), const Color(0xFF5E9A3A)],
+      [const Color(0xFF1B7F4E), const Color(0xFF0D6B3D)],
       [const Color(0xFFFF6B35), const Color(0xFFFF8C50)],
       [const Color(0xFF667eea), const Color(0xFF764ba2)],
     ];
     return colorSets[index % colorSets.length];
+  }
+}
+
+class LotusPatternPainter extends CustomPainter {
+  final double animationValue;
+
+  LotusPatternPainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _drawLotusFlower(
+      canvas,
+      Offset(size.width - 70, 80 + math.sin(animationValue * math.pi * 2) * 8),
+      90,
+      0.18 + animationValue * 0.06,
+    );
+
+    _drawLotusFlower(
+      canvas,
+      Offset(70, size.height - 120 + math.cos(animationValue * math.pi * 2) * 10),
+      110,
+      0.15 + animationValue * 0.04,
+    );
+
+    _drawLotusFlower(
+      canvas,
+      Offset(80, 100 + math.sin(animationValue * math.pi * 2 + 1) * 6),
+      70,
+      0.12 + animationValue * 0.03,
+    );
+
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 90, size.height - 100 + math.sin(animationValue * math.pi * 2) * 7),
+      75,
+      0.12 + animationValue * 0.03,
+    );
+
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 120, 140 + math.cos(animationValue * math.pi * 2) * 5),
+      55,
+      0.1,
+    );
+  }
+
+  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(opacity);
+
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (animationValue * 0.1);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
+
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(size * 0.3, -size * 0.5, 0, -size * 0.8);
+      path.quadraticBezierTo(-size * 0.3, -size * 0.5, 0, 0);
+
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
+
+    final centerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
+
+    canvas.drawCircle(center, size * 0.15, centerPaint);
+
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6;
+      final x = center.dx + math.cos(angle) * size * 0.1;
+      final y = center.dy + math.sin(angle) * size * 0.1;
+      canvas.drawCircle(
+        Offset(x, y),
+        size * 0.02,
+        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
+      );
+    }
+  }
+
+  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
+
+    final path = Path();
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy - size * 0.7,
+      center.dx + size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    path.lineTo(center.dx, center.dy);
+    
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy - size * 0.7,
+      center.dx - size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    path.lineTo(center.dx, center.dy);
+
+    canvas.drawPath(path, paint);
+
+    final veinPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
+
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size),
+      Offset(center.dx, center.dy + size),
+      veinPaint,
+    );
+
+    for (int i = -3; i <= 3; i++) {
+      if (i == 0) continue;
+      final startY = center.dy + (i * size / 4);
+      final endX = center.dx + (size * 0.7);
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(endX, startY + size * 0.1),
+        veinPaint..strokeWidth = 1.0,
+      );
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(center.dx - endX, startY + size * 0.1),
+        veinPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(LotusPatternPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
+  }
+}
+
+class RipplePainter extends CustomPainter {
+  final double animationValue;
+
+  RipplePainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = Colors.white.withOpacity(0.1);
+
+    for (int i = 0; i < 3; i++) {
+      final progress = (animationValue + (i * 0.33)) % 1.0;
+      final radius = progress * size.width * 0.6;
+      final opacity = (1 - progress) * 0.15;
+
+      canvas.drawCircle(
+        Offset(size.width / 2, size.height * 0.3),
+        radius,
+        paint..color = Colors.white.withOpacity(opacity),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(RipplePainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
 }

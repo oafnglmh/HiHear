@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
-import 'widgets/lesson_header.dart';
-import 'widgets/question_content.dart';
-import 'widgets/feedback_bottom_sheet.dart';
-import 'widgets/result_dialog.dart';
-import 'widgets/gradient_background.dart';
+import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/core/constants/app_colors.dart';
+import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'models/vocab_question.dart';
+import 'dart:math' as math;
 
 class VocabLessonPage extends StatefulWidget {
   final String id;
@@ -19,13 +19,17 @@ class VocabLessonPage extends StatefulWidget {
 }
 
 class _VocabLessonPageState extends State<VocabLessonPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   int _currentQuestionIndex = 0;
   int _correctAnswers = 0;
   bool _hasAnswered = false;
   String? _selectedAnswer;
   late AnimationController _feedbackController;
+  late AnimationController _lotusController;
+  late AnimationController _floatingController;
+  late AnimationController _rippleController;
   List<VocabQuestion> _questions = [];
+  Set<String> _savedVocabs = {}; // Track saved vocabularies
 
   bool get _isCorrect =>
       _selectedAnswer == _questions[_currentQuestionIndex].correctAnswer;
@@ -34,15 +38,34 @@ class _VocabLessonPageState extends State<VocabLessonPage>
   void initState() {
     super.initState();
     context.read<LessonBloc>().add(LessionEvent.loadLessonById(widget.id));
+    
     _feedbackController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    _lotusController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat(reverse: true);
+
+    _floatingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2500),
+    )..repeat(reverse: true);
+
+    _rippleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat();
   }
 
   @override
   void dispose() {
     _feedbackController.dispose();
+    _lotusController.dispose();
+    _floatingController.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
@@ -65,9 +88,21 @@ class _VocabLessonPageState extends State<VocabLessonPage>
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => FeedbackBottomSheet(
+      builder: (context) => _FeedbackBottomSheet(
         isCorrect: _isCorrect,
         explanation: _questions[_currentQuestionIndex].explanation,
+        correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
+        isSaved: _savedVocabs.contains(_questions[_currentQuestionIndex].correctAnswer),
+        onSave: () {
+          setState(() {
+            final vocab = _questions[_currentQuestionIndex].correctAnswer;
+            if (_savedVocabs.contains(vocab)) {
+              _savedVocabs.remove(vocab);
+            } else {
+              _savedVocabs.add(vocab);
+            }
+          });
+        },
         onNext: () {
           Navigator.pop(context);
           if (_currentQuestionIndex < _questions.length - 1) {
@@ -96,7 +131,7 @@ class _VocabLessonPageState extends State<VocabLessonPage>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ResultDialog(
+      builder: (context) => _ResultDialog(
         percentage: percentage,
         isPassed: isPassed,
         correctAnswers: _correctAnswers,
@@ -129,15 +164,36 @@ class _VocabLessonPageState extends State<VocabLessonPage>
       builder: (context, state) {
         return state.when(
           initial: () => const Scaffold(body: SizedBox.shrink()),
-          loading: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          loading: () => Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                _buildLotusBackground(),
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFD4AF37),
+                  ),
+                ),
+              ],
+            ),
           ),
           data: (lessons) {
             _questions = _buildQuestions(lessons);
 
             if (_questions.isEmpty) {
-              return const Scaffold(
-                body: Center(child: Text('Không có câu hỏi')),
+              return Scaffold(
+                body: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _buildLotusBackground(),
+                    const Center(
+                      child: Text(
+                        'Không có câu hỏi',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
 
@@ -146,25 +202,15 @@ class _VocabLessonPageState extends State<VocabLessonPage>
 
             return Scaffold(
               body: Stack(
+                fit: StackFit.expand,
                 children: [
-                  const GradientBackground(),
+                  _buildLotusBackground(),
                   SafeArea(
                     child: Column(
                       children: [
-                        LessonHeader(
-                          progress: progress,
-                          currentIndex: _currentQuestionIndex,
-                          totalQuestions: _questions.length,
-                          correctAnswers: _correctAnswers,
-                          onClose: () => context.go('/home'),
-                        ),
+                        _buildHeader(progress),
                         Expanded(
-                          child: QuestionContent(
-                            question: currentQuestion,
-                            hasAnswered: _hasAnswered,
-                            selectedAnswer: _selectedAnswer,
-                            onAnswerSelected: _selectAnswer,
-                          ),
+                          child: _buildQuestionContent(currentQuestion),
                         ),
                       ],
                     ),
@@ -174,10 +220,1053 @@ class _VocabLessonPageState extends State<VocabLessonPage>
             );
           },
           error: (message) => Scaffold(
-            body: Center(child: Text('Lỗi: $message')),
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                _buildLotusBackground(),
+                Center(
+                  child: Text(
+                    'Lỗi: $message',
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLotusBackground() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Gradient background
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF0A5C36),
+                Color(0xFF1B7F4E),
+                Color(0xFF0D6B3D),
+                Color(0xFF0D4D2D),
+              ],
+            ),
+          ),
+        ),
+
+        // Lotus pattern
+        AnimatedBuilder(
+          animation: _lotusController,
+          builder: (context, child) {
+            return CustomPaint(
+              painter: LotusPatternPainter(
+                animationValue: _lotusController.value,
+              ),
+              size: Size.infinite,
+            );
+          },
+        ),
+
+        // Ripple effects
+        AnimatedBuilder(
+          animation: _rippleController,
+          builder: (context, child) {
+            return CustomPaint(
+              painter: RipplePainter(
+                animationValue: _rippleController.value,
+              ),
+              size: Size.infinite,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(double progress) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.95),
+            Colors.white.withOpacity(0.9),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFD4AF37),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              // Close button
+              GestureDetector(
+                onTap: () => context.go('/home'),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B7F4E).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Color(0xFF1B7F4E),
+                    size: 22,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Title
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Từ vựng cơ bản',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D5016),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Câu ${_currentQuestionIndex + 1}/${_questions.length}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Score badge
+              AnimatedBuilder(
+                animation: _floatingController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(
+                      0,
+                      math.sin(_floatingController.value * math.pi * 2) * 3,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFD4AF37),
+                            Color(0xFFB8941E),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withOpacity(0.4),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.white, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$_correctAnswers',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: Colors.grey[200],
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFFD4AF37),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuestionContent(VocabQuestion question) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _floatingController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(
+                    0,
+                    math.sin(_floatingController.value * math.pi * 2) * 5,
+                  ),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.95),
+                          Colors.white.withOpacity(0.9),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFD4AF37),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 25,
+                          offset: const Offset(0, 10),
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFFD4AF37).withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: -5,
+                          offset: const Offset(0, 15),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFD4AF37),
+                                Color(0xFFB8941E),
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                blurRadius: 15,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.local_florist,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          question.question,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFF2D5016),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 32),
+
+            _buildAnswerOptions(question),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnswerOptions(VocabQuestion question) {
+    final answers = [question.correctAnswer, question.wrongAnswer]..shuffle();
+
+    return Column(
+      children: answers
+          .map((answer) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: _buildAnswerOption(answer, question),
+              ))
+          .toList(),
+    );
+  }
+
+  Widget _buildAnswerOption(String answer, VocabQuestion question) {
+    final isSelected = _selectedAnswer == answer;
+    final isCorrect = answer == question.correctAnswer;
+    final showResult = _hasAnswered && isSelected;
+    print("Answer option: $answer | Correct: ${question.correctAnswer}");
+    Color borderColor;
+    Color backgroundColor;
+    Widget? trailing;
+
+    if (showResult) {
+      if (isCorrect) {
+        borderColor = const Color(0xFFD4AF37);
+        backgroundColor = const Color(0xFFD4AF37).withOpacity(0.15);
+        trailing = Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Color(0xFFD4AF37),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.check, color: Colors.white, size: 20),
+        );
+      } else {
+        borderColor = Colors.grey;
+        backgroundColor = Colors.grey.withOpacity(0.1);
+        trailing = Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.grey[600],
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.close, color: Colors.white, size: 20),
+        );
+      }
+    } else {
+      borderColor = const Color(0xFFD4AF37).withOpacity(0.3);
+      backgroundColor = Colors.white.withOpacity(0.95);
+      trailing = null;
+    }
+
+    return GestureDetector(
+      onTap: () => _selectAnswer(answer),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor, width: 2.5),
+          boxShadow: [
+            BoxShadow(
+              color: borderColor.withOpacity(0.2),
+              blurRadius: showResult && isCorrect ? 15 : 5,
+              offset: Offset(0, showResult && isCorrect ? 8 : 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                answer,
+                style: const TextStyle(
+                  color: Color(0xFF2D5016),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (trailing != null) ...[
+              const SizedBox(width: 12),
+              trailing,
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LotusPatternPainter extends CustomPainter {
+  final double animationValue;
+
+  LotusPatternPainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _drawLotusFlower(
+      canvas,
+      Offset(size.width - 70, 80 + math.sin(animationValue * math.pi * 2) * 8),
+      90,
+      0.18 + animationValue * 0.06,
+    );
+
+    _drawLotusFlower(
+      canvas,
+      Offset(70, size.height - 120 + math.cos(animationValue * math.pi * 2) * 10),
+      110,
+      0.15 + animationValue * 0.04,
+    );
+
+    _drawLotusFlower(
+      canvas,
+      Offset(80, 100 + math.sin(animationValue * math.pi * 2 + 1) * 6),
+      70,
+      0.12 + animationValue * 0.03,
+    );
+
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 90, size.height - 100 + math.sin(animationValue * math.pi * 2) * 7),
+      75,
+      0.12 + animationValue * 0.03,
+    );
+
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 120, 140 + math.cos(animationValue * math.pi * 2) * 5),
+      55,
+      0.1,
+    );
+  }
+
+  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(opacity);
+
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (animationValue * 0.1);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
+
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(size * 0.3, -size * 0.5, 0, -size * 0.8);
+      path.quadraticBezierTo(-size * 0.3, -size * 0.5, 0, 0);
+
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
+
+    final centerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
+
+    canvas.drawCircle(center, size * 0.15, centerPaint);
+
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6;
+      final x = center.dx + math.cos(angle) * size * 0.1;
+      final y = center.dy + math.sin(angle) * size * 0.1;
+      canvas.drawCircle(
+        Offset(x, y),
+        size * 0.02,
+        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
+      );
+    }
+  }
+
+  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
+
+    final path = Path();
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(center.dx + size * 0.9, center.dy - size * 0.7, center.dx + size, center.dy);
+    path.quadraticBezierTo(center.dx + size * 0.9, center.dy + size * 0.7, center.dx, center.dy + size);
+    path.lineTo(center.dx, center.dy);
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(center.dx - size * 0.9, center.dy - size * 0.7, center.dx - size, center.dy);
+    path.quadraticBezierTo(center.dx - size * 0.9, center.dy + size * 0.7, center.dx, center.dy + size);
+    path.lineTo(center.dx, center.dy);
+
+    canvas.drawPath(path, paint);
+
+    final veinPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
+
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size),
+      Offset(center.dx, center.dy + size),
+      veinPaint,
+    );
+
+    for (int i = -3; i <= 3; i++) {
+      if (i == 0) continue;
+      final startY = center.dy + (i * size / 4);
+      final endX = center.dx + (size * 0.7);
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(endX, startY + size * 0.1),
+        veinPaint..strokeWidth = 1.0,
+      );
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(center.dx - endX, startY + size * 0.1),
+        veinPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(LotusPatternPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
+  }
+}
+
+// Ripple Effect Painter
+class RipplePainter extends CustomPainter {
+  final double animationValue;
+
+  RipplePainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = Colors.white.withOpacity(0.1);
+
+    for (int i = 0; i < 3; i++) {
+      final progress = (animationValue + (i * 0.33)) % 1.0;
+      final radius = progress * size.width * 0.6;
+      final opacity = (1 - progress) * 0.15;
+
+      canvas.drawCircle(
+        Offset(size.width / 2, size.height * 0.3),
+        radius,
+        paint..color = Colors.white.withOpacity(opacity),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(RipplePainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
+  }
+}
+
+class _FeedbackBottomSheet extends StatelessWidget {
+  final bool isCorrect;
+  final String explanation;
+  final String correctAnswer;
+  final bool isSaved;
+  final VoidCallback onSave;
+  final VoidCallback onNext;
+
+  const _FeedbackBottomSheet({
+    required this.isCorrect,
+    required this.explanation,
+    required this.correctAnswer,
+    required this.isSaved,
+    required this.onSave,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white,
+            Colors.white.withOpacity(0.98),
+          ],
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Lottie animation
+          Lottie.asset(
+            isCorrect ? AppAssets.passAnimation : AppAssets.errorAnimation,
+            height: 120,
+            width: 120,
+            repeat: false,
+          ),
+          const SizedBox(height: 16),
+
+          // Result text
+          Text(
+            isCorrect ? 'Chính xác! 🎉' : 'Sai rồi! 😔',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isCorrect ? const Color(0xFF1B7F4E) : const Color(0xFFDA291C),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Explanation
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFD4AF37).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFD4AF37).withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: Color(0xFFD4AF37),
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Giải thích',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D5016),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  explanation,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[800],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Row with Save and Next buttons
+          Row(
+            children: [
+              // Save vocabulary button
+              Expanded(
+                flex: 2,
+                child: Container(
+                  height: 54,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD4AF37).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: onSave,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSaved 
+                          ? const Color(0xFF1B7F4E)
+                          : const Color(0xFFD4AF37),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            isSaved ? 'Đã lưu' : 'Lưu từ',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Next button
+              Expanded(
+                flex: 3,
+                child: Container(
+                  height: 54,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF1B7F4E).withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: onNext,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1B7F4E),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Tiếp tục',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultDialog extends StatelessWidget {
+  final int percentage;
+  final bool isPassed;
+  final int correctAnswers;
+  final int totalQuestions;
+  final VoidCallback onComplete;
+
+  const _ResultDialog({
+    required this.percentage,
+    required this.isPassed,
+    required this.correctAnswers,
+    required this.totalQuestions,
+    required this.onComplete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isPassed 
+        ? const Color(0xFF1B7F4E) 
+        : const Color(0xFFDA291C);
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 380),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white,
+              Colors.white.withOpacity(0.98),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: const Color(0xFFD4AF37),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 30,
+              offset: const Offset(0, 15),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.1),
+                    color.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(22),
+                  topRight: Radius.circular(22),
+                ),
+              ),
+              child: Column(
+                children: [
+        
+                  Lottie.asset(
+                    isPassed ? AppAssets.passAnimation : AppAssets.errorAnimation,
+                    height: 150,
+                    width: 150,
+                    repeat: false,
+                  ),
+                  const SizedBox(height: 12),
+
+                  Text(
+                    isPassed ? 'Xuất sắc! ' : 'Cố gắng lên! ',
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isPassed
+                        ? 'Bạn đã vượt qua bài kiểm tra!'
+                        : 'Hãy thử lại để đạt kết quả tốt hơn',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: color.withOpacity(0.08),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 120,
+                        width: 120,
+                        child: CircularProgressIndicator(
+                          value: percentage / 100,
+                          strokeWidth: 10,
+                          backgroundColor: Colors.grey.withOpacity(0.15),
+                          valueColor: AlwaysStoppedAnimation(color),
+                          strokeCap: StrokeCap.round,
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$percentage%',
+                            style: TextStyle(
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                              color: color,
+                              height: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'điểm số',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFD4AF37).withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildStatItem(
+                          Icons.check_circle_rounded,
+                          'Đúng',
+                          '$correctAnswers',
+                          const Color(0xFF1B7F4E),
+                        ),
+                        Container(height: 40, width: 1, color: Colors.grey[300]),
+                        _buildStatItem(
+                          Icons.cancel_rounded,
+                          'Sai',
+                          '${totalQuestions - correctAnswers}',
+                          const Color(0xFFDA291C),
+                        ),
+                        Container(height: 40, width: 1, color: Colors.grey[300]),
+                        _buildStatItem(
+                          Icons.format_list_numbered_rounded,
+                          'Tổng',
+                          '$totalQuestions',
+                          const Color(0xFFD4AF37),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  Container(
+                    width: double.infinity,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: onComplete,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: color,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.home_rounded, size: 22),
+                          SizedBox(width: 8),
+                          Text(
+                            'Hoàn thành',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

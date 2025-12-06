@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/domain/entities/country/country_entity.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
-import 'package:hihear_mo/presentation/painter/bamboo_painter.dart';
+import 'dart:math' as math;
 
 class CountrySelectionPage extends StatefulWidget {
   const CountrySelectionPage({super.key});
@@ -15,7 +15,7 @@ class CountrySelectionPage extends StatefulWidget {
 class _CountrySelectionPageState extends State<CountrySelectionPage>
     with TickerProviderStateMixin {
   CountryEntity? _selectedCountry;
-  late AnimationController _bambooController;
+  late AnimationController _lotusController;
   late AnimationController _fadeController;
 
   @override
@@ -23,9 +23,9 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
     super.initState();
     context.read<CountryBloc>().add(const CountryEvent.loadCountries());
 
-    _bambooController = AnimationController(
+    _lotusController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 4000),
     )..repeat(reverse: true);
 
     _fadeController = AnimationController(
@@ -36,7 +36,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
 
   @override
   void dispose() {
-    _bambooController.dispose();
+    _lotusController.dispose();
     _fadeController.dispose();
     super.dispose();
   }
@@ -58,8 +58,8 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocListener<CountryBloc, CountryState>(
-          listener: (context, state) {
+      body: BlocListener<CountryBloc, CountryState>(
+        listener: (context, state) {
           state.whenOrNull(
             success: () {
               context.go('/start');
@@ -69,26 +69,28 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
         child: Stack(
           fit: StackFit.expand,
           children: [
+            // Background gradient
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFF4A7C2C),
-                    Color(0xFF5E9A3A),
-                    Color(0xFF3D6624),
+                    Color(0xFF0A5C36), // Xanh lá sen đậm
+                    Color(0xFF1B7F4E), // Xanh lá sen
+                    Color(0xFF0D4D2D), // Xanh đậm
                   ],
                 ),
               ),
             ),
 
+            // Lotus pattern
             AnimatedBuilder(
-              animation: _bambooController,
+              animation: _lotusController,
               builder: (context, child) {
                 return CustomPaint(
-                  painter: BambooPainter(
-                    animationValue: _bambooController.value,
+                  painter: LotusPatternPainter(
+                    animationValue: _lotusController.value,
                   ),
                   size: Size.infinite,
                 );
@@ -398,5 +400,167 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
         );
       },
     );
+  }
+}
+
+// Lotus Pattern Painter - Same as Login Page
+class LotusPatternPainter extends CustomPainter {
+  final double animationValue;
+
+  LotusPatternPainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Vẽ hoa sen góc trên phải
+    _drawLotusFlower(
+      canvas,
+      Offset(size.width - 80, 100 + math.sin(animationValue * math.pi * 2) * 5),
+      80,
+      0.15 + animationValue * 0.05,
+    );
+
+    // Vẽ hoa sen góc dưới trái
+    _drawLotusFlower(
+      canvas,
+      Offset(80, size.height - 150 + math.cos(animationValue * math.pi * 2) * 8),
+      100,
+      0.12 + animationValue * 0.03,
+    );
+
+    // Vẽ lá sen góc dưới phải
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 100, size.height - 100 + math.sin(animationValue * math.pi * 2) * 6),
+      70,
+      0.1 + animationValue * 0.02,
+    );
+
+    // Vẽ lá sen nhỏ góc trên trái
+    _drawLotusLeaf(
+      canvas,
+      Offset(60, 80 + math.cos(animationValue * math.pi * 2) * 4),
+      50,
+      0.08,
+    );
+  }
+
+  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(opacity);
+
+    // Vẽ cánh hoa sen (8 cánh)
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (animationValue * 0.1);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
+
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(
+        size * 0.3, -size * 0.5,
+        0, -size * 0.8,
+      );
+      path.quadraticBezierTo(
+        -size * 0.3, -size * 0.5,
+        0, 0,
+      );
+
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
+
+    // Vẽ nhụy hoa
+    final centerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
+
+    canvas.drawCircle(center, size * 0.15, centerPaint);
+
+    // Vẽ chi tiết nhụy
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6;
+      final x = center.dx + math.cos(angle) * size * 0.1;
+      final y = center.dy + math.sin(angle) * size * 0.1;
+      canvas.drawCircle(
+        Offset(x, y),
+        size * 0.02,
+        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
+      );
+    }
+  }
+
+  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
+
+    final path = Path();
+    
+    // Vẽ hình lá sen tròn với rãnh ở giữa
+    path.moveTo(center.dx, center.dy - size);
+    
+    // Nửa bên phải
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy - size * 0.7,
+      center.dx + size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    
+    // Rãnh ở giữa
+    path.lineTo(center.dx, center.dy);
+    
+    // Nửa bên trái
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy - size * 0.7,
+      center.dx - size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    path.lineTo(center.dx, center.dy);
+
+    canvas.drawPath(path, paint);
+
+    // Vẽ gân lá
+    final veinPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
+
+    // Gân chính
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size),
+      Offset(center.dx, center.dy + size),
+      veinPaint,
+    );
+
+    // Gân phụ
+    for (int i = -3; i <= 3; i++) {
+      if (i == 0) continue;
+      final startY = center.dy + (i * size / 4);
+      final endX = center.dx + (size * 0.7);
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(endX, startY + size * 0.1),
+        veinPaint..strokeWidth = 1.0,
+      );
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(center.dx - endX, startY + size * 0.1),
+        veinPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(LotusPatternPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
 }

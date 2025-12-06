@@ -1,102 +1,633 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
+import '../../../../core/constants/app_assets.dart';
+import 'dart:math' as math;
 
-class LanguageSelectionScreen extends StatelessWidget {
+class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
+
+  @override
+  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
+}
+
+class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _headerController;
+  late AnimationController _lotusController;
+  late AnimationController _floatingController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _headerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+
+    _lotusController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat(reverse: true);
+
+    _floatingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2500),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _headerController.dispose();
+    _lotusController.dispose();
+    _floatingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kiểm tra trình độ tiếng Việt'),
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [const Color(0xFFFFB6C1), const Color(0xFFFFF0F5)],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.pink.withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.local_florist,
-                  size: 60,
-                  color: Color(0xFFFF69B4),
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                'Chọn ngôn ngữ đề thi',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFD81B60),
-                ),
-              ),
-              const SizedBox(height: 40),
-              _buildLanguageButton(context, 'English Test', '🇬🇧', 'english'),
-              const SizedBox(height: 20),
-              _buildLanguageButton(
-                context,
-                'Korean Test (한국어)',
-                '🇰🇷',
-                'korean',
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLanguageButton(
-    BuildContext context,
-    String title,
-    String flag,
-    String language,
-  ) {
-    return ElevatedButton(
-      onPressed: () {
-        context.go(AppRoutes.test, extra: language);
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFFFF69B4),
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        elevation: 5,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          Text(flag, style: const TextStyle(fontSize: 30)),
-          const SizedBox(width: 15),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0A5C36), // Xanh lá sen đậm
+                  Color(0xFF1B7F4E), // Xanh lá sen
+                  Color(0xFF0D6B3D), // Xanh trung bình
+                  Color(0xFF0D4D2D), // Xanh đậm
+                ],
+              ),
+            ),
+          ),
+
+          // Lotus pattern
+          AnimatedBuilder(
+            animation: _lotusController,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: LotusPatternPainter(
+                  animationValue: _lotusController.value,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+                  _buildHeader(),
+                  const SizedBox(height: 50),
+                  _buildCenterLotusIcon(),
+                  const SizedBox(height: 40),
+                  _buildQuestionBubble(),
+                  const SizedBox(height: 50),
+                  _buildLanguageButtons(),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildHeader() {
+    return FadeTransition(
+      opacity: _headerController,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFD4AF37).withOpacity(0.4),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.language_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Kiểm tra trình độ",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Chọn ngôn ngữ bài kiểm tra 🪷",
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.85),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCenterLotusIcon() {
+    return AnimatedBuilder(
+      animation: _floatingController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2) * 10),
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 1000),
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: 0.5 + (value * 0.5),
+                child: Opacity(
+                  opacity: value,
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.pink.shade100.withOpacity(0.3),
+                          Colors.pink.shade200.withOpacity(0.2),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.pink.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Rotating lotus petals
+                        Transform.rotate(
+                          angle: _floatingController.value * math.pi * 2,
+                          child: CustomPaint(
+                            size: const Size(100, 100),
+                            painter: SimpleLotusPainter(),
+                          ),
+                        ),
+                        // Center icon
+                        const Icon(
+                          Icons.local_florist,
+                          size: 50,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildQuestionBubble() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 800),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.8 + (value * 0.2),
+          child: Opacity(
+            opacity: value,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.25),
+                    Colors.white.withOpacity(0.15),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFD4AF37).withOpacity(0.5),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  height: 1.5,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TypewriterAnimatedText(
+                      'Hãy chọn ngôn ngữ để bắt đầu bài kiểm tra trình độ tiếng Việt của bạn!',
+                      speed: const Duration(milliseconds: 60),
+                    ),
+                  ],
+                  totalRepeatCount: 1,
+                  pause: const Duration(milliseconds: 500),
+                  displayFullTextOnTap: true,
+                  stopPauseOnTap: true,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageButtons() {
+    final languages = [
+      {
+        'title': 'English Test',
+        'subtitle': 'Kiểm tra bằng tiếng Anh',
+        'flag': '🇬🇧',
+        'language': 'english',
+        'gradient': [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)],
+      },
+      {
+        'title': 'Korean Test',
+        'subtitle': '한국어로 시험보기',
+        'flag': '🇰🇷',
+        'language': 'korean',
+        'gradient': [const Color(0xFF991B1B), const Color(0xFFDC2626)],
+      },
+    ];
+
+    return Column(
+      children: languages.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 600 + (index * 200)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(0, 50 * (1 - value)),
+              child: Opacity(
+                opacity: value,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _buildLanguageCard(
+                    title: item['title'] as String,
+                    subtitle: item['subtitle'] as String,
+                    flag: item['flag'] as String,
+                    language: item['language'] as String,
+                    gradientColors: item['gradient'] as List<Color>,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildLanguageCard({
+    required String title,
+    required String subtitle,
+    required String flag,
+    required String language,
+    required List<Color> gradientColors,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        context.go(AppRoutes.test, extra: language);
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.2),
+              Colors.white.withOpacity(0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: const Color(0xFFD4AF37).withOpacity(0.4),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Flag container
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: gradientColors,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: gradientColors[0].withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  flag,
+                  style: const TextStyle(fontSize: 36),
+                ),
+              ),
+            ),
+            
+            const SizedBox(width: 20),
+            
+            // Text content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white.withOpacity(0.75),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Arrow icon
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFD4AF37).withOpacity(0.3),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Simple Lotus Painter for center icon
+class SimpleLotusPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(0.3);
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final petalSize = size.width / 3;
+
+    // Draw 8 petals
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
+
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(
+        petalSize * 0.3, -petalSize * 0.6,
+        0, -petalSize,
+      );
+      path.quadraticBezierTo(
+        -petalSize * 0.3, -petalSize * 0.6,
+        0, 0,
+      );
+
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(SimpleLotusPainter oldDelegate) => false;
+}
+
+// Lotus Pattern Painter (same as StudyTimePage)
+class LotusPatternPainter extends CustomPainter {
+  final double animationValue;
+
+  LotusPatternPainter({required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Vẽ hoa sen góc trên phải
+    _drawLotusFlower(
+      canvas,
+      Offset(size.width - 80, 100 + math.sin(animationValue * math.pi * 2) * 5),
+      80,
+      0.15 + animationValue * 0.05,
+    );
+
+    // Vẽ hoa sen góc dưới trái
+    _drawLotusFlower(
+      canvas,
+      Offset(80, size.height - 150 + math.cos(animationValue * math.pi * 2) * 8),
+      100,
+      0.12 + animationValue * 0.03,
+    );
+
+    // Vẽ lá sen góc dưới phải
+    _drawLotusLeaf(
+      canvas,
+      Offset(size.width - 100, size.height - 100 + math.sin(animationValue * math.pi * 2) * 6),
+      70,
+      0.1 + animationValue * 0.02,
+    );
+
+    // Vẽ lá sen nhỏ góc trên trái
+    _drawLotusLeaf(
+      canvas,
+      Offset(60, 80 + math.cos(animationValue * math.pi * 2) * 4),
+      50,
+      0.08,
+    );
+  }
+
+  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.pink.shade100.withOpacity(opacity);
+
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (animationValue * 0.1);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(angle);
+
+      final path = Path();
+      path.moveTo(0, 0);
+      path.quadraticBezierTo(
+        size * 0.3, -size * 0.5,
+        0, -size * 0.8,
+      );
+      path.quadraticBezierTo(
+        -size * 0.3, -size * 0.5,
+        0, 0,
+      );
+
+      canvas.drawPath(path, paint);
+      canvas.restore();
+    }
+
+    final centerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
+
+    canvas.drawCircle(center, size * 0.15, centerPaint);
+
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6;
+      final x = center.dx + math.cos(angle) * size * 0.1;
+      final y = center.dy + math.sin(angle) * size * 0.1;
+      canvas.drawCircle(
+        Offset(x, y),
+        size * 0.02,
+        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
+      );
+    }
+  }
+
+  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
+
+    final path = Path();
+    
+    path.moveTo(center.dx, center.dy - size);
+    
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy - size * 0.7,
+      center.dx + size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx + size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    
+    path.lineTo(center.dx, center.dy);
+    
+    path.moveTo(center.dx, center.dy - size);
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy - size * 0.7,
+      center.dx - size, center.dy,
+    );
+    path.quadraticBezierTo(
+      center.dx - size * 0.9, center.dy + size * 0.7,
+      center.dx, center.dy + size,
+    );
+    path.lineTo(center.dx, center.dy);
+
+    canvas.drawPath(path, paint);
+
+    final veinPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
+
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size),
+      Offset(center.dx, center.dy + size),
+      veinPaint,
+    );
+
+    for (int i = -3; i <= 3; i++) {
+      if (i == 0) continue;
+      final startY = center.dy + (i * size / 4);
+      final endX = center.dx + (size * 0.7);
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(endX, startY + size * 0.1),
+        veinPaint..strokeWidth = 1.0,
+      );
+      canvas.drawLine(
+        Offset(center.dx, startY),
+        Offset(center.dx - endX, startY + size * 0.1),
+        veinPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(LotusPatternPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
 }

@@ -80,7 +80,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
               Expanded(child: Text('Vui lòng chọn một đáp án!')),
             ],
           ),
-          backgroundColor: Colors.pink,
+          backgroundColor: const Color(0xFF1B7F4E), // Xanh lá sen
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -127,7 +127,10 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Colors.pink[50]!, Colors.white],
+                  colors: [
+                    const Color(0xFF1B7F4E).withOpacity(0.1), // Xanh lá sen nhạt
+                    Colors.white
+                  ],
                 ),
               ),
               child: Column(
@@ -145,7 +148,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF69B4),
+                      color: Color(0xFFD4AF37), // Vàng gold
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -162,7 +165,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF69B4).withOpacity(0.1),
+                      color: const Color(0xFFD4AF37).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -170,7 +173,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFFF69B4),
+                        color: Color(0xFFD4AF37),
                       ),
                     ),
                   ),
@@ -192,7 +195,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF69B4),
+                      backgroundColor: const Color(0xFFD4AF37), // Vàng gold
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 40,
@@ -258,8 +261,8 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: passed
-                  ? [Colors.pink[50]!, Colors.white]
-                  : [Colors.blue[50]!, Colors.white],
+                  ? [const Color(0xFF1B7F4E).withOpacity(0.1), Colors.white]
+                  : [const Color(0xFF0A5C36).withOpacity(0.1), Colors.white],
             ),
           ),
           child: Column(
@@ -279,7 +282,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: passed ? const Color(0xFFFF69B4) : Colors.blue[700],
+                  color: passed ? const Color(0xFFD4AF37) : const Color(0xFF1B7F4E),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -297,14 +300,14 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: passed
-                        ? [const Color(0xFFFF69B4), const Color(0xFFFF1493)]
-                        : [Colors.blue[400]!, Colors.blue[600]!],
+                        ? [const Color(0xFFD4AF37), const Color(0xFFB8941E)]
+                        : [const Color(0xFF1B7F4E), const Color(0xFF0A5C36)],
                   ),
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
                       color:
-                          (passed ? const Color(0xFFFF69B4) : Colors.blue[400]!)
+                          (passed ? const Color(0xFFD4AF37) : const Color(0xFF1B7F4E))
                               .withOpacity(0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
@@ -332,7 +335,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.quiz, color: Color(0xFFFF69B4)),
+                        const Icon(Icons.quiz, color: Color(0xFFD4AF37)),
                         const SizedBox(width: 10),
                         Text(
                           'Điểm $currentLevel: $currentLevelScore/10',
@@ -353,7 +356,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                         children: [
                           const Icon(
                             Icons.emoji_events,
-                            color: Colors.amber,
+                            color: Color(0xFFD4AF37),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -389,7 +392,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF69B4),
+                      backgroundColor: const Color(0xFFD4AF37),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 25,
@@ -433,7 +436,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 'Đang tải bài test...',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Color(0xFFFF69B4),
+                  color: Color(0xFF1B7F4E), // Xanh lá sen
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -466,7 +469,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFFF69B4), Color(0xFFFF1493)],
+                colors: [Color(0xFF1B7F4E), Color(0xFF0A5C36)], // Xanh lá sen
               ),
             ),
           ),
@@ -476,7 +479,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [const Color(0xFFFFB6C1).withOpacity(0.2), Colors.white],
+              colors: [const Color(0xFF1B7F4E).withOpacity(0.1), Colors.white],
             ),
           ),
           child: Padding(
@@ -491,7 +494,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.pink.withOpacity(0.1),
+                        color: const Color(0xFF1B7F4E).withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),
@@ -508,13 +511,13 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: const Color(
-                                    0xFFFF69B4,
+                                    0xFF1B7F4E,
                                   ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Icon(
                                   Icons.quiz,
-                                  color: Color(0xFFFF69B4),
+                                  color: Color(0xFF1B7F4E),
                                   size: 20,
                                 ),
                               ),
@@ -524,7 +527,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFFFF69B4),
+                                  color: Color(0xFF1B7F4E),
                                 ),
                               ),
                             ],
@@ -536,7 +539,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                             ),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFFFF69B4), Color(0xFFFF1493)],
+                                colors: [Color(0xFFD4AF37), Color(0xFFB8941E)], // Vàng gold
                               ),
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -568,9 +571,9 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                           value:
                               (currentQuestionIndex + 1) /
                               currentLevelQuestions.length,
-                          backgroundColor: Colors.pink[50],
+                          backgroundColor: const Color(0xFF1B7F4E).withOpacity(0.1),
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFFF69B4),
+                            Color(0xFF1B7F4E),
                           ),
                           minHeight: 8,
                         ),
@@ -585,12 +588,12 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Colors.white, Colors.pink[50]!.withOpacity(0.3)],
+                      colors: [Colors.white, const Color(0xFF1B7F4E).withOpacity(0.05)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.pink.withOpacity(0.15),
+                        color: const Color(0xFF1B7F4E).withOpacity(0.15),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -601,12 +604,12 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF69B4).withOpacity(0.1),
+                          color: const Color(0xFF1B7F4E).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.help_outline,
-                          color: Color(0xFFFF69B4),
+                          color: Color(0xFF1B7F4E),
                           size: 28,
                         ),
                       ),
@@ -643,8 +646,8 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                               gradient: isSelected
                                   ? const LinearGradient(
                                       colors: [
-                                        Color(0xFFFF69B4),
-                                        Color(0xFFFF1493),
+                                        Color(0xFFD4AF37), // Vàng gold
+                                        Color(0xFFB8941E),
                                       ],
                                     )
                                   : null,
@@ -653,13 +656,13 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                               border: Border.all(
                                 color: isSelected
                                     ? Colors.transparent
-                                    : Colors.pink[100]!,
+                                    : const Color(0xFF1B7F4E).withOpacity(0.2),
                                 width: 2,
                               ),
                               boxShadow: [
                                 BoxShadow(
                                   color: isSelected
-                                      ? const Color(0xFFFF69B4).withOpacity(0.4)
+                                      ? const Color(0xFFD4AF37).withOpacity(0.4)
                                       : Colors.grey.withOpacity(0.1),
                                   blurRadius: isSelected ? 15 : 10,
                                   offset: const Offset(0, 5),
@@ -682,15 +685,15 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                                           )
                                         : LinearGradient(
                                             colors: [
-                                              Colors.pink[100]!,
-                                              Colors.pink[50]!,
+                                              const Color(0xFF1B7F4E).withOpacity(0.2),
+                                              const Color(0xFF1B7F4E).withOpacity(0.1),
                                             ],
                                           ),
                                     boxShadow: [
                                       BoxShadow(
                                         color: isSelected
                                             ? Colors.white.withOpacity(0.5)
-                                            : Colors.pink.withOpacity(0.2),
+                                            : const Color(0xFF1B7F4E).withOpacity(0.2),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -703,7 +706,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18,
                                         color: isSelected
-                                            ? const Color(0xFFFF69B4)
+                                            ? const Color(0xFFD4AF37)
                                             : Colors.grey[700],
                                       ),
                                     ),
@@ -742,12 +745,12 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 Container(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFFF69B4), Color(0xFFFF1493)],
+                      colors: [Color(0xFFD4AF37), Color(0xFFB8941E)], // Vàng gold
                     ),
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF69B4).withOpacity(0.4),
+                        color: const Color(0xFFD4AF37).withOpacity(0.4),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
