@@ -539,7 +539,6 @@ class _VocabLessonPageState extends State<VocabLessonPage>
     final isSelected = _selectedAnswer == answer;
     final isCorrect = answer == question.correctAnswer;
     final showResult = _hasAnswered && isSelected;
-    print("Answer option: $answer | Correct: ${question.correctAnswer}");
     Color borderColor;
     Color backgroundColor;
     Widget? trailing;
