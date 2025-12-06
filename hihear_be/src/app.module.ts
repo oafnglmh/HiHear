@@ -21,6 +21,7 @@ import { ExerciseGrammaModule } from './modules/exercise-gramma/exercise-gramma.
 import { ExerciseVocabularyModule } from './modules/exercise-vocabulary/exercise-vocabulary.module';
 import { VideoModule } from './modules/video/video.module';
 import { UserSavedVocabularyModule } from './modules/user-saved-vocabulary/user-saved-vocabulary.module';
+import { UserLessonProgressModule } from './modules/user-lesson-progress/user-lesson-progress.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -63,7 +64,8 @@ import { UserSavedVocabularyModule } from './modules/user-saved-vocabulary/user-
     ExercisesModule,
     ExerciseGrammaModule,
     ExerciseVocabularyModule,
-    UserSavedVocabularyModule
+    UserSavedVocabularyModule,
+    UserLessonProgressModule
   ],
 })
 export class AppModule {}
