@@ -42,12 +42,14 @@ class AuthRemoteDataSource {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('Backend trả về lỗi: ${response.statusCode}');
       }
-
+      print('Response data from backend: ${response.data}');
       final accessToken = response.data['token']['accessToken'];
       await TokenStorage.saveToken(accessToken);
       final profile = response.data['profile'];
+      final userData = response.data['user'];
+      print('userData: ${userData}');
       await UserShare().saveUser(
-        id: user.uid,
+        id: userData['id'],
         name: user.displayName ?? '',
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',

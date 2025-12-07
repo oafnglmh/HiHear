@@ -12,7 +12,7 @@ part of 'lesson_bloc.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$LessionEvent {
+mixin _$LessonEvent {
 
 
 
@@ -20,7 +20,7 @@ mixin _$LessionEvent {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessionEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonEvent);
 }
 
 
@@ -29,20 +29,20 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'LessionEvent()';
+  return 'LessonEvent()';
 }
 
 
 }
 
 /// @nodoc
-class $LessionEventCopyWith<$Res>  {
-$LessionEventCopyWith(LessionEvent _, $Res Function(LessionEvent) __);
+class $LessonEventCopyWith<$Res>  {
+$LessonEventCopyWith(LessonEvent _, $Res Function(LessonEvent) __);
 }
 
 
-/// Adds pattern-matching-related methods to [LessionEvent].
-extension LessionEventPatterns on LessionEvent {
+/// Adds pattern-matching-related methods to [LessonEvent].
+extension LessonEventPatterns on LessonEvent {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -55,12 +55,13 @@ extension LessionEventPatterns on LessionEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLession value)?  loadLession,TResult Function( _LoadLessonById value)?  loadLessonById,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLesson value)?  loadLesson,TResult Function( _LoadLessonById value)?  loadLessonById,TResult Function( _SaveVocabulary value)?  saveVocabulary,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _LoadLession() when loadLession != null:
-return loadLession(_that);case _LoadLessonById() when loadLessonById != null:
-return loadLessonById(_that);case _:
+case _LoadLesson() when loadLesson != null:
+return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
+return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
+return saveVocabulary(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return loadLessonById(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLession value)  loadLession,required TResult Function( _LoadLessonById value)  loadLessonById,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLesson value)  loadLesson,required TResult Function( _LoadLessonById value)  loadLessonById,required TResult Function( _SaveVocabulary value)  saveVocabulary,}){
 final _that = this;
 switch (_that) {
-case _LoadLession():
-return loadLession(_that);case _LoadLessonById():
-return loadLessonById(_that);case _:
+case _LoadLesson():
+return loadLesson(_that);case _LoadLessonById():
+return loadLessonById(_that);case _SaveVocabulary():
+return saveVocabulary(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +102,13 @@ return loadLessonById(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLession value)?  loadLession,TResult? Function( _LoadLessonById value)?  loadLessonById,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLesson value)?  loadLesson,TResult? Function( _LoadLessonById value)?  loadLessonById,TResult? Function( _SaveVocabulary value)?  saveVocabulary,}){
 final _that = this;
 switch (_that) {
-case _LoadLession() when loadLession != null:
-return loadLession(_that);case _LoadLessonById() when loadLessonById != null:
-return loadLessonById(_that);case _:
+case _LoadLesson() when loadLesson != null:
+return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
+return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
+return saveVocabulary(_that);case _:
   return null;
 
 }
@@ -122,11 +125,12 @@ return loadLessonById(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLession,TResult Function( String id)?  loadLessonById,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLesson,TResult Function( String id)?  loadLessonById,TResult Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _LoadLession() when loadLession != null:
-return loadLession();case _LoadLessonById() when loadLessonById != null:
-return loadLessonById(_that.id);case _:
+case _LoadLesson() when loadLesson != null:
+return loadLesson();case _LoadLessonById() when loadLessonById != null:
+return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
   return orElse();
 
 }
@@ -144,11 +148,12 @@ return loadLessonById(_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLession,required TResult Function( String id)  loadLessonById,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLesson,required TResult Function( String id)  loadLessonById,required TResult Function( String word,  String meaning,  String category,  String userId)  saveVocabulary,}) {final _that = this;
 switch (_that) {
-case _LoadLession():
-return loadLession();case _LoadLessonById():
-return loadLessonById(_that.id);case _:
+case _LoadLesson():
+return loadLesson();case _LoadLessonById():
+return loadLessonById(_that.id);case _SaveVocabulary():
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +170,12 @@ return loadLessonById(_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLession,TResult? Function( String id)?  loadLessonById,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLesson,TResult? Function( String id)?  loadLessonById,TResult? Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,}) {final _that = this;
 switch (_that) {
-case _LoadLession() when loadLession != null:
-return loadLession();case _LoadLessonById() when loadLessonById != null:
-return loadLessonById(_that.id);case _:
+case _LoadLesson() when loadLesson != null:
+return loadLesson();case _LoadLessonById() when loadLessonById != null:
+return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
   return null;
 
 }
@@ -180,8 +186,8 @@ return loadLessonById(_that.id);case _:
 /// @nodoc
 
 
-class _LoadLession implements LessionEvent {
-  const _LoadLession();
+class _LoadLesson implements LessonEvent {
+  const _LoadLesson();
   
 
 
@@ -191,7 +197,7 @@ class _LoadLession implements LessionEvent {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadLession);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadLesson);
 }
 
 
@@ -200,7 +206,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'LessionEvent.loadLession()';
+  return 'LessonEvent.loadLesson()';
 }
 
 
@@ -212,13 +218,13 @@ String toString() {
 /// @nodoc
 
 
-class _LoadLessonById implements LessionEvent {
+class _LoadLessonById implements LessonEvent {
   const _LoadLessonById(this.id);
   
 
  final  String id;
 
-/// Create a copy of LessionEvent
+/// Create a copy of LessonEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
@@ -237,14 +243,14 @@ int get hashCode => Object.hash(runtimeType,id);
 
 @override
 String toString() {
-  return 'LessionEvent.loadLessonById(id: $id)';
+  return 'LessonEvent.loadLessonById(id: $id)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$LoadLessonByIdCopyWith<$Res> implements $LessionEventCopyWith<$Res> {
+abstract mixin class _$LoadLessonByIdCopyWith<$Res> implements $LessonEventCopyWith<$Res> {
   factory _$LoadLessonByIdCopyWith(_LoadLessonById value, $Res Function(_LoadLessonById) _then) = __$LoadLessonByIdCopyWithImpl;
 @useResult
 $Res call({
@@ -263,11 +269,83 @@ class __$LoadLessonByIdCopyWithImpl<$Res>
   final _LoadLessonById _self;
   final $Res Function(_LoadLessonById) _then;
 
-/// Create a copy of LessionEvent
+/// Create a copy of LessonEvent
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
   return _then(_LoadLessonById(
 null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SaveVocabulary implements LessonEvent {
+  const _SaveVocabulary({required this.word, required this.meaning, required this.category, required this.userId});
+  
+
+ final  String word;
+ final  String meaning;
+ final  String category;
+ final  String userId;
+
+/// Create a copy of LessonEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SaveVocabularyCopyWith<_SaveVocabulary> get copyWith => __$SaveVocabularyCopyWithImpl<_SaveVocabulary>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SaveVocabulary&&(identical(other.word, word) || other.word == word)&&(identical(other.meaning, meaning) || other.meaning == meaning)&&(identical(other.category, category) || other.category == category)&&(identical(other.userId, userId) || other.userId == userId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,word,meaning,category,userId);
+
+@override
+String toString() {
+  return 'LessonEvent.saveVocabulary(word: $word, meaning: $meaning, category: $category, userId: $userId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SaveVocabularyCopyWith<$Res> implements $LessonEventCopyWith<$Res> {
+  factory _$SaveVocabularyCopyWith(_SaveVocabulary value, $Res Function(_SaveVocabulary) _then) = __$SaveVocabularyCopyWithImpl;
+@useResult
+$Res call({
+ String word, String meaning, String category, String userId
+});
+
+
+
+
+}
+/// @nodoc
+class __$SaveVocabularyCopyWithImpl<$Res>
+    implements _$SaveVocabularyCopyWith<$Res> {
+  __$SaveVocabularyCopyWithImpl(this._self, this._then);
+
+  final _SaveVocabulary _self;
+  final $Res Function(_SaveVocabulary) _then;
+
+/// Create a copy of LessonEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? word = null,Object? meaning = null,Object? category = null,Object? userId = null,}) {
+  return _then(_SaveVocabulary(
+word: null == word ? _self.word : word // ignore: cast_nullable_to_non_nullable
+as String,meaning: null == meaning ? _self.meaning : meaning // ignore: cast_nullable_to_non_nullable
+as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -319,14 +397,15 @@ extension LessonStatePatterns on LessonState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Data value)?  data,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Data value)?  data,TResult Function( _Error value)?  error,TResult Function( _Saved value)?  saved,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Data() when data != null:
 return data(_that);case _Error() when error != null:
-return error(_that);case _:
+return error(_that);case _Saved() when saved != null:
+return saved(_that);case _:
   return orElse();
 
 }
@@ -344,14 +423,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Data value)  data,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Data value)  data,required TResult Function( _Error value)  error,required TResult Function( _Saved value)  saved,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Data():
 return data(_that);case _Error():
-return error(_that);case _:
+return error(_that);case _Saved():
+return saved(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -368,14 +448,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Data value)?  data,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Data value)?  data,TResult? Function( _Error value)?  error,TResult? Function( _Saved value)?  saved,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Data() when data != null:
 return data(_that);case _Error() when error != null:
-return error(_that);case _:
+return error(_that);case _Saved() when saved != null:
+return saved(_that);case _:
   return null;
 
 }
@@ -392,13 +473,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<LessionEntity> lessons)?  data,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<LessionEntity> lessons)?  data,TResult Function( String message)?  error,TResult Function()?  saved,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Data() when data != null:
 return data(_that.lessons);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.message);case _Saved() when saved != null:
+return saved();case _:
   return orElse();
 
 }
@@ -416,13 +498,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<LessionEntity> lessons)  data,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<LessionEntity> lessons)  data,required TResult Function( String message)  error,required TResult Function()  saved,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Data():
 return data(_that.lessons);case _Error():
-return error(_that.message);case _:
+return error(_that.message);case _Saved():
+return saved();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -439,13 +522,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<LessionEntity> lessons)?  data,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<LessionEntity> lessons)?  data,TResult? Function( String message)?  error,TResult? Function()?  saved,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Data() when data != null:
 return data(_that.lessons);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.message);case _Saved() when saved != null:
+return saved();case _:
   return null;
 
 }
@@ -654,5 +738,37 @@ as String,
 
 
 }
+
+/// @nodoc
+
+
+class _Saved implements LessonState {
+  const _Saved();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Saved);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LessonState.saved()';
+}
+
+
+}
+
+
+
 
 // dart format on

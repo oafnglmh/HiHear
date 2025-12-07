@@ -32,7 +32,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
     super.initState();
     _initTts();
     _initAnimations();
-    context.read<LessonBloc>().add(LessionEvent.loadLessonById(widget.id));
+    context.read<LessonBloc>().add(LessonEvent.loadLessonById(widget.id));
   }
 
   void _initAnimations() {
@@ -204,6 +204,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                     );
                   },
                   error: (message) => _buildErrorState(message),
+                  saved: () {
+                    return const SizedBox.shrink();
+                  },
                 );
               },
             ),
@@ -1064,7 +1067,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
               child: ElevatedButton.icon(
                 onPressed: () {
                   context.read<LessonBloc>().add(
-                    LessionEvent.loadLessonById(widget.id),
+                    LessonEvent.loadLessonById(widget.id),
                   );
                 },
                 style: ElevatedButton.styleFrom(

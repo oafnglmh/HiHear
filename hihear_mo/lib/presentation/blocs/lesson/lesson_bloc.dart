@@ -8,16 +8,17 @@ part 'lesson_bloc.freezed.dart';
 part 'lesson_event.dart';
 part 'lesson_state.dart';
 
-class LessonBloc extends Bloc<LessionEvent, LessonState> {
+class LessonBloc extends Bloc<LessonEvent, LessonState> {
   final LessonRepository repository;
 
   LessonBloc({required this.repository}) : super(const LessonState.initial()) {
-    on<_LoadLession>(_onLoadLession);
+    on<_LoadLesson>(_onLoadLesson);
     on<_LoadLessonById>(_onLoadLessonById);
+    on<_SaveVocabulary>(_onSaveVocabulary);
   }
 
-  Future<void> _onLoadLession(
-    _LoadLession event,
+  Future<void> _onLoadLesson(
+    _LoadLesson event,
     Emitter<LessonState> emit,
   ) async {
     emit(const LessonState.loading());
@@ -56,6 +57,36 @@ class LessonBloc extends Bloc<LessionEvent, LessonState> {
       );
     } catch (e, s) {
       emit(LessonState.error('Load lesson by id failed: $e'));
+      addError(e, s);
+    }
+  }
+
+  Future<void> _onSaveVocabulary(
+    _SaveVocabulary event,
+    Emitter<LessonState> emit,
+  ) async {
+    emit(const LessonState.loading());
+
+    try {
+      final result = await repository.saveVocabulary(
+        word: event.word,
+        meaning: event.meaning,
+        category: event.category,
+        userId: event.userId,
+      );
+
+      result.fold(
+        (failure) {
+          print('Save vocab failed: $failure');
+          emit(LessonState.error(failure.toString()));
+        },
+        (_) {
+          print('Vocabulary saved successfully');
+          emit(const LessonState.saved());
+        },
+      );
+    } catch (e, s) {
+      emit(LessonState.error('Save vocabulary failed: $e'));
       addError(e, s);
     }
   }

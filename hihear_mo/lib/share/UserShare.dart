@@ -51,4 +51,14 @@ class UserShare {
     photoUrl = null;
     national = null;
   }
+
+  void debugPrint() {
+    print("========== USER SHARE DEBUG ==========");
+    print("ID       : $id");
+    print("Name     : $name");
+    print("Email    : $email");
+    print("Photo    : $photoUrl");
+    print("National : $national");
+    print("======================================");
+  }
 }

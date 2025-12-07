@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 3000),
     )..repeat();
 
-    context.read<LessonBloc>().add(const LessionEvent.loadLession());
+    context.read<LessonBloc>().add(const LessonEvent.loadLesson());
 
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted && !_hasShownStreakPopup) {

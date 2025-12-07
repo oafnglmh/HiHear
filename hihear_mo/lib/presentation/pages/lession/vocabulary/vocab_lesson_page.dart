@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hihear_mo/share/UserShare.dart';
 import 'package:lottie/lottie.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
@@ -29,7 +30,6 @@ class _VocabLessonPageState extends State<VocabLessonPage>
   late AnimationController _floatingController;
   late AnimationController _rippleController;
   List<VocabQuestion> _questions = [];
-  Set<String> _savedVocabs = {}; // Track saved vocabularies
 
   bool get _isCorrect =>
       _selectedAnswer == _questions[_currentQuestionIndex].correctAnswer;
@@ -37,7 +37,7 @@ class _VocabLessonPageState extends State<VocabLessonPage>
   @override
   void initState() {
     super.initState();
-    context.read<LessonBloc>().add(LessionEvent.loadLessonById(widget.id));
+    context.read<LessonBloc>().add(LessonEvent.loadLessonById(widget.id));
     
     _feedbackController = AnimationController(
       vsync: this,
@@ -92,17 +92,26 @@ class _VocabLessonPageState extends State<VocabLessonPage>
         isCorrect: _isCorrect,
         explanation: _questions[_currentQuestionIndex].explanation,
         correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
-        isSaved: _savedVocabs.contains(_questions[_currentQuestionIndex].correctAnswer),
-        onSave: () {
-          setState(() {
-            final vocab = _questions[_currentQuestionIndex].correctAnswer;
-            if (_savedVocabs.contains(vocab)) {
-              _savedVocabs.remove(vocab);
-            } else {
-              _savedVocabs.add(vocab);
-            }
-          });
+        onSave: () async {
+          print("Saving vocabulary...");
+          UserShare().debugPrint();
+
+          await UserShare().loadUser(); 
+          print("AFTER loadUser()");
+          UserShare().debugPrint();
+
+          final question = _questions[_currentQuestionIndex];
+
+          context.read<LessonBloc>().add(
+            LessonEvent.saveVocabulary(
+              word: question.question,
+              meaning: question.correctAnswer,
+              category: "Từ Vựng",
+              userId: UserShare().id ?? '',
+            ),
+          );
         },
+
         onNext: () {
           Navigator.pop(context);
           if (_currentQuestionIndex < _questions.length - 1) {
@@ -232,7 +241,41 @@ class _VocabLessonPageState extends State<VocabLessonPage>
                 ),
               ],
             ),
-          ),
+          ), saved: () {
+            return Scaffold(
+              body: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _buildLotusBackground(),
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 60),
+                          SizedBox(height: 12),
+                          Text(
+                            "Đã lưu từ vựng!",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -781,7 +824,6 @@ class _FeedbackBottomSheet extends StatelessWidget {
   final bool isCorrect;
   final String explanation;
   final String correctAnswer;
-  final bool isSaved;
   final VoidCallback onSave;
   final VoidCallback onNext;
 
@@ -789,7 +831,6 @@ class _FeedbackBottomSheet extends StatelessWidget {
     required this.isCorrect,
     required this.explanation,
     required this.correctAnswer,
-    required this.isSaved,
     required this.onSave,
     required this.onNext,
   });
@@ -917,9 +958,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onSave,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isSaved 
-                          ? const Color(0xFF1B7F4E)
-                          : const Color(0xFFD4AF37),
+                      backgroundColor: const Color(0xFFD4AF37),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -930,13 +969,13 @@ class _FeedbackBottomSheet extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          Icons.bookmark,
                           size: 20,
                         ),
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
-                            isSaved ? 'Đã lưu' : 'Lưu từ',
+                            'Lưu từ',
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
