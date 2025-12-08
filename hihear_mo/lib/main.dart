@@ -56,7 +56,7 @@ Future<void> main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => LanguageBloc()),
-          BlocProvider(create: (_) => VocabBloc()),
+         // BlocProvider(create: (_) => VocabBloc()),
           BlocProvider(create: (context) => AuthBloc(authRepository)),
           BlocProvider(create: (_) => CountryBloc(countryRepository)),
           BlocProvider(create: (_) => LessonBloc(repository: lessonRepository)),
