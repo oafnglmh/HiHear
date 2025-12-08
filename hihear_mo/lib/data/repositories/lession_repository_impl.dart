@@ -29,15 +29,38 @@ class LessionRepositoryImpl implements LessonRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<Failure, void>> saveVocabulary({required String word, required String meaning, required String category, required String userId}) async{
-  try {
-      final lesson = await dataSource.saveVocabulary(word: word, meaning: meaning, category: category, userId: userId);
+  Future<Either<Failure, void>> saveVocabulary({
+    required String word,
+    required String meaning,
+    required String category,
+    required String userId,
+  }) async {
+    try {
+      final lesson = await dataSource.saveVocabulary(
+        word: word,
+        meaning: meaning,
+        category: category,
+        userId: userId,
+      );
       return Right(lesson);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
-      
+  }
+
+  @override
+  Future<Either<Failure, void>> saveCompleteLesson({
+    required String lessonId,
+    required String userId,
+  }) async {
+    try {
+      await dataSource.saveCompleteLesson(lessonId: lessonId, userId: userId);
+
+      return const Right(unit);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

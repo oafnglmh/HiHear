@@ -55,13 +55,14 @@ extension LessonEventPatterns on LessonEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLesson value)?  loadLesson,TResult Function( _LoadLessonById value)?  loadLessonById,TResult Function( _SaveVocabulary value)?  saveVocabulary,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLesson value)?  loadLesson,TResult Function( _LoadLessonById value)?  loadLessonById,TResult Function( _SaveVocabulary value)?  saveVocabulary,TResult Function( _SaveCompleteLesson value)?  saveCompleteLesson,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
 return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
-return saveVocabulary(_that);case _:
+return saveVocabulary(_that);case _SaveCompleteLesson() when saveCompleteLesson != null:
+return saveCompleteLesson(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return saveVocabulary(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLesson value)  loadLesson,required TResult Function( _LoadLessonById value)  loadLessonById,required TResult Function( _SaveVocabulary value)  saveVocabulary,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLesson value)  loadLesson,required TResult Function( _LoadLessonById value)  loadLessonById,required TResult Function( _SaveVocabulary value)  saveVocabulary,required TResult Function( _SaveCompleteLesson value)  saveCompleteLesson,}){
 final _that = this;
 switch (_that) {
 case _LoadLesson():
 return loadLesson(_that);case _LoadLessonById():
 return loadLessonById(_that);case _SaveVocabulary():
-return saveVocabulary(_that);case _:
+return saveVocabulary(_that);case _SaveCompleteLesson():
+return saveCompleteLesson(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +104,14 @@ return saveVocabulary(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLesson value)?  loadLesson,TResult? Function( _LoadLessonById value)?  loadLessonById,TResult? Function( _SaveVocabulary value)?  saveVocabulary,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLesson value)?  loadLesson,TResult? Function( _LoadLessonById value)?  loadLessonById,TResult? Function( _SaveVocabulary value)?  saveVocabulary,TResult? Function( _SaveCompleteLesson value)?  saveCompleteLesson,}){
 final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
 return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
-return saveVocabulary(_that);case _:
+return saveVocabulary(_that);case _SaveCompleteLesson() when saveCompleteLesson != null:
+return saveCompleteLesson(_that);case _:
   return null;
 
 }
@@ -125,12 +128,13 @@ return saveVocabulary(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLesson,TResult Function( String id)?  loadLessonById,TResult Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLesson,TResult Function( String id)?  loadLessonById,TResult Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult Function( String lessonId,  String userId)?  saveCompleteLesson,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
 return loadLesson();case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
-return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson() when saveCompleteLesson != null:
+return saveCompleteLesson(_that.lessonId,_that.userId);case _:
   return orElse();
 
 }
@@ -148,12 +152,13 @@ return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLesson,required TResult Function( String id)  loadLessonById,required TResult Function( String word,  String meaning,  String category,  String userId)  saveVocabulary,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLesson,required TResult Function( String id)  loadLessonById,required TResult Function( String word,  String meaning,  String category,  String userId)  saveVocabulary,required TResult Function( String lessonId,  String userId)  saveCompleteLesson,}) {final _that = this;
 switch (_that) {
 case _LoadLesson():
 return loadLesson();case _LoadLessonById():
 return loadLessonById(_that.id);case _SaveVocabulary():
-return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson():
+return saveCompleteLesson(_that.lessonId,_that.userId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +175,13 @@ return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLesson,TResult? Function( String id)?  loadLessonById,TResult? Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLesson,TResult? Function( String id)?  loadLessonById,TResult? Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult? Function( String lessonId,  String userId)?  saveCompleteLesson,}) {final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
 return loadLesson();case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
-return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _:
+return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson() when saveCompleteLesson != null:
+return saveCompleteLesson(_that.lessonId,_that.userId);case _:
   return null;
 
 }
@@ -345,6 +351,74 @@ class __$SaveVocabularyCopyWithImpl<$Res>
 word: null == word ? _self.word : word // ignore: cast_nullable_to_non_nullable
 as String,meaning: null == meaning ? _self.meaning : meaning // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SaveCompleteLesson implements LessonEvent {
+  const _SaveCompleteLesson({required this.lessonId, required this.userId});
+  
+
+ final  String lessonId;
+ final  String userId;
+
+/// Create a copy of LessonEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SaveCompleteLessonCopyWith<_SaveCompleteLesson> get copyWith => __$SaveCompleteLessonCopyWithImpl<_SaveCompleteLesson>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SaveCompleteLesson&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.userId, userId) || other.userId == userId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,lessonId,userId);
+
+@override
+String toString() {
+  return 'LessonEvent.saveCompleteLesson(lessonId: $lessonId, userId: $userId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SaveCompleteLessonCopyWith<$Res> implements $LessonEventCopyWith<$Res> {
+  factory _$SaveCompleteLessonCopyWith(_SaveCompleteLesson value, $Res Function(_SaveCompleteLesson) _then) = __$SaveCompleteLessonCopyWithImpl;
+@useResult
+$Res call({
+ String lessonId, String userId
+});
+
+
+
+
+}
+/// @nodoc
+class __$SaveCompleteLessonCopyWithImpl<$Res>
+    implements _$SaveCompleteLessonCopyWith<$Res> {
+  __$SaveCompleteLessonCopyWithImpl(this._self, this._then);
+
+  final _SaveCompleteLesson _self;
+  final $Res Function(_SaveCompleteLesson) _then;
+
+/// Create a copy of LessonEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? lessonId = null,Object? userId = null,}) {
+  return _then(_SaveCompleteLesson(
+lessonId: null == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,
   ));

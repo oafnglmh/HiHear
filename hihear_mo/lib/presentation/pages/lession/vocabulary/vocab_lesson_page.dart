@@ -145,7 +145,18 @@ class _VocabLessonPageState extends State<VocabLessonPage>
         isPassed: isPassed,
         correctAnswers: _correctAnswers,
         totalQuestions: _questions.length,
-        onComplete: () => context.go('/home'),
+        onComplete: () {
+          if (isPassed) {
+            context.read<LessonBloc>().add(
+              LessonEvent.saveCompleteLesson(
+                lessonId: widget.id,
+                userId: UserShare().id ?? '',
+              ),
+            );
+          }
+          context.go('/home');
+        },
+
       ),
     );
   }

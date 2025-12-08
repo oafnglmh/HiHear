@@ -10,5 +10,9 @@ class LessonEvent with _$LessonEvent {
     required String category,
     required String userId,
   }) = _SaveVocabulary;
+  const factory LessonEvent.saveCompleteLesson({
+    required String lessonId,
+    required String userId,
+  }) = _SaveCompleteLesson;
 }
 

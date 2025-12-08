@@ -15,6 +15,7 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     on<_LoadLesson>(_onLoadLesson);
     on<_LoadLessonById>(_onLoadLessonById);
     on<_SaveVocabulary>(_onSaveVocabulary);
+    on<_SaveCompleteLesson>(_onSaveCompleteLesson);
   }
 
   Future<void> _onLoadLesson(
@@ -83,6 +84,34 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
         (_) {
           print('Vocabulary saved successfully');
           emit(const LessonState.saved());
+        },
+      );
+    } catch (e, s) {
+      emit(LessonState.error('Save vocabulary failed: $e'));
+      addError(e, s);
+    }
+  }
+
+  Future<void> _onSaveCompleteLesson(
+    _SaveCompleteLesson event,
+    Emitter<LessonState> emit,
+  ) async {
+    emit(const LessonState.loading());
+
+    try {
+      final result = await repository.saveCompleteLesson(
+        lessonId: event.lessonId,
+        userId: event.userId,
+      );
+
+      result.fold(
+        (failure) {
+          print('Save vocab failed: $failure');
+          emit(LessonState.error(failure.toString()));
+        },
+        (_) {
+          print('Lesson saved successfully');
+          // emit(const LessonState.saved());
         },
       );
     } catch (e, s) {

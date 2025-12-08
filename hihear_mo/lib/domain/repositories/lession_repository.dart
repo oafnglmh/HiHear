@@ -13,4 +13,9 @@ abstract class LessonRepository {
     required String category,
     required String userId,
   });
+
+  Future<Either<Failure, void>> saveCompleteLesson({
+    required String lessonId,
+    required String userId,
+  });
 }

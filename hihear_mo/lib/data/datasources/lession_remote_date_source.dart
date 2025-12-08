@@ -152,6 +152,54 @@ class LessionRemoteDataSource {
     }
   }
 
+
+  Future<void> saveCompleteLesson({
+    required String lessonId,
+    required String userId,
+  }) async {
+    final token = await TokenStorage.getToken();
+
+    if (token == null) {
+      throw Exception("User chưa login hoặc token chưa được lưu.");
+    }
+    _debugValue("UserId", userId);
+    final payload = {
+      "lesson_id": lessonId,
+      "user_id": userId,
+      "completed": true,
+    };
+
+    _debugValue("Payload", payload);
+
+    try {
+      final response = await _dio.post(
+        "user-progress",
+        data: payload,
+        options: Options(headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        _debugSuccess("Lưu từ vựng thành công");
+        return;
+      }
+
+      _debugError("Server trả về lỗi: ${response.statusCode}");
+      throw Exception("Lưu từ vựng thất bại: ${response.statusCode}");
+    } on DioException catch (e) {
+      _debugError("DIO ERROR: ${e.message}");
+      _debugValue("Response", e.response?.data);
+      _debugValue("Status", e.response?.statusCode);
+      throw Exception("Dio error: ${e.message}");
+    } catch (e) {
+      _debugError("UNEXPECTED ERROR: $e");
+      throw Exception("Save vocab unexpected error: $e");
+    }
+  }
+
+
   // ---------------------------------------------------------------------------
   //                          DEBUG UTILITIES
   // ---------------------------------------------------------------------------
