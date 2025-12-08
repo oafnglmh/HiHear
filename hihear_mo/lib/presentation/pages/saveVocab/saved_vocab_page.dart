@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flip_card/flip_card.dart';
 import 'dart:math' as math;
+
+import 'package:hihear_mo/presentation/blocs/save_vocab/save_vocab_bloc.dart';
+import 'package:hihear_mo/share/UserShare.dart';
+import 'package:hihear_mo/domain/entities/VocabUserEntity/vocab_user_entity.dart';
 
 class SavedVocabPage extends StatefulWidget {
   const SavedVocabPage({super.key});
@@ -20,25 +25,17 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   late AnimationController _floatingController;
   late AnimationController _fadeController;
 
-  final List<Map<String, String>> _savedVocab = [
-    {'en': 'apple', 'vi': 'quả táo'},
-    {'en': 'book', 'vi': 'quyển sách'},
-    {'en': 'computer', 'vi': 'máy tính'},
-    {'en': 'friend', 'vi': 'người bạn'},
-    {'en': 'music', 'vi': 'âm nhạc'},
-    {'en': 'school', 'vi': 'trường học'},
-    {'en': 'teacher', 'vi': 'giáo viên'},
-    {'en': 'beautiful', 'vi': 'đẹp'},
-    {'en': 'family', 'vi': 'gia đình'},
-    {'en': 'house', 'vi': 'ngôi nhà'},
-  ];
-
-  List<Map<String, String>> _filteredVocab = [];
+  List<VocabUserEntity> _allVocab = [];
+  List<VocabUserEntity> _filteredVocab = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredVocab = List.from(_savedVocab);
+    UserShare().debugPrint();
+    context.read<SaveVocabBloc>().add(SaveVocabEvent.loadVocabUserById(
+      id: UserShare().id ?? '',
+    ));
+    
     _searchController.addListener(_onSearchChanged);
     
     _lotusController = AnimationController(
@@ -76,16 +73,17 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase().trim();
     setState(() {
-      _filteredVocab = _savedVocab.where((vocab) {
-        final en = vocab['en']!.toLowerCase();
-        final vi = vocab['vi']!.toLowerCase();
-        return en.contains(query) || vi.contains(query);
+      _filteredVocab = _allVocab.where((vocab) {
+        final word = vocab.word.toLowerCase();
+        final meaning = vocab.meaning.toLowerCase();
+        return word.contains(query) || meaning.contains(query);
       }).toList();
     });
   }
 
   Future<void> _speak(String word) async {
-    await _tts.setLanguage("en-US");
+    await _tts.setLanguage("vi-VN");
+
     await _tts.setPitch(1.0);
     await _tts.speak(word);
   }
@@ -110,7 +108,6 @@ class _SavedVocabPageState extends State<SavedVocabPage>
             ),
           ),
 
-          // Lotus pattern background
           AnimatedBuilder(
             animation: _lotusController,
             builder: (context, child) {
@@ -138,16 +135,46 @@ class _SavedVocabPageState extends State<SavedVocabPage>
           SafeArea(
             child: FadeTransition(
               opacity: _fadeController,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildHeader(),
-                    _buildSearchBar(),
-                    _buildStatsBar(),
-                    _buildVocabGrid(),
-                    const SizedBox(height: 40),
-                  ],
-                ),
+              child: BlocConsumer<SaveVocabBloc, SaveVocabState>(
+                listener: (context, state) {
+                  state.maybeWhen(
+                    vocabUserData: (vocabUsers) {
+                      setState(() {
+                        _allVocab = vocabUsers;
+                        _filteredVocab = vocabUsers;
+                      });
+                    },
+                    error: (message) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    },
+                    orElse: () {},
+                  );
+                },
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFD4AF37),
+                      ),
+                    ),
+                    orElse: () => SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _buildHeader(),
+                          _buildSearchBar(),
+                          _buildStatsBar(),
+                          _buildVocabGrid(),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -224,7 +251,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "${_savedVocab.length} từ vựng",
+                        "${_allVocab.length} từ vựng",
                         style: TextStyle(
                           color: const Color(0xFF2D5016).withOpacity(0.7),
                           fontSize: 15,
@@ -368,9 +395,9 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                   ),
                 ),
                 _buildStatItem(
-                  "7",
-                  "Ngày streak",
-                  const Color(0xFFDA291C),
+                  _allVocab.length.toString(),
+                  "Tổng số từ",
+                  const Color(0xFF1B7F4E),
                 ),
               ],
             ),
@@ -457,9 +484,11 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Không tìm thấy từ nào",
-                      style: TextStyle(
+                    Text(
+                      _allVocab.isEmpty 
+                          ? "Chưa có từ vựng nào"
+                          : "Không tìm thấy từ nào",
+                      style: const TextStyle(
                         color: Color(0xFF2D5016),
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -468,7 +497,9 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "Thử tìm kiếm với từ khóa khác",
+                      _allVocab.isEmpty 
+                          ? "Hãy bắt đầu lưu từ vựng của bạn"
+                          : "Thử tìm kiếm với từ khóa khác",
                       style: TextStyle(
                         color: const Color(0xFF2D5016).withOpacity(0.7),
                         fontSize: 15,
@@ -514,19 +545,18 @@ class _SavedVocabPageState extends State<SavedVocabPage>
     );
   }
 
-  Widget _buildFlipCard(Map<String, String> vocab, int index) {
+  Widget _buildFlipCard(VocabUserEntity vocab, int index) {
     return FlipCard(
       direction: FlipDirection.HORIZONTAL,
       speed: 500,
       front: _buildCardFace(
-        title: vocab['en']!,
+        title: vocab.word,
         icon: Icons.volume_up_rounded,
-        onIconPressed: () => _speak(vocab['en']!),
+        onIconPressed: () => _speak(vocab.word),
         index: index,
       ),
       back: _buildCardFace(
-        title: vocab['vi']!,
-        subtitle: vocab['en'],
+        title: vocab.meaning,
         isBack: true,
         index: index,
       ),
@@ -655,15 +685,27 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                 
                 if (subtitle != null) ...[
                   const SizedBox(height: 12),
-                  Text(
-                    subtitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
                       color: isBack
-                          ? Colors.white.withOpacity(0.9)
-                          : const Color(0xFF2D5016).withOpacity(0.7),
-                      fontWeight: FontWeight.w500,
+                          ? Colors.white.withOpacity(0.2)
+                          : colors[0].withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      subtitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isBack
+                            ? Colors.white.withOpacity(0.9)
+                            : colors[0],
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

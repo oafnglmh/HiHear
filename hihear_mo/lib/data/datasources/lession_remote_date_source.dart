@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:hihear_mo/core/network/api_client.dart';
+import 'package:hihear_mo/domain/entities/VocabUserEntity/vocab_user_entity.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/share/TokenStorage.dart';
 
@@ -25,10 +26,12 @@ class LessionRemoteDataSource {
 
     final response = await _dio.get(
       "lessons",
-      options: Options(headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      }),
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
     );
 
     _debugValue("Status code", response.statusCode);
@@ -70,10 +73,12 @@ class LessionRemoteDataSource {
 
     final response = await _dio.get(
       "lessons/$id",
-      options: Options(headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      }),
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
     );
 
     _debugValue("Status code", response.statusCode);
@@ -84,6 +89,31 @@ class LessionRemoteDataSource {
     if (response.statusCode == 200) {
       return LessionEntity.fromJson(response.data);
     }
+    throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
+  }
+
+  Future<List<VocabUserEntity>> loadVocabUserById(String id) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception("User chưa login hoặc token chưa được lưu.");
+    }
+
+    final response = await _dio.get(
+      "user-saved-vocabularies/$id",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final list = response.data as List;
+      print(  "Loaded vocab user data: $list");
+      return list.map((json) => VocabUserEntity.fromJson(json)).toList();
+    }
+
     throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
   }
 
@@ -124,10 +154,12 @@ class LessionRemoteDataSource {
       final response = await _dio.post(
         "user-saved-vocabularies",
         data: payload,
-        options: Options(headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        }),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
       );
 
       _debugValue("Status code", response.statusCode);
@@ -152,7 +184,6 @@ class LessionRemoteDataSource {
     }
   }
 
-
   Future<void> saveCompleteLesson({
     required String lessonId,
     required String userId,
@@ -175,10 +206,12 @@ class LessionRemoteDataSource {
       final response = await _dio.post(
         "user-progress",
         data: payload,
-        options: Options(headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        }),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
       );
 
       if (response.statusCode == 201) {
@@ -198,7 +231,6 @@ class LessionRemoteDataSource {
       throw Exception("Save vocab unexpected error: $e");
     }
   }
-
 
   // ---------------------------------------------------------------------------
   //                          DEBUG UTILITIES

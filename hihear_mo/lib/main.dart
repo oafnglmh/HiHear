@@ -19,7 +19,7 @@ import 'package:hihear_mo/presentation/blocs/ai/ai_chat_cubit.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
-import 'package:hihear_mo/presentation/blocs/vocab/vocab_bloc.dart';
+import 'package:hihear_mo/presentation/blocs/save_vocab/save_vocab_bloc.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
 import 'core/constants/app_colors.dart';
 import 'firebase_options.dart';
@@ -61,6 +61,7 @@ Future<void> main() async {
           BlocProvider(create: (_) => CountryBloc(countryRepository)),
           BlocProvider(create: (_) => LessonBloc(repository: lessonRepository)),
           BlocProvider(create: (_) => AiChatCubit(getAiResponse)),
+          BlocProvider(create: (_) => SaveVocabBloc(repository: lessonRepository)),
         ],
         child: const HiHearApp(),
       ),

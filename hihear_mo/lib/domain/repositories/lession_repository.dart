@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:hihear_mo/core/error/failures.dart';
+import 'package:hihear_mo/domain/entities/VocabUserEntity/vocab_user_entity.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 
 abstract class LessonRepository {
@@ -18,4 +19,6 @@ abstract class LessonRepository {
     required String lessonId,
     required String userId,
   });
+
+  Future<Either<Failure, List<VocabUserEntity>>> loadVocabUserById(String id);
 }

@@ -36,11 +36,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    context.read<LessonBloc>().add(const LessonEvent.loadLesson());
     _navBarController = AnimationController(vsync: this, duration: AppDuration.short);
     _bambooController = AnimationController(vsync: this, duration: AppDuration.bamboo)
       ..repeat(reverse: true);
     
-    // Thêm animation controllers cho hoa sen
     _lotusController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 4000),
@@ -51,7 +51,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 3000),
     )..repeat();
 
-    context.read<LessonBloc>().add(const LessonEvent.loadLesson());
 
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted && !_hasShownStreakPopup) {

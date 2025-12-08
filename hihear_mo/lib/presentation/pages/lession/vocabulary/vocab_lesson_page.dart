@@ -147,6 +147,7 @@ class _VocabLessonPageState extends State<VocabLessonPage>
         totalQuestions: _questions.length,
         onComplete: () {
           if (isPassed) {
+            UserShare().debugPrint();
             context.read<LessonBloc>().add(
               LessonEvent.saveCompleteLesson(
                 lessonId: widget.id,

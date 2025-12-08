@@ -547,7 +547,7 @@ return saved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<LessionEntity> lessons)?  data,TResult Function( String message)?  error,TResult Function()?  saved,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<LessionEntity> lessons)?  data,TResult Function( String message)?  error,TResult Function()?  saved,required TResult orElse(), required Null Function(dynamic vocabUsers) vocabUserData,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
