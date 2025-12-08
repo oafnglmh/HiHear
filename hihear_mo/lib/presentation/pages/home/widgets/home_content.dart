@@ -51,7 +51,7 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     return BlocBuilder<LessonBloc, LessonState>(
       builder: (context, state) {
-        final lessons = state.maybeWhen(data: (data) => data, orElse: () => <LessionEntity>[], vocabUserData: (vocabUsers) {  });
+        final lessons = state.maybeWhen(data: (data) => data, orElse: () => <LessionEntity>[],);
 
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),

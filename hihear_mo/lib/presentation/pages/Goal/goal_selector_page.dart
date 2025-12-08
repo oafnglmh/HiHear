@@ -434,7 +434,7 @@ class _StudyTimePageState extends State<StudyTimePage>
                 onPressed: isEnabled
                     ? () {
                         // context.go('/languageCountry');
-                        context.go('${AppRoutes.test}');
+                        context.go('${AppRoutes.home}');
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

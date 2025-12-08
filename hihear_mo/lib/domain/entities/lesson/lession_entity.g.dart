@@ -16,6 +16,7 @@ _LessionEntity _$LessionEntityFromJson(Map<String, dynamic> json) =>
       durationSeconds: (json['durationSeconds'] as num).toInt(),
       xpReward: (json['xpReward'] as num?)?.toInt(),
       prerequisiteLesson: json['prerequisiteLesson'] as String?,
+      isLock: json['isLock'] as bool? ?? false,
       media:
           (json['media'] as List<dynamic>?)
               ?.map((e) => MediaEntity.fromJson(e as Map<String, dynamic>))
@@ -38,6 +39,7 @@ Map<String, dynamic> _$LessionEntityToJson(_LessionEntity instance) =>
       'durationSeconds': instance.durationSeconds,
       'xpReward': instance.xpReward,
       'prerequisiteLesson': instance.prerequisiteLesson,
+      'isLock': instance.isLock,
       'media': instance.media,
       'exercises': instance.exercises,
     };

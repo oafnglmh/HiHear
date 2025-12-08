@@ -55,6 +55,7 @@ class AuthRemoteDataSource {
         photoUrl: user.photoURL ?? '',
         national: profile['language'],
       );
+      UserShare().debugPrint();
       return UserEntity(
         id: user.uid,
         name: user.displayName ?? '',

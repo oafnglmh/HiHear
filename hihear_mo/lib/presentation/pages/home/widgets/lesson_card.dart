@@ -19,54 +19,114 @@ class LessonCard extends StatefulWidget {
 }
 
 class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _shake;
-  late final Animation<double> _fall;
-  late final Animation<double> _rotate;
-  late final Animation<double> _chainFade;
-
-  bool _isLocked = true;
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
 
-    _shake = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.2, curve: Curves.elasticIn),
-    ));
-
-    _fall = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.4, 0.8, curve: Curves.easeInQuart),
-    ));
-
-    _rotate = Tween<double>(begin: 0, end: 2).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.4, 0.8, curve: Curves.easeInQuart),
-    ));
-
-    _chainFade = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
-    ));
-
-    // Mở khóa bài đầu tiên
-    if (widget.lesson.id == '1' || widget.lesson.id == 1) {
-      _isLocked = false;
-    }
+    _shakeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _shakeController,
+        curve: Curves.elasticIn,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _shakeController.dispose();
     super.dispose();
   }
 
-  void _unlock() {
-    if (!_isLocked) return;
-    _controller.forward().then((_) => setState(() => _isLocked = false));
+  void _handleTap() {
+    // isLock = true → Bài học BỊ KHÓA
+    // isLock = false → Bài học ĐÃ MỞ KHÓA
+    if (widget.lesson.isLock) {
+      // Chạy hiệu ứng lắc
+      _shakeController.forward().then((_) {
+        _shakeController.reverse();
+      });
+      
+      // Hiển thị popup
+      _showLockedDialog();
+    } else {
+      // Nếu đã mở khóa, chuyển đến bài học
+      final path = widget.lesson.category == Category.grammar
+          ? '/grammar/${widget.lesson.id}'
+          : '/vocab/${widget.lesson.id}';
+      context.go(path);
+    }
+  }
+
+  void _showLockedDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.large),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                ),
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+              child: const Icon(Icons.lock_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Bài học bị khóa',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D5016),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Bạn cần hoàn thành các bài học trước đó để mở khóa bài học này.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF2D5016),
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              backgroundColor: const Color(0xFFD4AF37),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+              ),
+            ),
+            child: const Text(
+              'Đã hiểu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -74,108 +134,126 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
     final colors = LessonHelper.getLessonColors(widget.lesson.id);
     final icon = LessonHelper.getIconForCategory(widget.lesson.category ?? '');
     final l10n = AppLocalizations.of(context)!;
+    final isLocked = widget.lesson.isLock;
 
     return GestureDetector(
-      onTap: _isLocked ? _unlock : null,
-      child: Stack(
-        children: [
-          // Card chính
-          Opacity(
-            opacity: _isLocked ? 0.6 : 1.0,
-            child: Container(
-              decoration: _cardDecoration(_isLocked ? Colors.grey : colors[0]),
-              padding: const EdgeInsets.all(AppPadding.medium + 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      _LessonIcon(icon: icon, colors: _isLocked ? [Colors.grey.shade400, Colors.grey.shade600] : colors),
-                      const Spacer(),
-                      _LessonBadge(title: widget.lesson.category ?? 'Bài học', color: _isLocked ? Colors.grey : colors[0]),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    widget.lesson.title ?? 'Bài học',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.cardTitle.copyWith(
-                      color: _isLocked ? Colors.grey.shade600 : const Color(0xFF2D5016),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.lesson.description,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.cardDescription.copyWith(
-                      color: _isLocked ? Colors.grey.shade500 : const Color(0xFF2D5016).withOpacity(0.7),
-                    ),
-                  ),
-                  const SizedBox(height: AppPadding.medium),
-                  _StartButton(lesson: widget.lesson, colors: colors, isLocked: _isLocked, l10n: l10n),
-                ],
-              ),
-            ),
-          ),
+      onTap: _handleTap,
+      child: AnimatedBuilder(
+        animation: _shakeAnimation,
+        builder: (context, child) {
+          final shakeOffset = isLocked && _shakeAnimation.value > 0
+              ? math.sin(_shakeAnimation.value * math.pi * 6) * 8
+              : 0.0;
 
-          // Layer khóa + hiệu ứng mở khóa
-          if (_isLocked)
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (_, __) {
-                  final shakeOffset = _shake.value < 1 ? math.sin(_shake.value * math.pi * 4) * 5 : 0.0;
-                  return Transform.translate(
-                    offset: Offset(shakeOffset, 0),
-                    child: Opacity(
-                      opacity: _chainFade.value,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(AppRadius.xLarge + 4),
-                        ),
-                        child: Center(
-                          child: Transform.translate(
-                            offset: Offset(0, _fall.value * 200),
-                            child: Transform.rotate(
-                              angle: _rotate.value * math.pi,
-                              child: Container(
-                                padding: const EdgeInsets.all(AppPadding.large),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFFD4AF37),
-                                      Color(0xFFB8941E),
-                                    ],
-                                  ),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFD4AF37).withOpacity(0.4),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(Icons.lock_rounded, size: 40, color: Colors.white),
-                              ),
+          return Transform.translate(
+            offset: Offset(shakeOffset, 0),
+            child: Stack(
+              children: [
+                // Card chính
+                Opacity(
+                  opacity: isLocked ? 0.6 : 1.0,
+                  child: Container(
+                    decoration: _cardDecoration(isLocked ? Colors.grey : colors[0]),
+                    padding: const EdgeInsets.all(AppPadding.medium + 6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _LessonIcon(
+                              icon: icon,
+                              colors: isLocked
+                                  ? [Colors.grey.shade400, Colors.grey.shade600]
+                                  : colors,
                             ),
+                            const Spacer(),
+                            _LessonBadge(
+                              title: widget.lesson.category ?? 'Bài học',
+                              color: isLocked ? Colors.grey : colors[0],
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        Text(
+                          widget.lesson.title ?? 'Bài học',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.cardTitle.copyWith(
+                            color: isLocked
+                                ? Colors.grey.shade600
+                                : const Color(0xFF2D5016),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.lesson.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.cardDescription.copyWith(
+                            color: isLocked
+                                ? Colors.grey.shade500
+                                : const Color(0xFF2D5016).withOpacity(0.7),
+                          ),
+                        ),
+                        const SizedBox(height: AppPadding.medium),
+                        _StartButton(
+                          lesson: widget.lesson,
+                          colors: colors,
+                          isLocked: isLocked,
+                          l10n: l10n,
+                          onTap: _handleTap,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Layer khóa (chỉ hiển thị khi isLock = true)
+                if (isLocked)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(AppRadius.xLarge + 4),
+                      ),
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(AppPadding.large),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFD4AF37),
+                                Color(0xFFB8941E),
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.lock_rounded,
+                            size: 40,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+              ],
             ),
-        ],
+          );
+        },
       ),
     );
   }
 
   BoxDecoration _cardDecoration(Color borderColor) {
+    final isLocked = widget.lesson.isLock;
     return BoxDecoration(
       gradient: LinearGradient(
         colors: [
@@ -185,8 +263,8 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
       ),
       borderRadius: BorderRadius.circular(AppRadius.xLarge + 4),
       border: Border.all(
-        color: _isLocked ? borderColor.withOpacity(0.3) : const Color(0xFFD4AF37),
-        width: _isLocked ? 2 : 3,
+        color: isLocked ? borderColor.withOpacity(0.3) : const Color(0xFFD4AF37),
+        width: isLocked ? 2 : 3,
       ),
       boxShadow: [
         BoxShadow(
@@ -194,7 +272,7 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
           blurRadius: 25,
           offset: const Offset(0, 10),
         ),
-        if (!_isLocked)
+        if (!isLocked)
           BoxShadow(
             color: const Color(0xFFD4AF37).withOpacity(0.3),
             blurRadius: 30,
@@ -239,7 +317,10 @@ class _LessonBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppPadding.small + 4, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppPadding.small + 4,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(AppRadius.small),
@@ -264,20 +345,20 @@ class _StartButton extends StatelessWidget {
   final List<Color> colors;
   final bool isLocked;
   final AppLocalizations l10n;
+  final VoidCallback onTap;
 
-  const _StartButton({required this.lesson, required this.colors, required this.isLocked, required this.l10n});
+  const _StartButton({
+    required this.lesson,
+    required this.colors,
+    required this.isLocked,
+    required this.l10n,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isLocked
-          ? null
-          : () {
-              final path = lesson.category == Category.grammar
-                  ? '/grammar/${lesson.id}'
-                  : '/vocab/${lesson.id}';
-              context.go(path);
-            },
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -293,7 +374,8 @@ class _StartButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.medium),
           boxShadow: [
             BoxShadow(
-              color: (isLocked ? Colors.grey : const Color(0xFFD4AF37)).withOpacity(0.4),
+              color: (isLocked ? Colors.grey : const Color(0xFFD4AF37))
+                  .withOpacity(0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -302,9 +384,16 @@ class _StartButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(isLocked ? 'Đã khóa' : l10n.startButton, style: AppTextStyles.button),
+            Text(
+              isLocked ? 'Đã khóa' : l10n.startButton,
+              style: AppTextStyles.button,
+            ),
             const SizedBox(width: 6),
-            Icon(isLocked ? Icons.lock_rounded : Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+            Icon(
+              isLocked ? Icons.lock_rounded : Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
           ],
         ),
       ),

@@ -16,6 +16,7 @@ abstract class LessionEntity with _$LessionEntity {
     required int durationSeconds,
     int? xpReward,
     String? prerequisiteLesson,
+    @Default(true) bool isLock,
     @Default([]) List<MediaEntity> media,
     @Default([]) List<ExerciseEntity> exercises,
   }) = _LessionEntity;

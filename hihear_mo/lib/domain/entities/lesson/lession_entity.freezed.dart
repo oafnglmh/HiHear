@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LessionEntity {
 
- String get id; String get title; String get category; String get level; String get description; int get durationSeconds; int? get xpReward; String? get prerequisiteLesson; List<MediaEntity> get media; List<ExerciseEntity> get exercises;
+ String get id; String get title; String get category; String get level; String get description; int get durationSeconds; int? get xpReward; String? get prerequisiteLesson; bool get isLock; List<MediaEntity> get media; List<ExerciseEntity> get exercises;
 /// Create a copy of LessionEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $LessionEntityCopyWith<LessionEntity> get copyWith => _$LessionEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessionEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&(identical(other.description, description) || other.description == description)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.prerequisiteLesson, prerequisiteLesson) || other.prerequisiteLesson == prerequisiteLesson)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.exercises, exercises));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessionEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&(identical(other.description, description) || other.description == description)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.prerequisiteLesson, prerequisiteLesson) || other.prerequisiteLesson == prerequisiteLesson)&&(identical(other.isLock, isLock) || other.isLock == isLock)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.exercises, exercises));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,category,level,description,durationSeconds,xpReward,prerequisiteLesson,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(exercises));
+int get hashCode => Object.hash(runtimeType,id,title,category,level,description,durationSeconds,xpReward,prerequisiteLesson,isLock,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(exercises));
 
 @override
 String toString() {
-  return 'LessionEntity(id: $id, title: $title, category: $category, level: $level, description: $description, durationSeconds: $durationSeconds, xpReward: $xpReward, prerequisiteLesson: $prerequisiteLesson, media: $media, exercises: $exercises)';
+  return 'LessionEntity(id: $id, title: $title, category: $category, level: $level, description: $description, durationSeconds: $durationSeconds, xpReward: $xpReward, prerequisiteLesson: $prerequisiteLesson, isLock: $isLock, media: $media, exercises: $exercises)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $LessionEntityCopyWith<$Res>  {
   factory $LessionEntityCopyWith(LessionEntity value, $Res Function(LessionEntity) _then) = _$LessionEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String category, String level, String description, int durationSeconds, int? xpReward, String? prerequisiteLesson, List<MediaEntity> media, List<ExerciseEntity> exercises
+ String id, String title, String category, String level, String description, int durationSeconds, int? xpReward, String? prerequisiteLesson, bool isLock, List<MediaEntity> media, List<ExerciseEntity> exercises
 });
 
 
@@ -65,7 +65,7 @@ class _$LessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of LessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? category = null,Object? level = null,Object? description = null,Object? durationSeconds = null,Object? xpReward = freezed,Object? prerequisiteLesson = freezed,Object? media = null,Object? exercises = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? category = null,Object? level = null,Object? description = null,Object? durationSeconds = null,Object? xpReward = freezed,Object? prerequisiteLesson = freezed,Object? isLock = null,Object? media = null,Object? exercises = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,8 @@ as String,description: null == description ? _self.description : description // 
 as String,durationSeconds: null == durationSeconds ? _self.durationSeconds : durationSeconds // ignore: cast_nullable_to_non_nullable
 as int,xpReward: freezed == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
 as int?,prerequisiteLesson: freezed == prerequisiteLesson ? _self.prerequisiteLesson : prerequisiteLesson // ignore: cast_nullable_to_non_nullable
-as String?,media: null == media ? _self.media : media // ignore: cast_nullable_to_non_nullable
+as String?,isLock: null == isLock ? _self.isLock : isLock // ignore: cast_nullable_to_non_nullable
+as bool,media: null == media ? _self.media : media // ignore: cast_nullable_to_non_nullable
 as List<MediaEntity>,exercises: null == exercises ? _self.exercises : exercises // ignore: cast_nullable_to_non_nullable
 as List<ExerciseEntity>,
   ));
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  List<MediaEntity> media,  List<ExerciseEntity> exercises)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  bool isLock,  List<MediaEntity> media,  List<ExerciseEntity> exercises)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LessionEntity() when $default != null:
-return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.media,_that.exercises);case _:
+return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.isLock,_that.media,_that.exercises);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.id,_that.title,_that.category,_that.level,_that.descriptio
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  List<MediaEntity> media,  List<ExerciseEntity> exercises)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  bool isLock,  List<MediaEntity> media,  List<ExerciseEntity> exercises)  $default,) {final _that = this;
 switch (_that) {
 case _LessionEntity():
-return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.media,_that.exercises);case _:
+return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.isLock,_that.media,_that.exercises);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.id,_that.title,_that.category,_that.level,_that.descriptio
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  List<MediaEntity> media,  List<ExerciseEntity> exercises)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String category,  String level,  String description,  int durationSeconds,  int? xpReward,  String? prerequisiteLesson,  bool isLock,  List<MediaEntity> media,  List<ExerciseEntity> exercises)?  $default,) {final _that = this;
 switch (_that) {
 case _LessionEntity() when $default != null:
-return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.media,_that.exercises);case _:
+return $default(_that.id,_that.title,_that.category,_that.level,_that.description,_that.durationSeconds,_that.xpReward,_that.prerequisiteLesson,_that.isLock,_that.media,_that.exercises);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.id,_that.title,_that.category,_that.level,_that.descriptio
 @JsonSerializable()
 
 class _LessionEntity implements LessionEntity {
-  const _LessionEntity({required this.id, required this.title, required this.category, required this.level, required this.description, required this.durationSeconds, this.xpReward, this.prerequisiteLesson, final  List<MediaEntity> media = const [], final  List<ExerciseEntity> exercises = const []}): _media = media,_exercises = exercises;
+  const _LessionEntity({required this.id, required this.title, required this.category, required this.level, required this.description, required this.durationSeconds, this.xpReward, this.prerequisiteLesson, this.isLock = false, final  List<MediaEntity> media = const [], final  List<ExerciseEntity> exercises = const []}): _media = media,_exercises = exercises;
   factory _LessionEntity.fromJson(Map<String, dynamic> json) => _$LessionEntityFromJson(json);
 
 @override final  String id;
@@ -229,6 +230,7 @@ class _LessionEntity implements LessionEntity {
 @override final  int durationSeconds;
 @override final  int? xpReward;
 @override final  String? prerequisiteLesson;
+@override@JsonKey() final  bool isLock;
  final  List<MediaEntity> _media;
 @override@JsonKey() List<MediaEntity> get media {
   if (_media is EqualUnmodifiableListView) return _media;
@@ -257,16 +259,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessionEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&(identical(other.description, description) || other.description == description)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.prerequisiteLesson, prerequisiteLesson) || other.prerequisiteLesson == prerequisiteLesson)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._exercises, _exercises));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessionEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&(identical(other.description, description) || other.description == description)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.xpReward, xpReward) || other.xpReward == xpReward)&&(identical(other.prerequisiteLesson, prerequisiteLesson) || other.prerequisiteLesson == prerequisiteLesson)&&(identical(other.isLock, isLock) || other.isLock == isLock)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._exercises, _exercises));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,category,level,description,durationSeconds,xpReward,prerequisiteLesson,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_exercises));
+int get hashCode => Object.hash(runtimeType,id,title,category,level,description,durationSeconds,xpReward,prerequisiteLesson,isLock,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_exercises));
 
 @override
 String toString() {
-  return 'LessionEntity(id: $id, title: $title, category: $category, level: $level, description: $description, durationSeconds: $durationSeconds, xpReward: $xpReward, prerequisiteLesson: $prerequisiteLesson, media: $media, exercises: $exercises)';
+  return 'LessionEntity(id: $id, title: $title, category: $category, level: $level, description: $description, durationSeconds: $durationSeconds, xpReward: $xpReward, prerequisiteLesson: $prerequisiteLesson, isLock: $isLock, media: $media, exercises: $exercises)';
 }
 
 
@@ -277,7 +279,7 @@ abstract mixin class _$LessionEntityCopyWith<$Res> implements $LessionEntityCopy
   factory _$LessionEntityCopyWith(_LessionEntity value, $Res Function(_LessionEntity) _then) = __$LessionEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String category, String level, String description, int durationSeconds, int? xpReward, String? prerequisiteLesson, List<MediaEntity> media, List<ExerciseEntity> exercises
+ String id, String title, String category, String level, String description, int durationSeconds, int? xpReward, String? prerequisiteLesson, bool isLock, List<MediaEntity> media, List<ExerciseEntity> exercises
 });
 
 
@@ -294,7 +296,7 @@ class __$LessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of LessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? category = null,Object? level = null,Object? description = null,Object? durationSeconds = null,Object? xpReward = freezed,Object? prerequisiteLesson = freezed,Object? media = null,Object? exercises = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? category = null,Object? level = null,Object? description = null,Object? durationSeconds = null,Object? xpReward = freezed,Object? prerequisiteLesson = freezed,Object? isLock = null,Object? media = null,Object? exercises = null,}) {
   return _then(_LessionEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -304,7 +306,8 @@ as String,description: null == description ? _self.description : description // 
 as String,durationSeconds: null == durationSeconds ? _self.durationSeconds : durationSeconds // ignore: cast_nullable_to_non_nullable
 as int,xpReward: freezed == xpReward ? _self.xpReward : xpReward // ignore: cast_nullable_to_non_nullable
 as int?,prerequisiteLesson: freezed == prerequisiteLesson ? _self.prerequisiteLesson : prerequisiteLesson // ignore: cast_nullable_to_non_nullable
-as String?,media: null == media ? _self._media : media // ignore: cast_nullable_to_non_nullable
+as String?,isLock: null == isLock ? _self.isLock : isLock // ignore: cast_nullable_to_non_nullable
+as bool,media: null == media ? _self._media : media // ignore: cast_nullable_to_non_nullable
 as List<MediaEntity>,exercises: null == exercises ? _self._exercises : exercises // ignore: cast_nullable_to_non_nullable
 as List<ExerciseEntity>,
   ));

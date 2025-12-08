@@ -3,6 +3,7 @@ import 'package:hihear_mo/core/network/api_client.dart';
 import 'package:hihear_mo/domain/entities/VocabUserEntity/vocab_user_entity.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/share/TokenStorage.dart';
+import 'package:hihear_mo/share/UserShare.dart';
 
 class LessionRemoteDataSource {
   final Dio _dio = Dio(BaseOptions(baseUrl: ApiClient.lession_get_url));
@@ -14,15 +15,12 @@ class LessionRemoteDataSource {
     _debugHeader("LOAD LESSONS");
 
     final token = await TokenStorage.getToken();
-    _debugValue("TOKEN", token);
-
     if (token == null) {
       _debugError("Token null → user chưa đăng nhập");
-      throw Exception("User chưa login hoặc token chưa được lưu.");
+      throw Exception("User chưa login.");
     }
 
     const national = "UK";
-    _debugValue("National filter", national);
 
     final response = await _dio.get(
       "lessons",
@@ -33,24 +31,56 @@ class LessionRemoteDataSource {
         },
       ),
     );
-
-    _debugValue("Status code", response.statusCode);
-    _debugValue("Raw response", response.data);
+    UserShare().debugPrint();
+    final responseHistory = await _dio.get(
+      "user-progress/${UserShare().id}",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
 
     if (response.statusCode == 200) {
       final data = response.data as List<dynamic>;
-
       final filtered = data.where((lesson) {
         if (lesson["category"] == "Nghe hiểu") return false;
-        final exercises = lesson["exercises"] as List<dynamic>;
-        return exercises.any((ex) => ex["national"] == national);
+        return (lesson["exercises"] as List).any(
+          (ex) => ex["national"] == national,
+        );
       }).toList();
 
-      _debugValue("Filtered lesson count", filtered.length);
-      _debugValue("Filtered list", filtered);
+      final historyList = responseHistory.data as List<dynamic>;
+      final completedLessonIds = historyList
+          .where((h) => h["completed"] == true)
+          .map<String>((h) => h["lesson_id"] as String)
+          .toSet();
 
-      _debugFooter();
-      return filtered.map((e) => LessionEntity.fromJson(e)).toList();
+      final lessons = filtered.map((json) {
+        final entity = LessionEntity.fromJson(json);
+
+        final lessonId = entity.id;
+        final prerequisite = entity.prerequisiteLesson;
+
+        bool isCompleted = completedLessonIds.contains(lessonId);
+        bool isLocked = false;
+
+        if (prerequisite != null && prerequisite.isNotEmpty) {
+          if (!completedLessonIds.contains(prerequisite)) {
+            isLocked = true;
+          }
+        }
+
+        if (isCompleted) {
+          isLocked = false;
+        }
+
+        return entity.copyWith(isLock: isLocked);
+      }).toList();
+
+      _debugValue("Loaded lessons", lessons);
+      return lessons;
     }
 
     throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
@@ -110,7 +140,7 @@ class LessionRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = response.data as List;
-      print(  "Loaded vocab user data: $list");
+      print("Loaded vocab user data: $list");
       return list.map((json) => VocabUserEntity.fromJson(json)).toList();
     }
 
