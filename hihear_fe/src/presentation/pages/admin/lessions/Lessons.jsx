@@ -1,11 +1,6 @@
 import React from "react";
-import LessonsList from "./components/LessionList";
+import { LessonList } from "./components/LessonList/LessonList";
 
 export default function Lessons() {
-  return (
-    <div>
-      <h1>Quản lý bài học</h1>
-      <LessonsList />
-    </div>
-  );
+  return <LessonList />;
 }
