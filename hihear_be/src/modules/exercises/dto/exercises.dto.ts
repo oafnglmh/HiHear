@@ -7,6 +7,7 @@ import { Nationality } from 'src/utils/enums/nationality.enum';
 import { VocabularyDto } from 'src/modules/exercise-vocabulary/dto/vocabulary.dto';
 import { GrammarDto } from 'src/modules/exercise-gramma/dto/grammar.dto';
 import { ListeningDto } from 'src/modules/exercise-listening/dto/listening.dto';
+import { SpeakingDto } from 'src/modules/exercise-speaking/dto/speaking.dto';
 
 export class ExercisesDto {
   @ApiProperty()
@@ -30,6 +31,9 @@ export class ExercisesDto {
   @ApiProperty({ type: () => [GrammarDto], required: false })
   readonly grammars?: GrammarDto[];
 
+  @ApiProperty({ type: () => [SpeakingDto], required: false })
+  readonly speakings?: SpeakingDto[];
+
   @ApiProperty({ type: () => [ListeningDto], required: false })
   readonly listenings?: ListeningDto[];
 
@@ -49,6 +53,7 @@ export class ExercisesDto {
       vocabularies: exercise.vocabularies,
       grammars: exercise.grammars,
       listenings: exercise.listenings,
+      speakings: exercise.speakings,
       createdAt: exercise.createdAt,
       updatedAt: exercise.updatedAt,
     };

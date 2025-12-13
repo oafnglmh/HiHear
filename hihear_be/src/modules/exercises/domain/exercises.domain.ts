@@ -5,6 +5,7 @@ import { Nationality } from 'src/utils/enums/nationality.enum';
 import { Vocabulary } from 'src/modules/exercise-vocabulary/domain/vocabulary.domain';
 import { Grammar } from 'src/modules/exercise-gramma/domain/grammar.domain';
 import { Listening } from 'src/modules/exercise-listening/domain/listening.domain';
+import { Speaking } from 'src/modules/exercise-speaking/domain/speaking.domain';
 
 export class Exercises {
   id: Uuid;
@@ -22,6 +23,8 @@ export class Exercises {
   grammars?: Grammar[];
 
   listenings?: Listening[];
+
+  speakings? : Speaking[];
 
   createdAt: Date;
 
@@ -41,6 +44,7 @@ export class Exercises {
       listenings: entity.listenings
         ? Listening.fromEntities(entity.listenings)
         : [],
+      speakings: entity.speakings ? Speaking.fromEntities(entity.speakings) : [],
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     };

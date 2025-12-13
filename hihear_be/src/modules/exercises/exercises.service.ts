@@ -16,6 +16,8 @@ import { ListeningEntity } from '../exercise-listening/entities/listening.entity
 import { ListeningCreate } from '../exercise-listening/domain/listening-create.domain';
 import { MediaService } from '../media/media.service';
 import { MediaEntity } from '../media/entities/media.entity';
+import { SpeakingEntity } from '../exercise-speaking/entities/speaking.entity';
+import { SpeakingCreate } from '../exercise-speaking/domain/speaking-create.domain';
 
 export class ExerciseService {
   constructor(
@@ -77,9 +79,18 @@ export class ExerciseService {
 
       return Promise.resolve();
     },
-
-    [LessonCategory.SPEAKING]: async () => {},
     [LessonCategory.READING]: async () => {},
+    [LessonCategory.SPEAKING]: async (qr, exercise, ex) => {
+      console.log('DEBUG: chạy vô đây');
+      console.log('DEBUG: chạy vô đây 02',ex);
+      if (ex.speakings?.length) {
+        console.log('DEBUG: chạy vô đây 03');
+        exercise.speakings = ex.speakings.map((speak) =>
+          qr.manager.create(SpeakingEntity, SpeakingCreate.toEntity(speak)),
+        );
+        return Promise.resolve();
+      }
+    },
     [LessonCategory.WRITING]: async () => {},
     [LessonCategory.VIDEO]: async () => {},
   };

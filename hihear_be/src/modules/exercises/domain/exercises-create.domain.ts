@@ -4,6 +4,7 @@ import { Nationality } from 'src/utils/enums/nationality.enum';
 import { VocabularyCreate } from 'src/modules/exercise-vocabulary/domain/vocabulary-create.domain';
 import { GrammarCreate } from 'src/modules/exercise-gramma/domain/grammar-create.domain';
 import { ListeningCreate } from 'src/modules/exercise-listening/domain/listening-create.domain';
+import { SpeakingCreate } from 'src/modules/exercise-speaking/domain/speaking-create.domain';
 
 export class ExercisesCreate {
   type: ExerciseType;
@@ -15,6 +16,8 @@ export class ExercisesCreate {
   grammars?: GrammarCreate[];
 
   listenings?: ListeningCreate[];
+
+  speakings?: SpeakingCreate[];
 
   national: Nationality;
 

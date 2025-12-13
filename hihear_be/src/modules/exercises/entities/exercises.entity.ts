@@ -6,6 +6,7 @@ import { Nationality } from 'src/utils/enums/nationality.enum';
 import { VocabularyEntity } from 'src/modules/exercise-vocabulary/entities/vocabulary.entity';
 import { GrammarEntity } from 'src/modules/exercise-gramma/entities/grammar.entity';
 import { ListeningEntity } from 'src/modules/exercise-listening/entities/listening.entity';
+import { SpeakingEntity } from 'src/modules/exercise-speaking/entities/speaking.entity';
 
 @Entity('exercises')
 export class ExercisesEntity extends AbstractEntity {
@@ -35,6 +36,12 @@ export class ExercisesEntity extends AbstractEntity {
     eager: true,
   })
   grammars?: GrammarEntity[];
+
+  @OneToMany(() => SpeakingEntity, (speakings) => speakings.exercise, {
+    cascade: true,
+    eager: true,
+  })
+  speakings?: SpeakingEntity[];
 
   @OneToMany(() => ListeningEntity, (listenings) => listenings.exercise, {
     cascade: true,

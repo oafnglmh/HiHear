@@ -14,6 +14,7 @@ import {
 import { Type } from 'class-transformer';
 import { GrammarCreateDto } from 'src/modules/exercise-gramma/dto/grammar-create.domain';
 import { ListeningCreateDto } from 'src/modules/exercise-listening/dto/listening-create.dto';
+import { SpeakingCreateDto } from 'src/modules/exercise-speaking/dto/speaking-create.domain';
 
 export class ExercisesCreateDto {
   @ApiProperty({ enum: ExerciseType })
@@ -43,6 +44,13 @@ export class ExercisesCreateDto {
   @Type(() => GrammarCreateDto)
   grammars?: GrammarCreateDto[];
 
+  @ApiProperty({ type: () => [SpeakingCreateDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SpeakingCreateDto)
+  speakings?: SpeakingCreateDto[];
+
   @ApiProperty({ type: () => [ListeningCreateDto], required: false })
   @IsOptional()
   @IsArray()
@@ -57,6 +65,7 @@ export class ExercisesCreateDto {
       national: exercisesDto.national,
       vocabularies: exercisesDto.vocabularies,
       grammars: exercisesDto.grammars,
+      speakings: exercisesDto.speakings,
     };
   }
 }

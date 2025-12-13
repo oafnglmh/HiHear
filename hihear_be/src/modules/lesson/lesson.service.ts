@@ -51,23 +51,18 @@ export class LessonService {
       const prerequisiteLesson = lessonCreate.prerequisiteLesson
         ? await this.findPrerequisiteLesson(lessonCreate.prerequisiteLesson)
         : null;
-
-      // 1️⃣ Create lesson entity
       const lessonEntity = queryRunner.manager.create(LessonEntity, {
         ...lessonCreate,
         prerequisiteLesson,
         user: currentUser,
       } as Partial<LessonEntity>);
 
-      // 2️⃣ Assign media
       if (lessonCreate.mediaId) {
         await this.mediaService.assignMediaToLesson(
           lessonCreate.mediaId,
           lessonEntity,
         );
       }
-
-      // 3️⃣ Create exercises
       if (lessonCreate.exercises?.length) {
         await this.exerciseService.createExerciseToLesson(
           queryRunner,
