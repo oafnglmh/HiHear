@@ -1,7 +1,7 @@
 export const LESSON_CATEGORIES = {
   VOCABULARY: "Từ vựng",
   GRAMMAR: "Ngữ pháp",
-  PRONUNCIATION: "Phát Âm",
+  PRONUNCIATION: "Nói",
   LISTENING: "Nghe hiểu",
   VIDEO: "Video",
 };

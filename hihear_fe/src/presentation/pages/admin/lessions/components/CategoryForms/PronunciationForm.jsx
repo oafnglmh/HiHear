@@ -6,7 +6,9 @@ import { Input } from "../ui/Input";
 
 export const PronunciationForm = ({ examples, order, onExamplesChange, onOrderChange }) => {
   const handleAdd = () => {
-    onExamplesChange([...examples, { id: generateId(), text: "" }]);
+    if (!order) return;
+    const newExample = { id: generateId(), number: order, read: "" };
+    onExamplesChange([...examples, newExample]);
   };
 
   const handleDelete = (id) => {
@@ -15,7 +17,7 @@ export const PronunciationForm = ({ examples, order, onExamplesChange, onOrderCh
 
   const handleChange = (id, value) => {
     onExamplesChange(
-      examples.map((ex) => (ex.id === id ? { ...ex, text: value } : ex))
+      examples.map((ex) => (ex.id === id ? { ...ex, read: value } : ex))
     );
   };
 
@@ -26,7 +28,7 @@ export const PronunciationForm = ({ examples, order, onExamplesChange, onOrderCh
         type="number"
         placeholder="Nhập số thứ tự..."
         value={order}
-        onChange={(e) => onOrderChange(e.target.value)}
+        onChange={(e) => onOrderChange(Number(e.target.value))}
         required
       />
 
@@ -51,7 +53,7 @@ export const PronunciationForm = ({ examples, order, onExamplesChange, onOrderCh
 
               <Input
                 placeholder="Nhập câu phát âm..."
-                value={ex.text}
+                value={ex.read}
                 onChange={(e) => handleChange(ex.id, e.target.value)}
                 required
               />

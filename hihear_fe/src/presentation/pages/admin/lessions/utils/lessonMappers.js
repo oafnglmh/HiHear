@@ -48,8 +48,8 @@ export class LessonMapper {
     return listeningExercises.flatMap(
       (ex) =>
         ex.listenings?.map((p, idx) => ({
-          id: p.id || idx,
-          text: p.example || "",
+          number: p.number || idx,
+          read: p.read || "",
         })) || []
     );
   }

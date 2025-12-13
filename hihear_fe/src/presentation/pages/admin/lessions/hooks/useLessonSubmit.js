@@ -12,7 +12,7 @@ export const useLessonSubmit = () => {
     async (formData, prerequisiteLessons) => {
       setIsSubmitting(true);
       const toastId = toast.loading("Đang tạo bài học đa ngôn ngữ...");
-
+      console.log("formData nè:", formData);
       try {
         await Promise.all(
           LANGUAGES.map(async (lang) => {
@@ -45,13 +45,14 @@ export const useLessonSubmit = () => {
             }
 
             const prerequisiteId = prerequisiteLessons[lang.code];
+
             const payload = LessonService.createLessonPayload(
               formData,
               lang.code,
               translatedData,
               prerequisiteId
             );
-
+            console.log("formData:", payload);
             return LessonApiService.create(payload);
           })
         );

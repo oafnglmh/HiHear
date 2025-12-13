@@ -51,6 +51,29 @@ export class LessonService {
         ];
 
       case LESSON_CATEGORIES.PRONUNCIATION:
+        const speakingMap = new Map();
+        data.pronunciationExamples.forEach((ex) => {
+          const numStr = String(ex.number);
+          if (!speakingMap.has(numStr)) {
+            speakingMap.set(numStr, []);
+          }
+          speakingMap.get(numStr)?.push(ex.read);
+        });
+
+        const speakingArray = Array.from(speakingMap, ([number, read]) => ({
+          number: String(number),
+          read,
+        }));
+        return [
+          {
+            ...baseExercise,
+            speakings: speakingArray,
+          },
+        ];
+
+      case LESSON_CATEGORIES.VIDEO:
+        if (!data.videoData?.transcriptions || !data.videoData.fileName)
+          return [];
         return [
           {
             type: "listening",
@@ -58,33 +81,12 @@ export class LessonService {
             national: langCode,
             vocabularies: [],
             grammars: [],
-            listenings: data.pronunciationExamples.map((ex) => ({
-              example: ex.text,
-              meaning: "",
-            })),
-          },
-        ];
-
-      case LESSON_CATEGORIES.VIDEO:
-        if (!data.videoData?.transcriptions) return [];
-        return [
-          {
-            type: "mcq",
-            points: 0,
-            national: langCode,
-            vocabularies: [],
-            grammars: [],
-            listenings: [],
-            video: [
-              {
-                linkVideo: data.videoData.fileName,
-                transl: data.videoData.transcriptions.map((item) => ({
-                  vi: item.vi,
-                  en: item.en,
-                  ko: item.ko,
-                })),
-              },
-            ],
+            // listenings: data.videoData.transcriptions.map((item) => ({
+            //   mediaId: data.videoData.fileName,
+            //   transcript: { vi: item.vi, en: item.en, ko: item.ko },
+            //   choices: item.choices || [],
+            //   correctAnswer: item.correctAnswer || null,
+            // })),
           },
         ];
 
@@ -93,7 +95,12 @@ export class LessonService {
     }
   }
 
-  static createLessonPayload(formData, langCode, translatedData, prerequisiteId) {
+  static createLessonPayload(
+    formData,
+    langCode,
+    translatedData,
+    prerequisiteId
+  ) {
     return {
       title: translatedData?.title || formData.title,
       description: formData.description,
@@ -106,6 +113,7 @@ export class LessonService {
         translatedData || formData,
         langCode
       ),
+      videoData: formData.videoData || null,
     };
   }
 }

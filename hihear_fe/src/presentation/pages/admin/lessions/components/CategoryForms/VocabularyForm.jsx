@@ -5,7 +5,7 @@ import { Select } from "../ui/Select";
 import { Input } from "../ui/Input";
 import { Card } from "../ui/Card";
 import { generateId } from "../../utils/idGenerator";
-
+import toast from "react-hot-toast";
 export const VocabularyForm = ({ questions, onChange }) => {
   const handleAdd = () => {
     onChange([
