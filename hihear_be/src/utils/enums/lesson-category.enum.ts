@@ -5,4 +5,5 @@ export enum LessonCategory {
   SPEAKING = 'Nói',
   READING = 'Đọc hiểu',
   WRITING = 'Viết',
+  VIDEO = 'Video',
 }

@@ -2,8 +2,16 @@ import { AbstractEntity } from 'src/common/abstract.entity';
 import { ExercisesEntity } from 'src/modules/exercises/entities/exercises.entity';
 import { MediaEntity } from 'src/modules/media/entities/media.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
+import { LessonVideoEntity } from 'src/modules/lesson-video/entities/lesson-video.entity';
 
 @Entity('lessons')
 export class LessonEntity extends AbstractEntity {
@@ -44,4 +52,11 @@ export class LessonEntity extends AbstractEntity {
     eager: true,
   })
   exercises: ExercisesEntity[];
+
+  @OneToOne(() => LessonVideoEntity, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinColumn()
+  lessonVideo: LessonVideoEntity;
 }

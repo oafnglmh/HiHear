@@ -81,6 +81,7 @@ export class ExerciseService {
     [LessonCategory.SPEAKING]: async () => {},
     [LessonCategory.READING]: async () => {},
     [LessonCategory.WRITING]: async () => {},
+    [LessonCategory.VIDEO]: async () => {},
   };
 
   private readonly lessonRelations = ['vocabularies', 'lesson'];

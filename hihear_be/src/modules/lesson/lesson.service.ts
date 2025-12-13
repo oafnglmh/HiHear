@@ -14,6 +14,8 @@ import { LessonUpdate } from './domain/lesson-update.domain';
 import { MediaService } from '../media/media.service';
 import { ExerciseService } from '../exercises/exercises.service';
 import { DataSource } from 'typeorm';
+import { LessonVideoService } from '../lesson-video/lesson-video.service';
+import { LessonVideoEntity } from '../lesson-video/entities/lesson-video.entity';
 
 @Injectable()
 export class LessonService {
@@ -25,6 +27,7 @@ export class LessonService {
 
     private readonly exerciseService: ExerciseService,
     private readonly dataSource: DataSource,
+    private readonly lessonVideoService: LessonVideoService,
   ) {}
 
   private readonly lessonRelations = [
@@ -49,12 +52,14 @@ export class LessonService {
         ? await this.findPrerequisiteLesson(lessonCreate.prerequisiteLesson)
         : null;
 
+      // 1️⃣ Create lesson entity
       const lessonEntity = queryRunner.manager.create(LessonEntity, {
         ...lessonCreate,
         prerequisiteLesson,
         user: currentUser,
       } as Partial<LessonEntity>);
 
+      // 2️⃣ Assign media
       if (lessonCreate.mediaId) {
         await this.mediaService.assignMediaToLesson(
           lessonCreate.mediaId,
@@ -62,6 +67,7 @@ export class LessonService {
         );
       }
 
+      // 3️⃣ Create exercises
       if (lessonCreate.exercises?.length) {
         await this.exerciseService.createExerciseToLesson(
           queryRunner,
@@ -70,6 +76,14 @@ export class LessonService {
         );
       }
 
+      if (lessonCreate.videoData) {
+        const video = queryRunner.manager.create(
+          LessonVideoEntity,
+          lessonCreate.videoData,
+        );
+
+        lessonEntity.lessonVideo = video;
+      }
       await queryRunner.manager.save(lessonEntity);
 
       await queryRunner.commitTransaction();

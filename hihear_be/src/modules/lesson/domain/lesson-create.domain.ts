@@ -2,6 +2,7 @@ import { Uuid } from 'src/common/types';
 import { LessonCreateDto } from '../dto/lesson-create.dto';
 import { ExercisesCreate } from 'src/modules/exercises/domain/exercises-create.domain';
 import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
+import { LessonVideoCreateDto } from 'src/modules/lesson-video/dto/lesson-video-create.dto';
 
 export class LessonCreate {
   title: string;
@@ -22,6 +23,7 @@ export class LessonCreate {
 
   exercises?: ExercisesCreate[];
 
+  videoData?: LessonVideoCreateDto;
   static toEntity(lessonCreate: LessonCreate): Partial<LessonCreateDto> {
     return {
       title: lessonCreate.title,

@@ -3,6 +3,7 @@ import { LessonEntity } from '../entities/lesson.entity';
 import _ from 'lodash';
 import { Media } from 'src/modules/media/domain/media';
 import { Exercises } from 'src/modules/exercises/domain/exercises.domain';
+import { LessonVideoCreateDto } from 'src/modules/lesson-video/dto/lesson-video-create.dto';
 
 export class Lesson {
   id: Uuid;
@@ -29,7 +30,7 @@ export class Lesson {
   createdAt: Date;
 
   updatedAt: Date;
-
+  
   static fromEntity(lessonEntity: LessonEntity): Lesson {
     return {
       id: lessonEntity.id,

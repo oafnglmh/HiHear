@@ -5,12 +5,14 @@ import { LessonController } from './lesson.controller';
 import { LessonService } from './lesson.service';
 import { MediaModule } from '../media/media.module';
 import { ExercisesModule } from '../exercises/exercises.module';
+import { LessonVideoModule } from '../lesson-video/lesson-video.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([LessonEntity]),
     MediaModule,
     ExercisesModule,
+    LessonVideoModule
   ],
   controllers: [LessonController],
   providers: [LessonService],

@@ -7,32 +7,42 @@ import { unlink } from 'fs/promises';
 export class VideoService {
   async transcribe(filePath: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      const pyScript = join(__dirname, 'transcribe.py');
-      const process = spawn('python', [pyScript, filePath]);
+      const pyScript = join(
+        process.cwd(),
+        'src',
+        'modules',
+        'video',
+        'transcribe.py',
+      );
+
+      const pythonProcess = spawn(
+        'C:/Users/ADMIN/AppData/Local/Programs/Python/Python310/python.exe',
+        [pyScript, filePath],
+      );
 
       let data = '';
       let error = '';
 
-      process.stdout.on('data', (chunk) => {
+      pythonProcess.stdout.on('data', (chunk) => {
         data += chunk.toString();
       });
 
-      process.stderr.on('data', (chunk) => {
+      pythonProcess.stderr.on('data', (chunk) => {
         const text = chunk.toString();
 
         if (
-          text.includes("FP16 is not supported on CPU") ||
-          text.toLowerCase().includes("userwarning") ||
-          text.toLowerCase().includes("warning")
+          text.includes('FP16 is not supported on CPU') ||
+          text.toLowerCase().includes('userwarning') ||
+          text.toLowerCase().includes('warning')
         ) {
-          console.warn("Whisper Warning:", text);
+          console.warn('Whisper Warning:', text);
           return;
         }
 
         error += text;
       });
 
-      process.on('close', async (code) => {
+      pythonProcess.on('close', async (code) => {
         try {
           await unlink(filePath);
         } catch (err) {
@@ -43,29 +53,28 @@ export class VideoService {
           console.error('Python script error:', error);
           return reject(
             new InternalServerErrorException(
-              error || `Process exited with code ${code}`
-            )
+              error || `Process exited with code ${code}`,
+            ),
           );
         }
 
         try {
           const result = JSON.parse(data);
           resolve(result);
-        } catch (e) {
-          console.error('Failed to parse JSON:', data);
+        } catch {
           reject(
             new InternalServerErrorException(
-              'Failed to parse transcription result'
-            )
+              'Failed to parse transcription result',
+            ),
           );
         }
       });
 
-      process.on('error', (err) => {
+      pythonProcess.on('error', (err) => {
         reject(
           new InternalServerErrorException(
-            `Failed to start Python process: ${err.message}`
-          )
+            `Failed to start Python process: ${err.message}`,
+          ),
         );
       });
     });

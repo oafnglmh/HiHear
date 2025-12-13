@@ -13,6 +13,7 @@ import type { Uuid } from 'src/common/types';
 import { ExercisesCreateDto } from 'src/modules/exercises/dto/exercises-create.dto';
 import { Type } from 'class-transformer';
 import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
+import { LessonVideoCreateDto } from 'src/modules/lesson-video/dto/lesson-video-create.dto';
 
 export class LessonCreateDto {
   @ApiProperty({
@@ -88,6 +89,12 @@ export class LessonCreateDto {
   @IsOptional()
   exercises?: ExercisesCreateDto[];
 
+  @ApiPropertyOptional({ type: () => LessonVideoCreateDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => LessonVideoCreateDto)
+  videoData?: LessonVideoCreateDto;
+
   static toLessonCreate(lessonCreateDto: LessonCreateDto): LessonCreate {
     return {
       title: lessonCreateDto.title,
@@ -99,6 +106,7 @@ export class LessonCreateDto {
       xpReward: lessonCreateDto.xpReward ?? 0,
       mediaId: lessonCreateDto.mediaId,
       exercises: lessonCreateDto.exercises ?? [],
+      videoData: lessonCreateDto.videoData,
     };
   }
 }

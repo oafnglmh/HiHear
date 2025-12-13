@@ -46,7 +46,8 @@ export class LessonDto {
 
   @ApiProperty({ type: timeStamp })
   updatedAt: Date;
-
+  @ApiPropertyOptional()
+  lessonVideo?: any;
   static fromDomain(lesson: Lesson): LessonDto {
     return {
       id: lesson.id,
@@ -61,6 +62,7 @@ export class LessonDto {
       xpReward: lesson.xpReward,
       createdAt: lesson.createdAt,
       updatedAt: lesson.updatedAt,
+      
     };
   }
 
