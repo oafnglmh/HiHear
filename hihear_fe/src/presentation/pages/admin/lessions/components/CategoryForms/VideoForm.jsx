@@ -1,12 +1,38 @@
-import { Upload, X, Check, Loader } from "lucide-react";
+import { Upload, X, Check, Loader, Plus } from "lucide-react";
 import { Textarea } from "../ui/Select";
 import { useState } from "react";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-
+import toast from "react-hot-toast";
 export const VideoForm = ({ videoData, onChange }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const uploadVideoToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "hihear");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dzvxim3zn/video/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error("Upload Cloudinary failed: " + error);
+    }
+
+    const data = await res.json();
+
+    return {
+      url: data.secure_url,
+      publicId: data.public_id,
+      duration: data.duration,
+    };
+  };
 
   const handleVideoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -25,8 +51,9 @@ export const VideoForm = ({ videoData, onChange }) => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-
     try {
+      const video = await uploadVideoToCloudinary(file);
+
       const response = await fetch(
         "http://172.23.208.1:3000/api/v1/video/transcribe",
         {
@@ -35,19 +62,21 @@ export const VideoForm = ({ videoData, onChange }) => {
         }
       );
 
-      if (!response.ok) throw new Error("Upload failed");
+      if (!response.ok) throw new Error("Transcribe failed");
 
       const transcriptions = await response.json();
-
       onChange({
         fileName: file.name,
         fileSize: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        transcriptions: transcriptions,
+        videoUrl: video.url,
+        cloudinaryId: video.publicId,
+        duration: video.duration,
+        transcriptions,
       });
 
-      toast.success("Upload và transcribe thành công!");
+      toast.success("Upload & transcribe thành công!");
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error(error);
       toast.error("Có lỗi xảy ra khi xử lý video!");
     } finally {
       setIsUploading(false);
@@ -64,9 +93,19 @@ export const VideoForm = ({ videoData, onChange }) => {
     const updated = videoData.transcriptions.filter((_, i) => i !== index);
     onChange({ ...videoData, transcriptions: updated });
   };
-
+  const formatTime = (seconds = 0) => {
+    const m = Math.floor(seconds / 60);
+    const s = (seconds % 60).toFixed(2).padStart(5, "0");
+    return `${m}:${s}`;
+  };
   const handleAddSentence = () => {
-    const newSentence = { vi: "", en: "", ko: "" };
+    const newSentence = {
+      start: 0,
+      end: 0,
+      vi: "",
+      en: "",
+      ko: "",
+    };
     onChange({
       ...videoData,
       transcriptions: [...(videoData.transcriptions || []), newSentence],
@@ -102,7 +141,9 @@ export const VideoForm = ({ videoData, onChange }) => {
             <div className="flex items-center gap-3 mt-4 p-3 bg-blue-50 rounded-lg">
               <Check size={20} className="text-green-600" />
               <div>
-                <p className="font-medium text-gray-900">{videoData.fileName}</p>
+                <p className="font-medium text-gray-900">
+                  {videoData.fileName}
+                </p>
                 <p className="text-sm text-gray-600">{videoData.fileSize}</p>
               </div>
             </div>
@@ -128,6 +169,9 @@ export const VideoForm = ({ videoData, onChange }) => {
                   <span className="font-medium text-gray-700">
                     Câu {index + 1}
                   </span>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {formatTime(item.start)} → {formatTime(item.end)}
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
