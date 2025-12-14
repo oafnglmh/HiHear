@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { LessonCreateDto } from './dto/lesson-create.dto';
@@ -16,12 +17,12 @@ import { RequireAdmin, RequireLoggedIn } from 'src/guards/role-container';
 import { AuthUser } from 'src/decorator/auth-user.decorator';
 import { LessonUpdateDto } from './dto/lesson-update.dto';
 import type { Uuid } from 'src/common/types';
+import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 @ApiTags('lessons')
 @Controller('lessons')
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
-
   @Post()
   @RequireLoggedIn()
   @RequireAdmin()
@@ -36,9 +37,16 @@ export class LessonController {
       ),
     );
   }
-
   @Get()
-  async findAll(): Promise<LessonDto[]> {
+  async findAll(
+    @Query('category') category?: LessonCategory,
+  ): Promise<LessonDto[]> {
+    if (category) {
+      return LessonDto.fromDomains(
+        await this.lessonService.findByCategory(category),
+      );
+    }
+
     return LessonDto.fromDomains(await this.lessonService.findAll());
   }
 

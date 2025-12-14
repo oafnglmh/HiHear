@@ -5,6 +5,7 @@ import type { Uuid } from 'src/common/types';
 import { timeStamp } from 'console';
 import { Media } from 'src/modules/media/domain/media';
 import { Exercises } from 'src/modules/exercises/domain/exercises.domain';
+import { LessonVideo } from 'src/modules/lesson-video/domain/lesson-video.domain';
 
 export class LessonDto {
   @ApiProperty()
@@ -44,10 +45,12 @@ export class LessonDto {
   @ApiProperty({ type: timeStamp })
   createdAt: Date;
 
+  @ApiPropertyOptional({ type: () => LessonVideo })
+  lessonVideo?: LessonVideo | null;
+
   @ApiProperty({ type: timeStamp })
   updatedAt: Date;
   @ApiPropertyOptional()
-  lessonVideo?: any;
   static fromDomain(lesson: Lesson): LessonDto {
     return {
       id: lesson.id,
@@ -60,9 +63,9 @@ export class LessonDto {
       media: lesson.media,
       exercises: lesson.exercises ?? [],
       xpReward: lesson.xpReward,
+      lessonVideo: lesson.lessonVideo ?? null,
       createdAt: lesson.createdAt,
       updatedAt: lesson.updatedAt,
-      
     };
   }
 

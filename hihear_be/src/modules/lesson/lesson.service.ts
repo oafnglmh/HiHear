@@ -16,6 +16,7 @@ import { ExerciseService } from '../exercises/exercises.service';
 import { DataSource } from 'typeorm';
 import { LessonVideoService } from '../lesson-video/lesson-video.service';
 import { LessonVideoEntity } from '../lesson-video/entities/lesson-video.entity';
+import { LessonCategory } from 'src/utils/enums/lesson-category.enum';
 
 @Injectable()
 export class LessonService {
@@ -34,6 +35,7 @@ export class LessonService {
     'media',
     'prerequisiteLesson',
     'exercises',
+    'lessonVideo',
   ];
 
   async create(
@@ -171,5 +173,13 @@ export class LessonService {
     }
 
     return lesson;
+  }
+  async findByCategory(category: LessonCategory): Promise<Lesson[]> {
+    const lessons = await this.lessonRepository.find({
+      where: { category },
+      relations: this.lessonRelations,
+    });
+
+    return Lesson.fromEntities(lessons);
   }
 }

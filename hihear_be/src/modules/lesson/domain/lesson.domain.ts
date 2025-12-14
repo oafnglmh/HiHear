@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Media } from 'src/modules/media/domain/media';
 import { Exercises } from 'src/modules/exercises/domain/exercises.domain';
 import { LessonVideoCreateDto } from 'src/modules/lesson-video/dto/lesson-video-create.dto';
+import { LessonVideo } from 'src/modules/lesson-video/domain/lesson-video.domain';
 
 export class Lesson {
   id: Uuid;
@@ -30,7 +31,9 @@ export class Lesson {
   createdAt: Date;
 
   updatedAt: Date;
-  
+
+  lessonVideo: LessonVideo | null;
+
   static fromEntity(lessonEntity: LessonEntity): Lesson {
     return {
       id: lessonEntity.id,
@@ -45,6 +48,9 @@ export class Lesson {
       exercises: lessonEntity.exercises
         ? Exercises.fromEntities(lessonEntity.exercises)
         : [],
+      lessonVideo: lessonEntity.lessonVideo
+        ? LessonVideo.fromEntity(lessonEntity.lessonVideo)
+        : null,
       createdAt: lessonEntity.createdAt,
       updatedAt: lessonEntity.updatedAt,
     };
