@@ -15,15 +15,25 @@ export const useAuth = () => {
     return localStorage.getItem("token");
   };
 
+  const saveUser = (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const getUser = () => {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
+  };
+
   const loginWithGoogle = async (idToken) => {
     try {
       setLoading(true);
       const res = await authService.loginWithGoogle(idToken);
       saveToken(res.token.accessToken);
+      saveUser(res.profile);
       localStorage.setItem("role", res.user.role);
 
       toast.success("Đăng nhập Google thành công!");
-      console.log("adbc",res.user.role)
+      console.log("adbc", res.user);
       if (res.user.role === "USER") {
         navigate("/admin/dashboard");
       } else {
@@ -54,13 +64,16 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    navigate("/");
   };
 
   return {
     loginWithGoogle,
     loginWithFacebook,
     getToken,
+    getUser,
     logout,
     loading,
   };

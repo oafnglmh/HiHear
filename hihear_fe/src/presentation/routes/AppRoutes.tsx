@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PageWrapper from "../layouts/PageWrapper";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/auth/pages/LoginPage";
@@ -14,7 +14,7 @@ const NotFoundPage = () => (
     <h1>404 - Trang không tồn tại</h1>
   </PageWrapper>
 );
-
+const token = localStorage.getItem("token");
 const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
@@ -29,9 +29,13 @@ const AppRoutes = () => (
       <Route
         path="/video"
         element={
-          <PageWrapper>
-            <VietnameseLearningApp />
-          </PageWrapper>
+          token ? (
+            <PageWrapper>
+              <VietnameseLearningApp />
+            </PageWrapper>
+          ) : (
+            <Navigate to="/login" replace />
+          )
         }
       />
       <Route

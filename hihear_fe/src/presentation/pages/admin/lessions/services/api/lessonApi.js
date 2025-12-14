@@ -20,4 +20,9 @@ export class LessonApiService {
     const response = await apiClient.delete(`/lessons/${id}`);
     return response.data;
   }
+
+  static async getvideo() {
+    const response = await apiClient.get("/lessons?category=Video");
+    return response.data;
+  }
 }
