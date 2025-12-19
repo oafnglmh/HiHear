@@ -37,17 +37,34 @@ export class LessonController {
       ),
     );
   }
+  // @Get()
+  // async findAll(
+  //   @Query('category') category?: LessonCategory,
+  // ): Promise<LessonDto[]> {
+  //   if (category) {
+  //     return LessonDto.fromDomains(
+  //       await this.lessonService.findByCategory(category),
+  //     );
+  //   }
+
+  //   return LessonDto.fromDomains(await this.lessonService.findAll());
+  // }
   @Get()
   async findAll(
     @Query('category') category?: LessonCategory,
   ): Promise<LessonDto[]> {
+    let lessons;
+
     if (category) {
-      return LessonDto.fromDomains(
-        await this.lessonService.findByCategory(category),
-      );
+      lessons = await this.lessonService.findByCategory(category);
+    } else {
+      lessons = await this.lessonService.findByCategories([
+        LessonCategory.VOCABULARY,
+        LessonCategory.GRAMMAR,
+      ]);
     }
 
-    return LessonDto.fromDomains(await this.lessonService.findAll());
+    return LessonDto.fromDomains(lessons);
   }
 
   @Get(':id')

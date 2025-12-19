@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { LessonEntity } from './entities/lesson.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { Lesson } from './domain/lesson.domain';
@@ -181,5 +181,13 @@ export class LessonService {
     });
 
     return Lesson.fromEntities(lessons);
+  }
+  async findByCategories(categories: LessonCategory[]): Promise<Lesson[]> {
+    const lessonEntities = await this.lessonRepository.find({
+      where: { category: In(categories) },
+      relations: this.lessonRelations,
+    });
+
+    return Lesson.fromEntities(lessonEntities);
   }
 }
