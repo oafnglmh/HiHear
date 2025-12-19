@@ -46,7 +46,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -61,7 +60,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
             ),
           ),
 
-          // Bamboo decoration
           AnimatedBuilder(
             animation: _bambooController,
             builder: (context, child) {
@@ -73,15 +71,10 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
               );
             },
           ),
-
-          // Content
           SafeArea(
             child: Column(
               children: [
-                // Custom AppBar
                 _buildAppBar(context, loc),
-                
-                // Scrollable Content
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
@@ -92,7 +85,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
                         children: [
                           const SizedBox(height: 10),
                           
-                          // Usage Guide Section
                           _buildSectionTitle('📖 ${loc.helpUsageGuide}'),
                           const SizedBox(height: 12),
                           _buildHelpCard(
@@ -116,7 +108,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 24),
 
-                          // FAQ Section
                           _buildSectionTitle('❓ ${loc.helpFAQ}'),
                           const SizedBox(height: 12),
                           _buildFaqItem(
@@ -130,7 +121,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 24),
 
-                          // Contact Section
                           _buildSectionTitle('📞 ${loc.helpContact}'),
                           const SizedBox(height: 12),
                           _buildContactCard(
@@ -157,7 +147,6 @@ class _HelpPageState extends State<HelpPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 32),
 
-                          // Support Note
                           Center(
                             child: Container(
                               padding: const EdgeInsets.all(20),

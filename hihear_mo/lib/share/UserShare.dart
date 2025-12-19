@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserShare {
@@ -10,6 +12,7 @@ class UserShare {
   String? email;
   String? photoUrl;
   String? national;
+  String? dailyStreak;
 
   Future<void> saveUser({
     required String id,
@@ -17,19 +20,21 @@ class UserShare {
     required String email,
     required String photoUrl,
     required String national,
+    required String dailyStreak,
   }) async {
     this.id = id;
     this.name = name;
     this.email = email;
     this.photoUrl = photoUrl;
     this.national = national;
-
+    this.dailyStreak = dailyStreak;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("id", id);
     await prefs.setString("name", name);
     await prefs.setString("email", email);
     await prefs.setString("photoUrl", photoUrl);
     await prefs.setString("national", national);
+    await prefs.setString("dailyStreak", dailyStreak);
   }
 
   Future<void> loadUser() async {
@@ -39,6 +44,7 @@ class UserShare {
     email = prefs.getString("email");
     photoUrl = prefs.getString("photoUrl");
     national = prefs.getString("national");
+    dailyStreak = prefs.getString("dailyStreak");
   }
 
   Future<void> clear() async {
@@ -50,6 +56,7 @@ class UserShare {
     email = null;
     photoUrl = null;
     national = null;
+    dailyStreak = null;
   }
 
   void debugPrint() {
@@ -59,6 +66,7 @@ class UserShare {
     print("Email    : $email");
     print("Photo    : $photoUrl");
     print("National : $national");
+    print("Streak   : $dailyStreak");
     print("======================================");
   }
 }

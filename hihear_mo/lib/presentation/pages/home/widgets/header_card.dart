@@ -29,7 +29,7 @@ class HeaderCard extends StatelessWidget {
                     Text(
                       "Xin chào!",
                       style: AppTextStyles.header.copyWith(
-                        color: const Color(0xFF2D5016), // Xanh lá đậm
+                        color: const Color(0xFF2D5016),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -53,16 +53,10 @@ class HeaderCard extends StatelessWidget {
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       gradient: LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.95),
-          Colors.white.withOpacity(0.9),
-        ],
+        colors: [Colors.white.withOpacity(0.95), Colors.white.withOpacity(0.9)],
       ),
       borderRadius: BorderRadius.circular(AppRadius.xLarge + 4),
-      border: Border.all(
-        color: const Color(0xFFD4AF37), // Gold border
-        width: 3,
-      ),
+      border: Border.all(color: const Color(0xFFD4AF37), width: 3),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.2),
@@ -89,10 +83,7 @@ class _VietnamFlagIcon extends StatelessWidget {
       padding: const EdgeInsets.all(AppPadding.medium + 2),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFFDA291C), // Đỏ cờ Việt Nam
-            Color(0xFFFD0000),
-          ],
+          colors: [Color(0xFFDA291C), Color(0xFFFD0000)],
         ),
         borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [

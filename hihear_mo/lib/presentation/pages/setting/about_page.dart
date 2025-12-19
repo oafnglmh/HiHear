@@ -47,7 +47,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -61,8 +60,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
               ),
             ),
           ),
-
-          // Bamboo decoration
           AnimatedBuilder(
             animation: _bambooController,
             builder: (context, child) {
@@ -75,14 +72,11 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
             },
           ),
 
-          // Content
           SafeArea(
             child: Column(
               children: [
-                // Custom AppBar
                 _buildAppBar(context, l10n),
-                
-                // Scrollable Content
+
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
@@ -92,8 +86,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(height: 20),
-                          
-                          // Logo with Vietnamese style
+
                           Container(
                             width: 120,
                             height: 120,
@@ -121,7 +114,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 20),
 
-                          // App Name with flag
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
@@ -163,7 +155,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 12),
 
-                          // Version
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -189,7 +180,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 28),
 
-                          // Description Card
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
@@ -235,7 +225,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 28),
 
-                          // Info Cards
                           _buildInfoCard(
                             '👨‍💻',
                             l10n.aboutDeveloper,
@@ -259,7 +248,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
 
                           const SizedBox(height: 32),
 
-                          // Features Section
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
@@ -313,7 +301,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
 
                           const SizedBox(height: 40),
 
-                          // Divider
                           Container(
                             height: 2,
                             margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -330,7 +317,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                           
                           const SizedBox(height: 20),
 
-                          // Copyright
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(

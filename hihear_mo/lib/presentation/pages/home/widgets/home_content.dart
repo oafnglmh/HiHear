@@ -4,8 +4,7 @@ import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/pages/home/widgets/header_card.dart';
-import 'package:hihear_mo/presentation/pages/home/widgets/progress_card.dart';
-import 'package:hihear_mo/presentation/pages/home/widgets/lesson_grid.dart';
+import 'package:hihear_mo/presentation/pages/home/widgets/lesson_path.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -72,8 +71,6 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
                       const SizedBox(height: AppPadding.large),
                       HeaderCard(controller: _headerController),
                       const SizedBox(height: AppPadding.xxLarge),
-                      const ProgressCard(),
-                      const SizedBox(height: AppPadding.large),
                     ],
                   ),
                 ),
@@ -82,7 +79,7 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
             
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppPadding.large),
-              sliver: LessonGrid(lessons: lessons),
+              sliver: LessonPath(lessons: lessons),
             ),
             
             const SliverToBoxAdapter(child: SizedBox(height: 120)),

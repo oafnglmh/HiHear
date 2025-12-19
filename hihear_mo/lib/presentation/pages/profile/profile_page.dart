@@ -6,6 +6,7 @@ import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/auth/auth_bloc.dart';
 import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
+import 'package:hihear_mo/share/UserShare.dart';
     
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -124,9 +125,9 @@ class _ProfileViewState extends State<_ProfileView> {
             color: Color(0xFF2D3748),
           ),
         ),
-        trailing: trailing ?? 
+        trailing: trailing ??
           Icon(
-            Icons.chevron_right_rounded, 
+            Icons.chevron_right_rounded,
             color: Colors.grey[400],
             size: 24,
           ),
@@ -175,7 +176,6 @@ class _ProfileViewState extends State<_ProfileView> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                // Profile Header Card
                 Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(20),
@@ -199,7 +199,6 @@ class _ProfileViewState extends State<_ProfileView> {
                   ),
                   child: Row(
                     children: [
-                      // Avatar
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -223,7 +222,6 @@ class _ProfileViewState extends State<_ProfileView> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // User Info
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +256,6 @@ class _ProfileViewState extends State<_ProfileView> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Logout Button
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
@@ -280,7 +277,6 @@ class _ProfileViewState extends State<_ProfileView> {
                   ),
                 ),
 
-                // Stats Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -288,7 +284,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       Expanded(
                         child: _buildStatCard(
                           "Chuỗi ngày",
-                          "7",
+                          UserShare().dailyStreak ?? "0",
                           Icons.local_fire_department_rounded,
                           const Color(0xFFFF6B35),
                         ),
@@ -317,7 +313,6 @@ class _ProfileViewState extends State<_ProfileView> {
 
                 const SizedBox(height: 28),
 
-                // Settings Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(

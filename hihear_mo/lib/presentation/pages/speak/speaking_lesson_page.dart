@@ -80,8 +80,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
       _showErrorDialog('Không nhận được giọng nói. Vui lòng thử lại!');
       return;
     }
-
-    // Calculate accuracy
     final accuracy = _calculateAccuracy(_recognizedText, targetText);
     final mistakes = _findMistakes(_recognizedText, targetText);
 
@@ -114,7 +112,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
   }
 
   bool _isSimilar(String word1, String word2) {
-    // Simple similarity check - can be improved with Levenshtein distance
     if (word1 == word2) return true;
     if (word1.length != word2.length) return false;
 
@@ -123,7 +120,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
       if (word1[i] != word2[i]) differences++;
     }
 
-    return differences <= 1; // Allow 1 character difference
+    return differences <= 1;
   }
 
   List<String> _findMistakes(String recognized, String target) {
@@ -332,36 +329,29 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Progress indicator
                         _buildProgressIndicator(sentences.length),
 
                         const SizedBox(height: 24),
 
-                        // Lesson info card
                         _buildLessonInfoCard(lesson, exercise),
 
                         const SizedBox(height: 24),
 
-                        // Sentence card
                         _buildSentenceCard(currentSentence),
 
                         const SizedBox(height: 24),
 
-                        // Recognition result
                         if (_recognizedText.isNotEmpty)
                           _buildRecognitionResult(),
 
                         const SizedBox(height: 32),
 
-                        // Microphone button
                         Center(child: _buildMicrophoneButton(currentSentence)),
 
                         const SizedBox(height: 100),
                       ],
                     ),
                   ),
-
-                  // Feedback popup
                   if (_showFeedback)
                     _buildFeedbackPopup(lesson, currentSentence),
                 ],
@@ -630,7 +620,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -646,7 +635,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
               const SizedBox(height: 24),
 
-              // Accuracy
               Text(
                 '${_accuracy.toStringAsFixed(1)}%',
                 style: TextStyle(
@@ -669,7 +657,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
               const SizedBox(height: 16),
 
-              // Mistakes
               if (_results.isNotEmpty && _results.last.mistakes.isNotEmpty) ...[
                 Text(
                   'Từ cần lưu ý:',
@@ -703,7 +690,6 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                 const SizedBox(height: 24),
               ],
 
-              // Buttons
               Row(
                 children: [
                   Expanded(

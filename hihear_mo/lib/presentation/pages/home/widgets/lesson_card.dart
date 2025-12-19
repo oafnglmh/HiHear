@@ -1,14 +1,12 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
 import 'package:hihear_mo/core/constants/category.dart';
 import 'package:hihear_mo/core/helper/lesson_helper.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
-import 'package:hihear_mo/share/UserShare.dart';
 
 class LessonCard extends StatefulWidget {
   final LessionEntity lesson;
@@ -45,18 +43,13 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
   }
 
   void _handleTap() {
-    // isLock = true → Bài học BỊ KHÓA
-    // isLock = false → Bài học ĐÃ MỞ KHÓA
     if (widget.lesson.isLock) {
-      // Chạy hiệu ứng lắc
       _shakeController.forward().then((_) {
         _shakeController.reverse();
       });
-      
-      // Hiển thị popup
+
       _showLockedDialog();
     } else {
-      // Nếu đã mở khóa, chuyển đến bài học
       final path = widget.lesson.category == Category.grammar
           ? '/grammar/${widget.lesson.id}'
           : '/vocab/${widget.lesson.id}';
@@ -149,7 +142,6 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
             offset: Offset(shakeOffset, 0),
             child: Stack(
               children: [
-                // Card chính
                 Opacity(
                   opacity: isLocked ? 0.6 : 1.0,
                   child: Container(
@@ -208,7 +200,6 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
                   ),
                 ),
 
-                // Layer khóa (chỉ hiển thị khi isLock = true)
                 if (isLocked)
                   Positioned.fill(
                     child: Container(

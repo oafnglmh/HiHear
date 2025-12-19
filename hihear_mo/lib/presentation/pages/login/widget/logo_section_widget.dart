@@ -49,7 +49,7 @@ class LogoSection extends StatelessWidget {
                 border: Border.all(color: Colors.white.withOpacity(0.3)),
               ),
               child: const Text(
-                "🎋 Học Tiếng Việt Cùng Nhau",
+                "Học Tiếng Việt Cùng Nhau",
                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),

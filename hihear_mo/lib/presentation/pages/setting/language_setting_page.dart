@@ -63,7 +63,6 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
