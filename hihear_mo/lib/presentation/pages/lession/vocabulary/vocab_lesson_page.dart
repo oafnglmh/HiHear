@@ -253,41 +253,7 @@ class _VocabLessonPageState extends State<VocabLessonPage>
                 ),
               ],
             ),
-          ), saved: () {
-            return Scaffold(
-              body: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _buildLotusBackground(),
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.check_circle,
-                              color: Colors.green, size: 60),
-                          SizedBox(height: 12),
-                          Text(
-                            "Đã lưu từ vựng!",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+          ),
         );
       },
     );

@@ -66,7 +66,7 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     _SaveVocabulary event,
     Emitter<LessonState> emit,
   ) async {
-    emit(const LessonState.loading());
+    // emit(const LessonState.loading());
 
     try {
       final result = await repository.saveVocabulary(
@@ -83,7 +83,7 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
         },
         (_) {
           print('Vocabulary saved successfully');
-          emit(const LessonState.saved());
+          // emit(const LessonState.saved());
         },
       );
     } catch (e, s) {

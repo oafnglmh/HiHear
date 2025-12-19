@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
+import 'package:hihear_mo/share/UserShare.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:math' as math;
 
@@ -135,9 +136,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
             animation: _rippleController,
             builder: (context, child) {
               return CustomPaint(
-                painter: RipplePainter(
-                  animationValue: _rippleController.value,
-                ),
+                painter: RipplePainter(animationValue: _rippleController.value),
                 size: Size.infinite,
               );
             },
@@ -163,7 +162,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                         ],
                       ),
                       child: const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD4AF37)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFFD4AF37),
+                        ),
                       ),
                     ),
                   ),
@@ -193,7 +194,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                               children: [
                                 _buildLessonHeader(lesson),
                                 const SizedBox(height: 24),
-                                _buildGrammarCard(grammars[_currentGrammarIndex]),
+                                _buildGrammarCard(
+                                  grammars[_currentGrammarIndex],
+                                ),
                                 const SizedBox(height: 24),
                                 _buildNavigationButtons(grammars.length),
                               ],
@@ -204,9 +207,6 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                     );
                   },
                   error: (message) => _buildErrorState(message),
-                  saved: () {
-                    return const SizedBox.shrink();
-                  },
                 );
               },
             ),
@@ -245,10 +245,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
               ),
               child: IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
               ),
             ),
             const SizedBox(width: 16),
@@ -293,7 +290,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
       animation: _floatingController,
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2) * 3),
+          offset: Offset(
+            0,
+            math.sin(_floatingController.value * math.pi * 2) * 3,
+          ),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             padding: const EdgeInsets.all(20),
@@ -331,7 +331,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
@@ -384,7 +387,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
       animation: _floatingController,
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2 + 0.5) * 4),
+          offset: Offset(
+            0,
+            math.sin(_floatingController.value * math.pi * 2 + 0.5) * 4,
+          ),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -395,10 +401,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: const Color(0xFFD4AF37),
-                width: 3,
-              ),
+              border: Border.all(color: const Color(0xFFD4AF37), width: 3),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
@@ -499,7 +502,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
       animation: _floatingController,
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, math.sin(_floatingController.value * math.pi * 2 + 1) * 5),
+          offset: Offset(
+            0,
+            math.sin(_floatingController.value * math.pi * 2 + 1) * 5,
+          ),
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -509,10 +515,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: const Color(0xFFD4AF37),
-                width: 3,
-              ),
+              border: Border.all(color: const Color(0xFFD4AF37), width: 3),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
@@ -540,7 +543,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                         const Color(0xFFB8941E).withOpacity(0.1),
                       ],
                     ),
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(21),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,7 +561,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFD4AF37).withOpacity(0.3),
+                                  color: const Color(
+                                    0xFFD4AF37,
+                                  ).withOpacity(0.3),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -621,7 +628,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF2D7A4F).withOpacity(0.3),
+                                  color: const Color(
+                                    0xFF2D7A4F,
+                                  ).withOpacity(0.3),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -663,10 +672,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                         ),
                         child: Row(
                           children: [
-                            const Text(
-                              '🇻🇳',
-                              style: TextStyle(fontSize: 24),
-                            ),
+                            const Text('🇻🇳', style: TextStyle(fontSize: 24)),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -687,7 +693,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                                 decoration: BoxDecoration(
                                   gradient: _isSpeaking
                                       ? const LinearGradient(
-                                          colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
+                                          colors: [
+                                            Color(0xFFD4AF37),
+                                            Color(0xFFB8941E),
+                                          ],
                                         )
                                       : null,
                                   color: _isSpeaking ? null : Colors.white,
@@ -695,21 +704,29 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                                   border: Border.all(
                                     color: _isSpeaking
                                         ? Colors.transparent
-                                        : const Color(0xFFDA291C).withOpacity(0.3),
+                                        : const Color(
+                                            0xFFDA291C,
+                                          ).withOpacity(0.3),
                                     width: 2,
                                   ),
                                   boxShadow: _isSpeaking
                                       ? [
                                           BoxShadow(
-                                            color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                            color: const Color(
+                                              0xFFD4AF37,
+                                            ).withOpacity(0.4),
                                             blurRadius: 12,
                                           ),
                                         ]
                                       : null,
                                 ),
                                 child: Icon(
-                                  _isSpeaking ? Icons.volume_up : Icons.volume_up_outlined,
-                                  color: _isSpeaking ? Colors.white : const Color(0xFFDA291C),
+                                  _isSpeaking
+                                      ? Icons.volume_up
+                                      : Icons.volume_up_outlined,
+                                  color: _isSpeaking
+                                      ? Colors.white
+                                      : const Color(0xFFDA291C),
                                   size: 22,
                                 ),
                               ),
@@ -755,7 +772,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -894,6 +912,13 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   _flutterTts.stop();
                 } else {
                   _flutterTts.stop();
+                  UserShare().debugPrint();
+                  context.read<LessonBloc>().add(
+                    LessonEvent.saveCompleteLesson(
+                      lessonId: widget.id,
+                      userId: UserShare().id ?? '',
+                    ),
+                  );
                   _showCompletionDialog();
                 }
               },
@@ -910,7 +935,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _currentGrammarIndex < total - 1 ? 'Tiếp theo' : 'Hoàn thành',
+                    _currentGrammarIndex < total - 1
+                        ? 'Tiếp theo'
+                        : 'Hoàn thành',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -945,15 +972,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
             ],
           ),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: const Color(0xFFD4AF37),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xFFD4AF37), width: 2),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20),
           ],
         ),
         child: Column(
@@ -1004,15 +1025,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
             ],
           ),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: const Color(0xFFDA291C),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xFFDA291C), width: 2),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20),
           ],
         ),
         child: Column(
@@ -1047,10 +1062,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
             const SizedBox(height: 8),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF2D5016),
-              ),
+              style: const TextStyle(fontSize: 14, color: Color(0xFF2D5016)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -1073,7 +1085,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD4AF37),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -1082,10 +1097,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 icon: const Icon(Icons.refresh, size: 20),
                 label: const Text(
                   'Thử lại',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -1111,10 +1123,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
               ],
             ),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: const Color(0xFFD4AF37),
-              width: 3,
-            ),
+            border: Border.all(color: const Color(0xFFD4AF37), width: 3),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
@@ -1206,10 +1215,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   icon: const Icon(Icons.home, size: 22),
                   label: const Text(
                     'Quay về trang chủ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -1238,7 +1244,10 @@ class LotusPatternPainter extends CustomPainter {
 
     _drawLotusFlower(
       canvas,
-      Offset(70, size.height - 120 + math.cos(animationValue * math.pi * 2) * 10),
+      Offset(
+        70,
+        size.height - 120 + math.cos(animationValue * math.pi * 2) * 10,
+      ),
       110,
       0.15 + animationValue * 0.04,
     );
@@ -1252,20 +1261,31 @@ class LotusPatternPainter extends CustomPainter {
 
     _drawLotusLeaf(
       canvas,
-      Offset(size.width - 90, size.height - 100 + math.sin(animationValue * math.pi * 2) * 7),
+      Offset(
+        size.width - 90,
+        size.height - 100 + math.sin(animationValue * math.pi * 2) * 7,
+      ),
       75,
       0.12 + animationValue * 0.03,
     );
 
     _drawLotusLeaf(
       canvas,
-      Offset(size.width - 120, 140 + math.cos(animationValue * math.pi * 2) * 5),
+      Offset(
+        size.width - 120,
+        140 + math.cos(animationValue * math.pi * 2) * 5,
+      ),
       55,
       0.1,
     );
   }
 
-  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
+  void _drawLotusFlower(
+    Canvas canvas,
+    Offset center,
+    double size,
+    double opacity,
+  ) {
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..color = Colors.pink.shade100.withOpacity(opacity);
@@ -1278,14 +1298,8 @@ class LotusPatternPainter extends CustomPainter {
 
       final path = Path();
       path.moveTo(0, 0);
-      path.quadraticBezierTo(
-        size * 0.3, -size * 0.5,
-        0, -size * 0.8,
-      );
-      path.quadraticBezierTo(
-        -size * 0.3, -size * 0.5,
-        0, 0,
-      );
+      path.quadraticBezierTo(size * 0.3, -size * 0.5, 0, -size * 0.8);
+      path.quadraticBezierTo(-size * 0.3, -size * 0.5, 0, 0);
 
       canvas.drawPath(path, paint);
       canvas.restore();
@@ -1309,32 +1323,45 @@ class LotusPatternPainter extends CustomPainter {
     }
   }
 
-  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
+  void _drawLotusLeaf(
+    Canvas canvas,
+    Offset center,
+    double size,
+    double opacity,
+  ) {
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
 
     final path = Path();
-    
+
     path.moveTo(center.dx, center.dy - size);
     path.quadraticBezierTo(
-      center.dx + size * 0.9, center.dy - size * 0.7,
-      center.dx + size, center.dy,
+      center.dx + size * 0.9,
+      center.dy - size * 0.7,
+      center.dx + size,
+      center.dy,
     );
     path.quadraticBezierTo(
-      center.dx + size * 0.9, center.dy + size * 0.7,
-      center.dx, center.dy + size,
+      center.dx + size * 0.9,
+      center.dy + size * 0.7,
+      center.dx,
+      center.dy + size,
     );
     path.lineTo(center.dx, center.dy);
-    
+
     path.moveTo(center.dx, center.dy - size);
     path.quadraticBezierTo(
-      center.dx - size * 0.9, center.dy - size * 0.7,
-      center.dx - size, center.dy,
+      center.dx - size * 0.9,
+      center.dy - size * 0.7,
+      center.dx - size,
+      center.dy,
     );
     path.quadraticBezierTo(
-      center.dx - size * 0.9, center.dy + size * 0.7,
-      center.dx, center.dy + size,
+      center.dx - size * 0.9,
+      center.dy + size * 0.7,
+      center.dx,
+      center.dy + size,
     );
     path.lineTo(center.dx, center.dy);
 

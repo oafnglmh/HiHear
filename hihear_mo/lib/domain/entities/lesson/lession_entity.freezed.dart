@@ -219,7 +219,7 @@ return $default(_that.id,_that.title,_that.category,_that.level,_that.descriptio
 @JsonSerializable()
 
 class _LessionEntity implements LessionEntity {
-  const _LessionEntity({required this.id, required this.title, required this.category, required this.level, required this.description, required this.durationSeconds, this.xpReward, this.prerequisiteLesson, this.isLock = false, final  List<MediaEntity> media = const [], final  List<ExerciseEntity> exercises = const []}): _media = media,_exercises = exercises;
+  const _LessionEntity({required this.id, required this.title, required this.category, required this.level, required this.description, required this.durationSeconds, this.xpReward, this.prerequisiteLesson, this.isLock = true, final  List<MediaEntity> media = const [], final  List<ExerciseEntity> exercises = const []}): _media = media,_exercises = exercises;
   factory _LessionEntity.fromJson(Map<String, dynamic> json) => _$LessionEntityFromJson(json);
 
 @override final  String id;
