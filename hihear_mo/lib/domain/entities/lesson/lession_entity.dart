@@ -15,7 +15,7 @@ abstract class LessionEntity with _$LessionEntity {
     required String description,
     required int durationSeconds,
     int? xpReward,
-    String? prerequisiteLesson,
+    String? prerequisiteLessonId,
     @Default(true) bool isLock,
     @Default([]) List<MediaEntity> media,
     @Default([]) List<ExerciseEntity> exercises,

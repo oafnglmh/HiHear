@@ -54,6 +54,7 @@ class AuthRemoteDataSource {
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
         national: profile['language'],
+        dailyStreak: profile['streakDays'].toString(),
       );
       UserShare().debugPrint();
       return UserEntity(

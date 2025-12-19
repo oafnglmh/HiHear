@@ -61,7 +61,7 @@ class LessionRemoteDataSource {
         final entity = LessionEntity.fromJson(json);
 
         final lessonId = entity.id;
-        final prerequisite = entity.prerequisiteLesson;
+        final prerequisite = entity.prerequisiteLessonId;
 
         bool isCompleted = completedLessonIds.contains(lessonId);
         bool isLocked = false;
@@ -79,7 +79,10 @@ class LessionRemoteDataSource {
         return entity.copyWith(isLock: isLocked);
       }).toList();
 
-      _debugValue("Loaded lessons", lessons);
+      for (var lesson in lessons) {
+        _debugValue("Lesson ${lesson.id}", lesson.toJson());
+      }
+
       return lessons;
     }
 
