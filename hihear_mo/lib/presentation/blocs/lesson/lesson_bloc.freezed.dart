@@ -55,11 +55,12 @@ extension LessonEventPatterns on LessonEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLesson value)?  loadLesson,TResult Function( _LoadLessonById value)?  loadLessonById,TResult Function( _SaveVocabulary value)?  saveVocabulary,TResult Function( _SaveCompleteLesson value)?  saveCompleteLesson,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _LoadLesson value)?  loadLesson,TResult Function( _LoadLessonBySpeak value)?  loadLessonBySpeak,TResult Function( _LoadLessonById value)?  loadLessonById,TResult Function( _SaveVocabulary value)?  saveVocabulary,TResult Function( _SaveCompleteLesson value)?  saveCompleteLesson,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
-return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
+return loadLesson(_that);case _LoadLessonBySpeak() when loadLessonBySpeak != null:
+return loadLessonBySpeak(_that);case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
 return saveVocabulary(_that);case _SaveCompleteLesson() when saveCompleteLesson != null:
 return saveCompleteLesson(_that);case _:
@@ -80,11 +81,12 @@ return saveCompleteLesson(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLesson value)  loadLesson,required TResult Function( _LoadLessonById value)  loadLessonById,required TResult Function( _SaveVocabulary value)  saveVocabulary,required TResult Function( _SaveCompleteLesson value)  saveCompleteLesson,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _LoadLesson value)  loadLesson,required TResult Function( _LoadLessonBySpeak value)  loadLessonBySpeak,required TResult Function( _LoadLessonById value)  loadLessonById,required TResult Function( _SaveVocabulary value)  saveVocabulary,required TResult Function( _SaveCompleteLesson value)  saveCompleteLesson,}){
 final _that = this;
 switch (_that) {
 case _LoadLesson():
-return loadLesson(_that);case _LoadLessonById():
+return loadLesson(_that);case _LoadLessonBySpeak():
+return loadLessonBySpeak(_that);case _LoadLessonById():
 return loadLessonById(_that);case _SaveVocabulary():
 return saveVocabulary(_that);case _SaveCompleteLesson():
 return saveCompleteLesson(_that);case _:
@@ -104,11 +106,12 @@ return saveCompleteLesson(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLesson value)?  loadLesson,TResult? Function( _LoadLessonById value)?  loadLessonById,TResult? Function( _SaveVocabulary value)?  saveVocabulary,TResult? Function( _SaveCompleteLesson value)?  saveCompleteLesson,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _LoadLesson value)?  loadLesson,TResult? Function( _LoadLessonBySpeak value)?  loadLessonBySpeak,TResult? Function( _LoadLessonById value)?  loadLessonById,TResult? Function( _SaveVocabulary value)?  saveVocabulary,TResult? Function( _SaveCompleteLesson value)?  saveCompleteLesson,}){
 final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
-return loadLesson(_that);case _LoadLessonById() when loadLessonById != null:
+return loadLesson(_that);case _LoadLessonBySpeak() when loadLessonBySpeak != null:
+return loadLessonBySpeak(_that);case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that);case _SaveVocabulary() when saveVocabulary != null:
 return saveVocabulary(_that);case _SaveCompleteLesson() when saveCompleteLesson != null:
 return saveCompleteLesson(_that);case _:
@@ -128,10 +131,11 @@ return saveCompleteLesson(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLesson,TResult Function( String id)?  loadLessonById,TResult Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult Function( String lessonId,  String userId)?  saveCompleteLesson,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loadLesson,TResult Function()?  loadLessonBySpeak,TResult Function( String id)?  loadLessonById,TResult Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult Function( String lessonId,  String userId)?  saveCompleteLesson,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
-return loadLesson();case _LoadLessonById() when loadLessonById != null:
+return loadLesson();case _LoadLessonBySpeak() when loadLessonBySpeak != null:
+return loadLessonBySpeak();case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
 return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson() when saveCompleteLesson != null:
 return saveCompleteLesson(_that.lessonId,_that.userId);case _:
@@ -152,10 +156,11 @@ return saveCompleteLesson(_that.lessonId,_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLesson,required TResult Function( String id)  loadLessonById,required TResult Function( String word,  String meaning,  String category,  String userId)  saveVocabulary,required TResult Function( String lessonId,  String userId)  saveCompleteLesson,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loadLesson,required TResult Function()  loadLessonBySpeak,required TResult Function( String id)  loadLessonById,required TResult Function( String word,  String meaning,  String category,  String userId)  saveVocabulary,required TResult Function( String lessonId,  String userId)  saveCompleteLesson,}) {final _that = this;
 switch (_that) {
 case _LoadLesson():
-return loadLesson();case _LoadLessonById():
+return loadLesson();case _LoadLessonBySpeak():
+return loadLessonBySpeak();case _LoadLessonById():
 return loadLessonById(_that.id);case _SaveVocabulary():
 return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson():
 return saveCompleteLesson(_that.lessonId,_that.userId);case _:
@@ -175,10 +180,11 @@ return saveCompleteLesson(_that.lessonId,_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLesson,TResult? Function( String id)?  loadLessonById,TResult? Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult? Function( String lessonId,  String userId)?  saveCompleteLesson,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loadLesson,TResult? Function()?  loadLessonBySpeak,TResult? Function( String id)?  loadLessonById,TResult? Function( String word,  String meaning,  String category,  String userId)?  saveVocabulary,TResult? Function( String lessonId,  String userId)?  saveCompleteLesson,}) {final _that = this;
 switch (_that) {
 case _LoadLesson() when loadLesson != null:
-return loadLesson();case _LoadLessonById() when loadLessonById != null:
+return loadLesson();case _LoadLessonBySpeak() when loadLessonBySpeak != null:
+return loadLessonBySpeak();case _LoadLessonById() when loadLessonById != null:
 return loadLessonById(_that.id);case _SaveVocabulary() when saveVocabulary != null:
 return saveVocabulary(_that.word,_that.meaning,_that.category,_that.userId);case _SaveCompleteLesson() when saveCompleteLesson != null:
 return saveCompleteLesson(_that.lessonId,_that.userId);case _:
@@ -213,6 +219,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'LessonEvent.loadLesson()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _LoadLessonBySpeak implements LessonEvent {
+  const _LoadLessonBySpeak();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadLessonBySpeak);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LessonEvent.loadLessonBySpeak()';
 }
 
 

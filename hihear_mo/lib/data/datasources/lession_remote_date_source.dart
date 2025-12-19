@@ -86,6 +86,63 @@ class LessionRemoteDataSource {
     throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
   }
 
+  Future<List<LessionEntity>> loadLessionBySpeaking() async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      _debugError("Token null → user chưa đăng nhập");
+      throw Exception("User chưa login.");
+    }
+
+    const national = "UK";
+    final response = await _dio.get(
+      "lessons?category=Nói",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    UserShare().debugPrint();
+
+    final responseHistory = await _dio.get(
+      "user-progress/${UserShare().id}",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data as List<dynamic>;
+
+      final filtered = data.where((lesson) {
+        return (lesson["exercises"] as List).any(
+          (ex) => ex["national"] == national,
+        );
+      }).toList();
+      final historyList = responseHistory.data as List<dynamic>;
+      final completedLessonIds = historyList
+          .where((h) => h["completed"] == true)
+          .map<String>((h) => h["lesson_id"] as String)
+          .toSet();
+
+      final lessons = filtered
+          .map((json) => LessionEntity.fromJson(json))
+          .where((entity) => !completedLessonIds.contains(entity.id))
+          .map((entity) => entity.copyWith(isLock: false))
+          .toList();
+
+      _debugValue("Loaded lessons", lessons);
+      return lessons;
+    }
+
+    throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
+  }
+
   // ---------------------------------------------------------------------------
   //                           LOAD LESSON BY ID
   // ---------------------------------------------------------------------------

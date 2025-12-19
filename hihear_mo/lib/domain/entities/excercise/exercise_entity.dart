@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hihear_mo/domain/entities/grammar/grammar_entity.dart';
 import 'package:hihear_mo/domain/entities/listening/listening_entity.dart';
+import 'package:hihear_mo/domain/entities/speaking/speaking_entity.dart';
 import 'package:hihear_mo/domain/entities/vocabulary/vocabulary_entity.dart';
 part 'exercise_entity.freezed.dart';
 part 'exercise_entity.g.dart';
@@ -15,6 +16,7 @@ abstract class ExerciseEntity with _$ExerciseEntity {
     @Default([]) List<VocabularyEntity> vocabularies,
     @Default([]) List<GrammarEntity> grammars,
     @Default([]) List<ListeningEntity> listenings,
+    @Default([]) List<SpeakingEntity> speakings,
   }) = _ExerciseEntity;
 
   factory ExerciseEntity.fromJson(Map<String, dynamic> json) =>

@@ -28,6 +28,11 @@ _ExerciseEntity _$ExerciseEntityFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ListeningEntity.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      speakings:
+          (json['speakings'] as List<dynamic>?)
+              ?.map((e) => SpeakingEntity.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$ExerciseEntityToJson(_ExerciseEntity instance) =>
@@ -40,4 +45,5 @@ Map<String, dynamic> _$ExerciseEntityToJson(_ExerciseEntity instance) =>
       'vocabularies': instance.vocabularies,
       'grammars': instance.grammars,
       'listenings': instance.listenings,
+      'speakings': instance.speakings,
     };

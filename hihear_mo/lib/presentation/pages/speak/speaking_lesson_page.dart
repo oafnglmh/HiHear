@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hihear_mo/presentation/painter/wave_painter.dart';
-import '../../blocs/speaking/speaking_bloc.dart';
-import '../../blocs/speaking/speaking_event.dart';
-import '../../blocs/speaking/speaking_state.dart';
-import 'dart:math' as math;
+import 'package:hihear_mo/share/UserShare.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
+import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 
 class SpeakingLessonPage extends StatefulWidget {
   const SpeakingLessonPage({super.key});
@@ -15,386 +14,412 @@ class SpeakingLessonPage extends StatefulWidget {
 }
 
 class _SpeakingLessonPageState extends State<SpeakingLessonPage>
-    with TickerProviderStateMixin {
-  late final AnimationController _waveController;
-  late final AnimationController _pulseController;
-  late final AnimationController _lotusController;
-  late final AnimationController _floatingController;
-  late final AnimationController _rippleController;
-  late final AnimationController _fadeController;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late stt.SpeechToText _speech;
+
+  bool _isRecording = false;
+  String _recognizedText = '';
+  int _currentLessonIndex = 0;
+  int _currentSentenceIndex = 0;
+  List<SpeakingResult> _results = [];
+  bool _showFeedback = false;
+  double _accuracy = 0.0;
 
   @override
   void initState() {
     super.initState();
-    
-    _waveController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
+    _speech = stt.SpeechToText();
+    _initSpeech();
 
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
 
-    _lotusController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 4000),
-    )..repeat(reverse: true);
+    context.read<LessonBloc>().add(const LessonEvent.loadLessonBySpeak());
+  }
 
-    _floatingController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2500),
-    )..repeat(reverse: true);
-
-    _rippleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 3000),
-    )..repeat();
-
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..forward();
+  void _initSpeech() async {
+    await _speech.initialize();
   }
 
   @override
   void dispose() {
-    _waveController.dispose();
     _pulseController.dispose();
-    _lotusController.dispose();
-    _floatingController.dispose();
-    _rippleController.dispose();
-    _fadeController.dispose();
+    _speech.stop();
     super.dispose();
+  }
+
+  void _toggleRecording(String targetText) async {
+    if (_isRecording) {
+      await _speech.stop();
+      setState(() => _isRecording = false);
+      _analyzeSpeech(targetText);
+    } else {
+      bool available = await _speech.initialize();
+      if (available) {
+        setState(() {
+          _isRecording = true;
+          _recognizedText = '';
+        });
+
+        _speech.listen(
+          onResult: (result) {
+            setState(() {
+              _recognizedText = result.recognizedWords;
+            });
+          },
+        );
+      }
+    }
+  }
+
+  void _analyzeSpeech(String targetText) {
+    if (_recognizedText.isEmpty) {
+      _showErrorDialog('Không nhận được giọng nói. Vui lòng thử lại!');
+      return;
+    }
+
+    // Calculate accuracy
+    final accuracy = _calculateAccuracy(_recognizedText, targetText);
+    final mistakes = _findMistakes(_recognizedText, targetText);
+
+    setState(() {
+      _accuracy = accuracy;
+      _results.add(
+        SpeakingResult(
+          targetText: targetText,
+          recognizedText: _recognizedText,
+          accuracy: accuracy,
+          mistakes: mistakes,
+        ),
+      );
+      _showFeedback = true;
+    });
+  }
+
+  double _calculateAccuracy(String recognized, String target) {
+    final recognizedWords = recognized.toLowerCase().split(' ');
+    final targetWords = target.toLowerCase().split(' ');
+
+    int correctWords = 0;
+    for (int i = 0; i < targetWords.length && i < recognizedWords.length; i++) {
+      if (_isSimilar(recognizedWords[i], targetWords[i])) {
+        correctWords++;
+      }
+    }
+
+    return (correctWords / targetWords.length) * 100;
+  }
+
+  bool _isSimilar(String word1, String word2) {
+    // Simple similarity check - can be improved with Levenshtein distance
+    if (word1 == word2) return true;
+    if (word1.length != word2.length) return false;
+
+    int differences = 0;
+    for (int i = 0; i < word1.length; i++) {
+      if (word1[i] != word2[i]) differences++;
+    }
+
+    return differences <= 1; // Allow 1 character difference
+  }
+
+  List<String> _findMistakes(String recognized, String target) {
+    final recognizedWords = recognized.toLowerCase().split(' ');
+    final targetWords = target.toLowerCase().split(' ');
+    final mistakes = <String>[];
+
+    for (int i = 0; i < targetWords.length; i++) {
+      if (i >= recognizedWords.length ||
+          !_isSimilar(recognizedWords[i], targetWords[i])) {
+        mistakes.add(targetWords[i]);
+      }
+    }
+
+    return mistakes;
+  }
+
+  void _nextSentence(LessionEntity lesson) {
+    final sentences = lesson.exercises.first.speakings?.first.read ?? [];
+    if (_currentSentenceIndex < sentences.length - 1) {
+      setState(() {
+        _currentSentenceIndex++;
+        _showFeedback = false;
+        _recognizedText = '';
+      });
+    } else {
+      _nextLesson();
+    }
+  }
+
+  void _nextLesson() {
+    final state = context.read<LessonBloc>().state;
+
+    state.whenOrNull(
+      data: (lessons) async {
+        final currentLesson = lessons[_currentLessonIndex];
+        context.read<LessonBloc>().add(
+          LessonEvent.saveCompleteLesson(
+            lessonId: currentLesson.id,
+            userId: UserShare().id ?? '',
+          ),
+        );
+
+        if (_currentLessonIndex < lessons.length - 1) {
+          setState(() {
+            _currentLessonIndex++;
+            _currentSentenceIndex = 0;
+            _showFeedback = false;
+            _recognizedText = '';
+            _results.clear();
+          });
+        } else {
+          _showCompletionDialog();
+        }
+      },
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Lỗi'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCompletionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Hoàn thành!'),
+        content: const Text('Bạn đã hoàn thành tất cả bài học nói!'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.go('/home');
+            },
+            child: const Text('Về trang chủ'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SpeakingBloc(),
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background gradient - giống StartPage
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF0A5C36), // Xanh lá sen đậm
-                    Color(0xFF1B7F4E), // Xanh lá sen
-                    Color(0xFF0D6B3D), // Xanh trung bình
-                    Color(0xFF0D4D2D), // Xanh đậm
-                  ],
-                ),
-              ),
-            ),
-
-            // Lotus pattern background
-            AnimatedBuilder(
-              animation: _lotusController,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: LotusPatternPainter(
-                    animationValue: _lotusController.value,
-                  ),
-                  size: Size.infinite,
-                );
-              },
-            ),
-
-            // Ripple effects
-            AnimatedBuilder(
-              animation: _rippleController,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: RipplePainter(
-                    animationValue: _rippleController.value,
-                  ),
-                  size: Size.infinite,
-                );
-              },
-            ),
-
-            // Content
-            SafeArea(
-              child: BlocBuilder<SpeakingBloc, SpeakingState>(
-                builder: (context, state) {
-                  final bloc = context.read<SpeakingBloc>();
-                  final lesson = bloc.lessons[state.currentLesson];
-
-                  return Stack(
-                    children: [
-                      Column(
-                        children: [
-                          _buildAppBar(context, state),
-                          const SizedBox(height: 24),
-                          _buildLessonCard(lesson, state),
-                          const Spacer(),
-                          if (!state.showPopup)
-                            _buildMicrophoneButton(context, state),
-                          const SizedBox(height: 60),
-                        ],
-                      ),
-
-                      if (state.showPopup)
-                        _buildFeedbackPopup(context, state),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ],
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1B7F4E),
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => context.go('/home'),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context, SpeakingState state) {
-    return FadeTransition(
-      opacity: _fadeController,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.25),
-                    Colors.white.withOpacity(0.15),
-                  ],
+        title: const Text(
+          'Luyện phát âm',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
                 ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFFD4AF37).withOpacity(0.5),
-                  width: 2,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () => context.go('/home'),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Bài Luyện Nói",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Bài ${state.currentLesson + 1}/${state.currentLesson + 5}",
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            AnimatedBuilder(
-              animation: _floatingController,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(0, math.sin(_floatingController.value * math.pi * 2) * 3),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFD4AF37).withOpacity(0.4),
-                          blurRadius: 15,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          "${state.score.toInt()}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.star, color: Colors.amber, size: 18),
+                    const SizedBox(width: 4),
+                    BlocBuilder<LessonBloc, LessonState>(
+                      builder: (context, state) {
+                        return state.maybeWhen(
+                          data: (lessons) => Text(
+                            '${_currentLessonIndex + 1}/${lessons.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                          orElse: () => const Text(
+                            '0/0',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLessonCard(String lesson, SpeakingState state) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AnimatedBuilder(
-        animation: _floatingController,
-        builder: (context, child) {
-          return Transform.translate(
-            offset: Offset(0, math.sin(_floatingController.value * math.pi * 2 + 1) * 5),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.95),
-                    Colors.white.withOpacity(0.9),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: const Color(0xFFD4AF37),
-                  width: 3,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 25,
-                    offset: const Offset(0, 10),
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFFD4AF37).withOpacity(0.3),
-                    blurRadius: 30,
-                    spreadRadius: -5,
-                    offset: const Offset(0, 15),
-                  ),
-                ],
               ),
+            ),
+          ),
+        ],
+      ),
+      body: BlocBuilder<LessonBloc, LessonState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const Center(child: Text('Khởi tạo...')),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: Color(0xFF1B7F4E)),
+            ),
+            error: (message) => Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Lotus icon at top
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFD4AF37),
-                          Color(0xFFB8941E),
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFD4AF37).withOpacity(0.4),
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.record_voice_over,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  const Text(
-                    "Hãy đọc câu sau:",
-                    style: TextStyle(
-                      color: Color(0xFF2D5016),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
-                  
                   Text(
-                    lesson,
-                    style: const TextStyle(
-                      color: Color(0xFF0D4D2D),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      height: 1.5,
+                    'Lỗi: $message',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<LessonBloc>().add(
+                      const LessonEvent.loadLessonBySpeak(),
                     ),
-                    textAlign: TextAlign.center,
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),
             ),
+            data: (lessons) {
+              if (lessons.isEmpty) {
+                return const Center(child: Text('Không có bài học nào'));
+              }
+
+              final lesson = lessons[_currentLessonIndex];
+              final exercise = lesson.exercises.first;
+              final speakings = exercise.speakings ?? [];
+
+              if (speakings.isEmpty) {
+                return const Center(child: Text('Bài học không có nội dung'));
+              }
+
+              final speaking = speakings.first;
+              final sentences = speaking.read ?? [];
+
+              if (sentences.isEmpty ||
+                  _currentSentenceIndex >= sentences.length) {
+                return const Center(child: Text('Không có câu để đọc'));
+              }
+
+              final currentSentence = sentences[_currentSentenceIndex];
+
+              return Stack(
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Progress indicator
+                        _buildProgressIndicator(sentences.length),
+
+                        const SizedBox(height: 24),
+
+                        // Lesson info card
+                        _buildLessonInfoCard(lesson, exercise),
+
+                        const SizedBox(height: 24),
+
+                        // Sentence card
+                        _buildSentenceCard(currentSentence),
+
+                        const SizedBox(height: 24),
+
+                        // Recognition result
+                        if (_recognizedText.isNotEmpty)
+                          _buildRecognitionResult(),
+
+                        const SizedBox(height: 32),
+
+                        // Microphone button
+                        Center(child: _buildMicrophoneButton(currentSentence)),
+
+                        const SizedBox(height: 100),
+                      ],
+                    ),
+                  ),
+
+                  // Feedback popup
+                  if (_showFeedback)
+                    _buildFeedbackPopup(lesson, currentSentence),
+                ],
+              );
+            },
           );
         },
       ),
     );
   }
 
-
-  Widget _buildStatItem(IconData icon, String label, String value) {
+  Widget _buildProgressIndicator(int totalSentences) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
-          ],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFD4AF37).withOpacity(0.3),
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: const Color(0xFFD4AF37),
-            size: 28,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Câu ${_currentSentenceIndex + 1}/$totalSentences',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              Text(
+                '${((_currentSentenceIndex + 1) / totalSentences * 100).toInt()}%',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B7F4E),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 13,
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: (_currentSentenceIndex + 1) / totalSentences,
+              minHeight: 8,
+              backgroundColor: Colors.grey[200],
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF1B7F4E),
+              ),
             ),
           ),
         ],
@@ -402,125 +427,183 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
     );
   }
 
-  Widget _buildMicrophoneButton(BuildContext context, SpeakingState state) {
-    return GestureDetector(
-      onTap: () => context.read<SpeakingBloc>().add(ToggleRecording()),
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_waveController, _pulseController]),
-        builder: (context, child) {
-          return SizedBox(
-            height: 200,
-            width: 200,
-            child: Stack(
-              alignment: Alignment.center,
+  Widget _buildLessonInfoCard(LessionEntity lesson, dynamic exercise) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1B7F4E), Color(0xFF0D6B3D)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1B7F4E).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.record_voice_over,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (state.isRecording) ...[
-                  for (int i = 0; i < 3; i++)
-                    Transform.scale(
-                      scale: 1.0 + (i * 0.3) + (_pulseController.value * 0.2),
-                      child: Container(
-                        width: 140 + (i * 20),
-                        height: 140 + (i * 20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFDA291C).withOpacity(0.2 - (i * 0.05)),
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-
-                CustomPaint(
-                  painter: WavePainter(
-                    animationValue: _waveController.value,
-                    active: state.isRecording,
-                    color: const Color(0xFFD4AF37).withOpacity(0.3),
-                  ),
-                  size: const Size(180, 180),
-                ),
-
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  height: 120,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: state.isRecording
-                        ? const LinearGradient(
-                            colors: [Color(0xFFDA291C), Color(0xFFFD0000)],
-                          )
-                        : const LinearGradient(
-                            colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                          ),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 3,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (state.isRecording
-                                ? const Color(0xFFDA291C)
-                                : const Color(0xFFD4AF37))
-                            .withOpacity(0.5),
-                        blurRadius: 30 + (_pulseController.value * 10),
-                        spreadRadius: state.isRecording ? 10 : 5,
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    state.isRecording ? Icons.stop_rounded : Icons.mic,
+                Text(
+                  lesson.title,
+                  style: const TextStyle(
                     color: Colors.white,
-                    size: 56,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                if (state.isRecording)
-                  Positioned(
-                    bottom: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFDA291C), Color(0xFFFD0000)],
-                        ),
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFDA291C).withOpacity(0.5),
-                            blurRadius: 15,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            "Đang ghi âm...",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                const SizedBox(height: 4),
+                Text(
+                  'Ngôn ngữ: ${exercise.national ?? "Unknown"}',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 14,
                   ),
+                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSentenceCard(String sentence) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF1B7F4E), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.volume_up_rounded,
+            color: Color(0xFF1B7F4E),
+            size: 40,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Hãy đọc câu sau:',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF718096),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            sentence,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2D3748),
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecognitionResult() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.hearing, color: Colors.blue[700]),
+              const SizedBox(width: 8),
+              Text(
+                'Bạn đã nói:',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _recognizedText,
+            style: const TextStyle(
+              fontSize: 18,
+              color: Color(0xFF2D3748),
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMicrophoneButton(String targetText) {
+    return GestureDetector(
+      onTap: () => _toggleRecording(targetText),
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          return Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: _isRecording
+                    ? [const Color(0xFFE53E3E), const Color(0xFFC53030)]
+                    : [const Color(0xFF1B7F4E), const Color(0xFF0D6B3D)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color:
+                      (_isRecording
+                              ? const Color(0xFFE53E3E)
+                              : const Color(0xFF1B7F4E))
+                          .withOpacity(0.4),
+                  blurRadius: 20 + (_pulseController.value * 10),
+                  spreadRadius: _isRecording ? 5 : 2,
+                ),
+              ],
+            ),
+            child: Icon(
+              _isRecording ? Icons.stop_rounded : Icons.mic_rounded,
+              color: Colors.white,
+              size: 48,
             ),
           );
         },
@@ -528,414 +611,162 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
     );
   }
 
-  Widget _buildFeedbackPopup(BuildContext context, SpeakingState state) {
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: () => context.read<SpeakingBloc>().add(HideFeedbackPopup()),
-          child: Container(
-            color: Colors.black.withOpacity(0.75),
+  Widget _buildFeedbackPopup(LessionEntity lesson, String sentence) {
+    final isPassed = _accuracy >= 50;
+
+    return Container(
+      color: Colors.black.withOpacity(0.7),
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30),
+            ],
           ),
-        ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: isPassed ? Colors.green[50] : Colors.orange[50],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isPassed ? Icons.check_circle : Icons.info,
+                  size: 64,
+                  color: isPassed ? Colors.green : Colors.orange,
+                ),
+              ),
 
-        Center(
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 600),
-            tween: Tween(begin: 0.0, end: state.showPopup ? 1.0 : 0.0),
-            curve: Curves.elasticOut,
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: 0.8 + (value * 0.2),
-                child: Opacity(
-                  opacity: value.clamp(0.0, 1.0),
+              const SizedBox(height: 24),
 
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.white.withOpacity(0.98),
-                          Colors.white.withOpacity(0.95),
-                        ],
+              // Accuracy
+              Text(
+                '${_accuracy.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: isPassed ? Colors.green : Colors.orange,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                isPassed ? 'Tuyệt vời!' : 'Cần cải thiện',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Mistakes
+              if (_results.isNotEmpty && _results.last.mistakes.isNotEmpty) ...[
+                Text(
+                  'Từ cần lưu ý:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _results.last.mistakes.map((word) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      borderRadius: BorderRadius.circular(32),
-                      border: Border.all(
-                        color: const Color(0xFFD4AF37),
-                        width: 3,
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red[200]!),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 40,
-                          offset: const Offset(0, 15),
+                      child: Text(
+                        word,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
                         ),
-                        BoxShadow(
-                          color: const Color(0xFFD4AF37).withOpacity(0.3),
-                          blurRadius: 30,
-                          spreadRadius: -5,
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24),
+              ],
+
+              // Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _showFeedback = false;
+                          _recognizedText = '';
+                        });
+                      },
+                      icon: const Icon(Icons.replay),
+                      label: const Text('Thử lại'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF1B7F4E),
+                        side: const BorderSide(
+                          color: Color(0xFF1B7F4E),
+                          width: 2,
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFD4AF37).withOpacity(0.3),
-                                blurRadius: 15,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.local_florist,
-                            color: Colors.white,
-                            size: 24,
-                          ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-
-                        const SizedBox(height: 20),
-
-                        Container(
-                          padding: const EdgeInsets.all(28),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFD4AF37).withOpacity(0.4),
-                                blurRadius: 25,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              const Icon(
-                                Icons.star,
-                                color: Colors.white,
-                                size: 48,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "${state.score.toStringAsFixed(1)}",
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        Text(
-                          _getScoreEmoji(state.score),
-                          style: const TextStyle(fontSize: 56),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        Text(
-                          state.feedback,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D5016),
-                            height: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFDA291C).withOpacity(0.3),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
-                                ),
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    context.read<SpeakingBloc>().add(
-                                          HideFeedbackPopup(),
-                                        );
-                                  },
-                                  icon: const Icon(Icons.replay, size: 22),
-                                  label: const Text(
-                                    "Thử lại",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: const Color(0xFFDA291C),
-                                    side: const BorderSide(
-                                      color: Color(0xFFDA291C),
-                                      width: 2.5,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFD4AF37).withOpacity(0.4),
-                                      blurRadius: 15,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    context.read<SpeakingBloc>().add(
-                                          NextLesson(context),
-                                        );
-                                  },
-                                  icon: const Icon(Icons.arrow_forward_rounded, size: 22),
-                                  label: const Text(
-                                    "Tiếp tục",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFD4AF37),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                  if (isPassed) ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _nextSentence(lesson),
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text('Tiếp tục'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1B7F4E),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
-  }
-
-  String _getScoreEmoji(double score) {
-    if (score >= 90) return "🎉";
-    if (score >= 75) return "😊";
-    if (score >= 60) return "👍";
-    return "💪";
   }
 }
 
-class LotusPatternPainter extends CustomPainter {
-  final double animationValue;
+class SpeakingResult {
+  final String targetText;
+  final String recognizedText;
+  final double accuracy;
+  final List<String> mistakes;
 
-  LotusPatternPainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    _drawLotusFlower(
-      canvas,
-      Offset(size.width - 80, 100 + math.sin(animationValue * math.pi * 2) * 5),
-      80,
-      0.15 + animationValue * 0.05,
-    );
-
-    _drawLotusFlower(
-      canvas,
-      Offset(80, size.height - 150 + math.cos(animationValue * math.pi * 2) * 8),
-      100,
-      0.12 + animationValue * 0.03,
-    );
-
-    _drawLotusLeaf(
-      canvas,
-      Offset(size.width - 100, size.height - 100 + math.sin(animationValue * math.pi * 2) * 6),
-      70,
-      0.1 + animationValue * 0.02,
-    );
-
-    _drawLotusLeaf(
-      canvas,
-      Offset(60, 80 + math.cos(animationValue * math.pi * 2) * 4),
-      50,
-      0.08,
-    );
-  }
-
-  void _drawLotusFlower(Canvas canvas, Offset center, double size, double opacity) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.pink.shade100.withOpacity(opacity);
-
-    for (int i = 0; i < 8; i++) {
-      final angle = (i * math.pi / 4) + (animationValue * 0.1);
-      canvas.save();
-      canvas.translate(center.dx, center.dy);
-      canvas.rotate(angle);
-
-      final path = Path();
-      path.moveTo(0, 0);
-      path.quadraticBezierTo(
-        size * 0.3, -size * 0.5,
-        0, -size * 0.8,
-      );
-      path.quadraticBezierTo(
-        -size * 0.3, -size * 0.5,
-        0, 0,
-      );
-
-      canvas.drawPath(path, paint);
-      canvas.restore();
-    }
-
-    final centerPaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.yellow.shade300.withOpacity(opacity * 1.5);
-
-    canvas.drawCircle(center, size * 0.15, centerPaint);
-
-    for (int i = 0; i < 12; i++) {
-      final angle = i * math.pi / 6;
-      final x = center.dx + math.cos(angle) * size * 0.1;
-      final y = center.dy + math.sin(angle) * size * 0.1;
-      canvas.drawCircle(
-        Offset(x, y),
-        size * 0.02,
-        Paint()..color = Colors.orange.shade200.withOpacity(opacity * 1.2),
-      );
-    }
-  }
-
-  void _drawLotusLeaf(Canvas canvas, Offset center, double size, double opacity) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = const Color(0xFF2D7A4F).withOpacity(opacity);
-
-    final path = Path();
-
-    path.moveTo(center.dx, center.dy - size);
-
-    path.quadraticBezierTo(
-      center.dx + size * 0.9, center.dy - size * 0.7,
-      center.dx + size, center.dy,
-    );
-    path.quadraticBezierTo(
-      center.dx + size * 0.9, center.dy + size * 0.7,
-      center.dx, center.dy + size,
-    );
-    
-    path.lineTo(center.dx, center.dy);
-    
-    path.moveTo(center.dx, center.dy - size);
-    path.quadraticBezierTo(
-      center.dx - size * 0.9, center.dy - size * 0.7,
-      center.dx - size, center.dy,
-    );
-    path.quadraticBezierTo(
-      center.dx - size * 0.9, center.dy + size * 0.7,
-      center.dx, center.dy + size,
-    );
-    path.lineTo(center.dx, center.dy);
-
-    canvas.drawPath(path, paint);
-    final veinPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..color = const Color(0xFF1B5A37).withOpacity(opacity * 0.8);
-
-    canvas.drawLine(
-      Offset(center.dx, center.dy - size),
-      Offset(center.dx, center.dy + size),
-      veinPaint,
-    );
-
-    for (int i = -3; i <= 3; i++) {
-      if (i == 0) continue;
-      final startY = center.dy + (i * size / 4);
-      final endX = center.dx + (size * 0.7);
-      canvas.drawLine(
-        Offset(center.dx, startY),
-        Offset(endX, startY + size * 0.1),
-        veinPaint..strokeWidth = 1.0,
-      );
-      canvas.drawLine(
-        Offset(center.dx, startY),
-        Offset(center.dx - endX, startY + size * 0.1),
-        veinPaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(LotusPatternPainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
-  }
-}
-class RipplePainter extends CustomPainter {
-  final double animationValue;
-
-  RipplePainter({required this.animationValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..color = Colors.white.withOpacity(0.1);
-
-    for (int i = 0; i < 3; i++) {
-      final progress = (animationValue + (i * 0.33)) % 1.0;
-      final radius = progress * size.width * 0.6;
-      final opacity = (1 - progress) * 0.15;
-
-      canvas.drawCircle(
-        Offset(size.width / 2, size.height * 0.3),
-        radius,
-        paint..color = Colors.white.withOpacity(opacity),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(RipplePainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
-  }
+  SpeakingResult({
+    required this.targetText,
+    required this.recognizedText,
+    required this.accuracy,
+    required this.mistakes,
+  });
 }

@@ -6,6 +6,8 @@ import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 abstract class LessonRepository {
   Future<Either<Failure, List<LessionEntity>>> loadLessions();
 
+  Future<Either<Failure, List<LessionEntity>>> loadLessionsBySpeak();
+
   Future<Either<Failure, LessionEntity>> getLessonById(String id);
 
   Future<Either<Failure, void>> saveVocabulary({

@@ -16,6 +16,7 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     on<_LoadLessonById>(_onLoadLessonById);
     on<_SaveVocabulary>(_onSaveVocabulary);
     on<_SaveCompleteLesson>(_onSaveCompleteLesson);
+    on<_LoadLessonBySpeak>(_onLoadLessonBySpeak);
   }
 
   Future<void> _onLoadLesson(
@@ -37,6 +38,29 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
       );
     } catch (e, s) {
       emit(LessonState.error('Load lessons failed: $e'));
+      addError(e, s);
+    }
+  }
+
+  Future<void> _onLoadLessonBySpeak(
+    _LoadLessonBySpeak event,
+    Emitter<LessonState> emit,
+  ) async {
+    emit(const LessonState.loading());
+    try {
+      final result = await repository.loadLessionsBySpeak();
+      result.fold(
+        (failure) {
+          print('Load lessons by speak failed: $failure');
+          emit(LessonState.error(failure.toString()));
+        },
+        (lessons) {
+          print('Loaded ${lessons.length} lessons by speak');
+          emit(LessonState.data(lessons));
+        },
+      );
+    } catch (e, s) {
+      emit(LessonState.error('Load lessons by speak failed: $e'));
       addError(e, s);
     }
   }
@@ -66,8 +90,6 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     _SaveVocabulary event,
     Emitter<LessonState> emit,
   ) async {
-    // emit(const LessonState.loading());
-
     try {
       final result = await repository.saveVocabulary(
         word: event.word,
@@ -83,7 +105,6 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
         },
         (_) {
           print('Vocabulary saved successfully');
-          // emit(const LessonState.saved());
         },
       );
     } catch (e, s) {
@@ -96,8 +117,6 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     _SaveCompleteLesson event,
     Emitter<LessonState> emit,
   ) async {
-    emit(const LessonState.loading());
-
     try {
       final result = await repository.saveCompleteLesson(
         lessonId: event.lessonId,
@@ -111,7 +130,6 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
         },
         (_) {
           print('Lesson saved successfully');
-          // emit(const LessonState.saved());
         },
       );
     } catch (e, s) {

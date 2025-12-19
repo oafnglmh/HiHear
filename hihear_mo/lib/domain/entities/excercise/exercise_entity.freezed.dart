@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExerciseEntity {
 
- String get id; String? get lessonId; String get type; int get points; String get national; List<VocabularyEntity> get vocabularies; List<GrammarEntity> get grammars; List<ListeningEntity> get listenings;
+ String get id; String? get lessonId; String get type; int get points; String get national; List<VocabularyEntity> get vocabularies; List<GrammarEntity> get grammars; List<ListeningEntity> get listenings; List<SpeakingEntity> get speakings;
 /// Create a copy of ExerciseEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ExerciseEntityCopyWith<ExerciseEntity> get copyWith => _$ExerciseEntityCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExerciseEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.type, type) || other.type == type)&&(identical(other.points, points) || other.points == points)&&(identical(other.national, national) || other.national == national)&&const DeepCollectionEquality().equals(other.vocabularies, vocabularies)&&const DeepCollectionEquality().equals(other.grammars, grammars)&&const DeepCollectionEquality().equals(other.listenings, listenings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExerciseEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.type, type) || other.type == type)&&(identical(other.points, points) || other.points == points)&&(identical(other.national, national) || other.national == national)&&const DeepCollectionEquality().equals(other.vocabularies, vocabularies)&&const DeepCollectionEquality().equals(other.grammars, grammars)&&const DeepCollectionEquality().equals(other.listenings, listenings)&&const DeepCollectionEquality().equals(other.speakings, speakings));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,lessonId,type,points,national,const DeepCollectionEquality().hash(vocabularies),const DeepCollectionEquality().hash(grammars),const DeepCollectionEquality().hash(listenings));
+int get hashCode => Object.hash(runtimeType,id,lessonId,type,points,national,const DeepCollectionEquality().hash(vocabularies),const DeepCollectionEquality().hash(grammars),const DeepCollectionEquality().hash(listenings),const DeepCollectionEquality().hash(speakings));
 
 @override
 String toString() {
-  return 'ExerciseEntity(id: $id, lessonId: $lessonId, type: $type, points: $points, national: $national, vocabularies: $vocabularies, grammars: $grammars, listenings: $listenings)';
+  return 'ExerciseEntity(id: $id, lessonId: $lessonId, type: $type, points: $points, national: $national, vocabularies: $vocabularies, grammars: $grammars, listenings: $listenings, speakings: $speakings)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ExerciseEntityCopyWith<$Res>  {
   factory $ExerciseEntityCopyWith(ExerciseEntity value, $Res Function(ExerciseEntity) _then) = _$ExerciseEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String? lessonId, String type, int points, String national, List<VocabularyEntity> vocabularies, List<GrammarEntity> grammars, List<ListeningEntity> listenings
+ String id, String? lessonId, String type, int points, String national, List<VocabularyEntity> vocabularies, List<GrammarEntity> grammars, List<ListeningEntity> listenings, List<SpeakingEntity> speakings
 });
 
 
@@ -65,7 +65,7 @@ class _$ExerciseEntityCopyWithImpl<$Res>
 
 /// Create a copy of ExerciseEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? lessonId = freezed,Object? type = null,Object? points = null,Object? national = null,Object? vocabularies = null,Object? grammars = null,Object? listenings = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? lessonId = freezed,Object? type = null,Object? points = null,Object? national = null,Object? vocabularies = null,Object? grammars = null,Object? listenings = null,Object? speakings = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,lessonId: freezed == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,8 @@ as int,national: null == national ? _self.national : national // ignore: cast_nu
 as String,vocabularies: null == vocabularies ? _self.vocabularies : vocabularies // ignore: cast_nullable_to_non_nullable
 as List<VocabularyEntity>,grammars: null == grammars ? _self.grammars : grammars // ignore: cast_nullable_to_non_nullable
 as List<GrammarEntity>,listenings: null == listenings ? _self.listenings : listenings // ignore: cast_nullable_to_non_nullable
-as List<ListeningEntity>,
+as List<ListeningEntity>,speakings: null == speakings ? _self.speakings : speakings // ignore: cast_nullable_to_non_nullable
+as List<SpeakingEntity>,
   ));
 }
 
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings,  List<SpeakingEntity> speakings)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExerciseEntity() when $default != null:
-return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings);case _:
+return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings,_that.speakings);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings,  List<SpeakingEntity> speakings)  $default,) {final _that = this;
 switch (_that) {
 case _ExerciseEntity():
-return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings);case _:
+return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings,_that.speakings);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? lessonId,  String type,  int points,  String national,  List<VocabularyEntity> vocabularies,  List<GrammarEntity> grammars,  List<ListeningEntity> listenings,  List<SpeakingEntity> speakings)?  $default,) {final _that = this;
 switch (_that) {
 case _ExerciseEntity() when $default != null:
-return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings);case _:
+return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_that.vocabularies,_that.grammars,_that.listenings,_that.speakings);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.id,_that.lessonId,_that.type,_that.points,_that.national,_
 @JsonSerializable()
 
 class _ExerciseEntity implements ExerciseEntity {
-  const _ExerciseEntity({required this.id, this.lessonId, required this.type, required this.points, required this.national, final  List<VocabularyEntity> vocabularies = const [], final  List<GrammarEntity> grammars = const [], final  List<ListeningEntity> listenings = const []}): _vocabularies = vocabularies,_grammars = grammars,_listenings = listenings;
+  const _ExerciseEntity({required this.id, this.lessonId, required this.type, required this.points, required this.national, final  List<VocabularyEntity> vocabularies = const [], final  List<GrammarEntity> grammars = const [], final  List<ListeningEntity> listenings = const [], final  List<SpeakingEntity> speakings = const []}): _vocabularies = vocabularies,_grammars = grammars,_listenings = listenings,_speakings = speakings;
   factory _ExerciseEntity.fromJson(Map<String, dynamic> json) => _$ExerciseEntityFromJson(json);
 
 @override final  String id;
@@ -245,6 +246,13 @@ class _ExerciseEntity implements ExerciseEntity {
   return EqualUnmodifiableListView(_listenings);
 }
 
+ final  List<SpeakingEntity> _speakings;
+@override@JsonKey() List<SpeakingEntity> get speakings {
+  if (_speakings is EqualUnmodifiableListView) return _speakings;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_speakings);
+}
+
 
 /// Create a copy of ExerciseEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -259,16 +267,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExerciseEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.type, type) || other.type == type)&&(identical(other.points, points) || other.points == points)&&(identical(other.national, national) || other.national == national)&&const DeepCollectionEquality().equals(other._vocabularies, _vocabularies)&&const DeepCollectionEquality().equals(other._grammars, _grammars)&&const DeepCollectionEquality().equals(other._listenings, _listenings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExerciseEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.type, type) || other.type == type)&&(identical(other.points, points) || other.points == points)&&(identical(other.national, national) || other.national == national)&&const DeepCollectionEquality().equals(other._vocabularies, _vocabularies)&&const DeepCollectionEquality().equals(other._grammars, _grammars)&&const DeepCollectionEquality().equals(other._listenings, _listenings)&&const DeepCollectionEquality().equals(other._speakings, _speakings));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,lessonId,type,points,national,const DeepCollectionEquality().hash(_vocabularies),const DeepCollectionEquality().hash(_grammars),const DeepCollectionEquality().hash(_listenings));
+int get hashCode => Object.hash(runtimeType,id,lessonId,type,points,national,const DeepCollectionEquality().hash(_vocabularies),const DeepCollectionEquality().hash(_grammars),const DeepCollectionEquality().hash(_listenings),const DeepCollectionEquality().hash(_speakings));
 
 @override
 String toString() {
-  return 'ExerciseEntity(id: $id, lessonId: $lessonId, type: $type, points: $points, national: $national, vocabularies: $vocabularies, grammars: $grammars, listenings: $listenings)';
+  return 'ExerciseEntity(id: $id, lessonId: $lessonId, type: $type, points: $points, national: $national, vocabularies: $vocabularies, grammars: $grammars, listenings: $listenings, speakings: $speakings)';
 }
 
 
@@ -279,7 +287,7 @@ abstract mixin class _$ExerciseEntityCopyWith<$Res> implements $ExerciseEntityCo
   factory _$ExerciseEntityCopyWith(_ExerciseEntity value, $Res Function(_ExerciseEntity) _then) = __$ExerciseEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? lessonId, String type, int points, String national, List<VocabularyEntity> vocabularies, List<GrammarEntity> grammars, List<ListeningEntity> listenings
+ String id, String? lessonId, String type, int points, String national, List<VocabularyEntity> vocabularies, List<GrammarEntity> grammars, List<ListeningEntity> listenings, List<SpeakingEntity> speakings
 });
 
 
@@ -296,7 +304,7 @@ class __$ExerciseEntityCopyWithImpl<$Res>
 
 /// Create a copy of ExerciseEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? lessonId = freezed,Object? type = null,Object? points = null,Object? national = null,Object? vocabularies = null,Object? grammars = null,Object? listenings = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? lessonId = freezed,Object? type = null,Object? points = null,Object? national = null,Object? vocabularies = null,Object? grammars = null,Object? listenings = null,Object? speakings = null,}) {
   return _then(_ExerciseEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,lessonId: freezed == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
@@ -306,7 +314,8 @@ as int,national: null == national ? _self.national : national // ignore: cast_nu
 as String,vocabularies: null == vocabularies ? _self._vocabularies : vocabularies // ignore: cast_nullable_to_non_nullable
 as List<VocabularyEntity>,grammars: null == grammars ? _self._grammars : grammars // ignore: cast_nullable_to_non_nullable
 as List<GrammarEntity>,listenings: null == listenings ? _self._listenings : listenings // ignore: cast_nullable_to_non_nullable
-as List<ListeningEntity>,
+as List<ListeningEntity>,speakings: null == speakings ? _self._speakings : speakings // ignore: cast_nullable_to_non_nullable
+as List<SpeakingEntity>,
   ));
 }
 
