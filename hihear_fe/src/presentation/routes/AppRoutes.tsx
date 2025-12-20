@@ -7,7 +7,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import Lession from "../pages/admin/lessions/Lessons";
 import Dashboard from "../pages/admin/dashboard/Dashboard";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
-import VietnameseLearningApp from "../pages/studyVideo/VietnameseLearningApp";
+import VideoLessonsPage from "../pages/studyVideo/VideoLessonsPage";
 
 const NotFoundPage = () => (
   <PageWrapper>
@@ -31,7 +31,7 @@ const AppRoutes = () => (
         element={
           token ? (
             <PageWrapper>
-              <VietnameseLearningApp />
+              <VideoLessonsPage />
             </PageWrapper>
           ) : (
             <Navigate to="/login" replace />
