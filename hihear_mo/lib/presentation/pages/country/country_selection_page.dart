@@ -68,11 +68,10 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
           state.whenOrNull(
             success: () {
               if (_selectedCountry != null) {
+                context.go('/chooseLanguageTest');
                 final language = _selectedCountry!.toLanguageType();
                 context.read<LanguageBloc>().add(ChangeLanguageEvent(language));
               }
-
-              context.go('/chooseLanguageTest');
             },
           );
         },

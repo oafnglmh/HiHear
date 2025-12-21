@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
 import 'package:lottie/lottie.dart';
 
@@ -26,7 +27,8 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
   String? selectedAnswer;
   bool isLoading = true;
   late AnimationController _pulseController;
-
+  late final l10n = AppLocalizations.of(context)!;
+  
   @override
   void initState() {
     super.initState();
@@ -73,17 +75,17 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
     if (selectedAnswer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.white),
-              SizedBox(width: 10),
-              Expanded(child: Text('Vui lòng chọn một đáp án!')),
+              const Icon(Icons.warning_amber_rounded, color: Colors.white),
+              const SizedBox(width: 10),
+              Expanded(child: Text(l10n.testSelectAnswerWarning)),
             ],
           ),
-          backgroundColor: const Color(0xFF1B7F4E), // Xanh lá sen
+          backgroundColor: const Color(0xFFFF6B6B),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
           ),
           margin: const EdgeInsets.all(20),
         ),
@@ -118,107 +120,114 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
           barrierDismissible: false,
           builder: (context) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(32),
             ),
             child: Container(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF1B7F4E).withOpacity(0.1), // Xanh lá sen nhạt
-                    Colors.white
-                  ],
-                ),
+                borderRadius: BorderRadius.circular(32),
+                color: Colors.white,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Lottie.asset(
                     AppAssets.successTestAnimation,
-                    width: 150,
-                    height: 150,
+                    width: 120,
+                    height: 120,
                     repeat: false,
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Chúc mừng!',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFD4AF37), // Vàng gold
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 15),
                   Text(
-                    'Bạn đã vượt qua $currentLevel',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                    l10n.testCongratulations,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFF6B6B),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Điểm: $currentLevelScore/10',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFD4AF37),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                   Text(
-                    'Sẵn sàng cho thử thách tiếp theo?',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    l10n.testPassedLevel(currentLevel),
+                    style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 25),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(() {
-                        currentLevelIndex++;
-                        currentQuestionIndex = 0;
-                        currentLevelScore = 0;
-                        selectedAnswer = null;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37), // Vàng gold
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 15,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      elevation: 5,
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Tiếp tục',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFFFF6B6B).withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: Offset(0, 6),
                         ),
-                        SizedBox(width: 10),
-                        Icon(Icons.arrow_forward_rounded),
                       ],
+                    ),
+                    child: Text(
+                      '${l10n.testScore}: $currentLevelScore/10',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    l10n.testReadyNextChallenge,
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFFFF6B6B).withOpacity(0.4),
+                          blurRadius: 16,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(() {
+                          currentLevelIndex++;
+                          currentQuestionIndex = 0;
+                          currentLevelScore = 0;
+                          selectedAnswer = null;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.testContinue,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -252,18 +261,12 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         child: Container(
-          padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: passed
-                  ? [const Color(0xFF1B7F4E).withOpacity(0.1), Colors.white]
-                  : [const Color(0xFF0A5C36).withOpacity(0.1), Colors.white],
-            ),
+            borderRadius: BorderRadius.circular(32),
+            color: Colors.white,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -272,70 +275,66 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                 passed
                     ? AppAssets.celebrationAnimation
                     : AppAssets.faileAnimation,
-                width: 150,
-                height: 150,
+                width: 120,
+                height: 120,
                 repeat: true,
               ),
               const SizedBox(height: 20),
               Text(
-                passed ? '🌟 Xuất sắc!' : '💪 Cố gắng lên!',
+                passed ? '🎉 Xuất sắc!' : '💪 Cố gắng lên!',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: passed ? const Color(0xFFD4AF37) : const Color(0xFF1B7F4E),
+                  color: Color(0xFFFF6B6B),
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 12),
               Text(
                 'Trình độ của bạn:',
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 12,
+                  horizontal: 28,
+                  vertical: 14,
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: passed
-                        ? [const Color(0xFFD4AF37), const Color(0xFFB8941E)]
-                        : [const Color(0xFF1B7F4E), const Color(0xFF0A5C36)],
+                    colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
                   ),
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          (passed ? const Color(0xFFD4AF37) : const Color(0xFF1B7F4E))
-                              .withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+                      color: Color(0xFFFF6B6B).withOpacity(0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
                 child: Text(
                   finalLevel,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.quiz, color: Color(0xFFD4AF37)),
+                        Icon(Icons.quiz_rounded, color: Color(0xFFFF6B6B), size: 22),
                         const SizedBox(width: 10),
                         Text(
                           'Điểm $currentLevel: $currentLevelScore/10',
@@ -348,15 +347,15 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                       ],
                     ),
                     if (completedLevels.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      const Divider(),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 12),
+                      Divider(color: Colors.grey[300]),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.emoji_events,
-                            color: Color(0xFFD4AF37),
+                          Icon(
+                            Icons.emoji_events_rounded,
+                            color: Color(0xFFFF6B6B),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -376,44 +375,49 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(() {
-                        currentLevelIndex = 0;
-                        currentQuestionIndex = 0;
-                        currentLevelScore = 0;
-                        completedLevels.clear();
-                        selectedAnswer = null;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 25,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      elevation: 5,
+              const SizedBox(height: 28),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                  ),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFFFF6B6B).withOpacity(0.4),
+                      blurRadius: 16,
+                      offset: Offset(0, 8),
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Hoàn thành',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      currentLevelIndex = 0;
+                      currentQuestionIndex = 0;
+                      currentLevelScore = 0;
+                      completedLevels.clear();
+                      selectedAnswer = null;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                ],
+                  child: const Text(
+                    'Hoàn thành',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -426,21 +430,33 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Lottie.asset(AppAssets.loadingAnimation, width: 150, height: 150),
-              const SizedBox(height: 20),
-              const Text(
-                'Đang tải bài test...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF1B7F4E), // Xanh lá sen
-                  fontWeight: FontWeight.w600,
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFFF6B6B),
+                Color(0xFFFF8E53),
+              ],
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset(AppAssets.loadingAnimation, width: 150, height: 150),
+                const SizedBox(height: 24),
+                const Text(
+                  'Đang tải bài test...',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -462,101 +478,59 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
         );
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Test $currentLevel'),
-          centerTitle: true,
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF1B7F4E), Color(0xFF0A5C36)], // Xanh lá sen
-              ),
-            ),
-          ),
-        ),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [const Color(0xFF1B7F4E).withOpacity(0.1), Colors.white],
+              colors: [
+                Color(0xFFFF6B6B),
+                Color(0xFFFF8E53),
+              ],
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+          child: SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF1B7F4E).withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF1B7F4E,
-                                  ).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.quiz,
-                                  color: Color(0xFF1B7F4E),
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Câu ${currentQuestionIndex + 1}/${currentLevelQuestions.length}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1B7F4E),
-                                ),
-                              ),
-                            ],
+                          Text(
+                            'Questions ${currentQuestionIndex + 1}/${currentLevelQuestions.length}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
+                              horizontal: 16,
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFD4AF37), Color(0xFFB8941E)], // Vàng gold
-                              ),
+                              color: Colors.white.withOpacity(0.25),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.star,
+                                Icon(
+                                  Icons.star_rounded,
                                   color: Colors.white,
                                   size: 18,
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 6),
                                 Text(
                                   '$currentLevelScore',
-                                  style: const TextStyle(
+                                  style: TextStyle(
+                                    color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                 ),
                               ],
@@ -564,228 +538,200 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 12),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: LinearProgressIndicator(
-                          value:
-                              (currentQuestionIndex + 1) /
-                              currentLevelQuestions.length,
-                          backgroundColor: const Color(0xFF1B7F4E).withOpacity(0.1),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFF1B7F4E),
-                          ),
+                          value: (currentQuestionIndex + 1) / currentLevelQuestions.length,
+                          backgroundColor: Colors.white.withOpacity(0.3),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           minHeight: 8,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 25),
-                Container(
-                  padding: const EdgeInsets.all(25),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Colors.white, const Color(0xFF1B7F4E).withOpacity(0.05)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF1B7F4E).withOpacity(0.15),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1B7F4E).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.help_outline,
-                          color: Color(0xFF1B7F4E),
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      Expanded(
-                        child: Text(
-                          question['question'],
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25),
+                
+                // White content area
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: question['options'].length,
-                    itemBuilder: (context, index) {
-                      bool isSelected = selectedAnswer == index.toString();
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.only(bottom: 15),
-                        child: InkWell(
-                          onTap: () => _selectAnswer(index),
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.all(18),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Level badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              gradient: isSelected
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFFD4AF37), // Vàng gold
-                                        Color(0xFFB8941E),
-                                      ],
-                                    )
-                                  : null,
-                              color: isSelected ? null : Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.transparent
-                                    : const Color(0xFF1B7F4E).withOpacity(0.2),
-                                width: 2,
+                              gradient: LinearGradient(
+                                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
                               ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'Test $currentLevel',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          
+                          // Question
+                          Text(
+                            question['question'],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          
+                          // Options
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: question['options'].length,
+                              itemBuilder: (context, index) {
+                                bool isSelected = selectedAnswer == index.toString();
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: InkWell(
+                                    onTap: () => _selectAnswer(index),
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(18),
+                                      decoration: BoxDecoration(
+                                        gradient: isSelected
+                                            ? LinearGradient(
+                                                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                                              )
+                                            : null,
+                                        color: isSelected ? null : Color(0xFFF5F5F5),
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: Color(0xFFFF6B6B).withOpacity(0.3),
+                                                  blurRadius: 12,
+                                                  offset: Offset(0, 4),
+                                                ),
+                                              ]
+                                            : [],
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: isSelected
+                                                  ? Colors.white.withOpacity(0.3)
+                                                  : Colors.white,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                String.fromCharCode(65 + index),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color: isSelected
+                                                      ? Colors.white
+                                                      : Color(0xFFFF6B6B),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: Text(
+                                              question['options'][index],
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                                color: isSelected
+                                                    ? Colors.white
+                                                    : Colors.black87,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                              ),
+                              borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
-                                  color: isSelected
-                                      ? const Color(0xFFD4AF37).withOpacity(0.4)
-                                      : Colors.grey.withOpacity(0.1),
-                                  blurRadius: isSelected ? 15 : 10,
-                                  offset: const Offset(0, 5),
+                                  color: Color(0xFFFF6B6B).withOpacity(0.4),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
                                 ),
                               ],
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: isSelected
-                                        ? const LinearGradient(
-                                            colors: [
-                                              Colors.white,
-                                              Colors.white,
-                                            ],
-                                          )
-                                        : LinearGradient(
-                                            colors: [
-                                              const Color(0xFF1B7F4E).withOpacity(0.2),
-                                              const Color(0xFF1B7F4E).withOpacity(0.1),
-                                            ],
-                                          ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: isSelected
-                                            ? Colors.white.withOpacity(0.5)
-                                            : const Color(0xFF1B7F4E).withOpacity(0.2),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      String.fromCharCode(65 + index),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: isSelected
-                                            ? const Color(0xFFD4AF37)
-                                            : Colors.grey[700],
-                                      ),
+                            child: ElevatedButton(
+                              onPressed: _nextQuestion,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    currentQuestionIndex == currentLevelQuestions.length - 1
+                                        ? 'Hoàn thành'
+                                        : 'Câu tiếp theo',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 15),
-                                Expanded(
-                                  child: Text(
-                                    question['options'][index],
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.black87,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ),
-                                if (isSelected)
+                                  const SizedBox(width: 8),
                                   const Icon(
-                                    Icons.check_circle,
+                                    Icons.arrow_forward_rounded,
                                     color: Colors.white,
-                                    size: 24,
+                                    size: 20,
                                   ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFD4AF37), Color(0xFFB8941E)], // Vàng gold
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFD4AF37).withOpacity(0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _nextQuestion,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          currentQuestionIndex ==
-                                  currentLevelQuestions.length - 1
-                              ? 'Hoàn thành'
-                              : 'Câu tiếp theo',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                        ),
-                      ],
                     ),
                   ),
                 ),

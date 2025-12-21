@@ -48,23 +48,27 @@ class AuthRemoteDataSource {
       final profile = response.data['profile'];
       final userData = response.data['user'];
       print('userData: ${userData}');
+      print('level:${profile['level']}');
       await UserShare().saveUser(
         id: userData['id'],
         name: user.displayName ?? '',
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
-        national: profile['language'],
+        national: profile['language'] ?? null,
+        level: profile['level'] ?? null,
         dailyStreak: profile['streakDays'].toString(),
       );
       UserShare().debugPrint();
       return UserEntity(
-        id: user.uid,
+        id: userData['id'],
         name: user.displayName ?? '',
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
-        national: profile['language'],
+        level: profile['level'] ?? null,
+        national: profile['language'] ?? null,
       );
     } catch (e) {
+      print(e);
       throw Exception('Lỗi đăng nhập Google: $e');
     }
   }
@@ -94,7 +98,21 @@ class AuthRemoteDataSource {
         throw Exception('Backend trả về lỗi: ${response.statusCode}');
       }
 
-      return UserEntity.fromJson(response.data);
+      final user = UserEntity.fromJson(response.data);
+
+      await UserShare().saveUser(
+        id: user.id ?? '',
+        name: user.name ?? '',
+        email: user.email ?? '',
+        photoUrl: user.photoUrl ?? '',
+        national: country.code,
+        level: user.level,
+        dailyStreak: user.streakDays?.toString() ?? '0',
+      );
+    
+      UserShare().debugPrint();
+
+      return user;
     } catch (e) {
       print('Lỗi gọi backend: $e');
       throw Exception('Lỗi khi gọi backend: $e');

@@ -7,6 +7,7 @@ import 'package:hihear_mo/share/UserShare.dart';
 
 class LessionRemoteDataSource {
   final Dio _dio = Dio(BaseOptions(baseUrl: ApiClient.lession_get_url));
+  static const List<String> _levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
   // ---------------------------------------------------------------------------
   //                               LOAD LESSONS
@@ -16,11 +17,15 @@ class LessionRemoteDataSource {
 
     final token = await TokenStorage.getToken();
     if (token == null) {
-      _debugError("Token null → user chưa đăng nhập");
       throw Exception("User chưa login.");
     }
 
     final national = UserShare().national;
+    final userLevel = UserShare().level;
+    int _levelIndex(String? level) {
+      if (level == null) return -1;
+      return _levelOrder.indexOf(level);
+    }
 
     final response = await _dio.get(
       "lessons",
@@ -31,7 +36,7 @@ class LessionRemoteDataSource {
         },
       ),
     );
-    UserShare().debugPrint();
+
     final responseHistory = await _dio.get(
       "user-progress/${UserShare().id}",
       options: Options(
@@ -42,51 +47,65 @@ class LessionRemoteDataSource {
       ),
     );
 
-    if (response.statusCode == 200) {
-      final data = response.data as List<dynamic>;
-      final filtered = data.where((lesson) {
-        if (lesson["category"] == "Nghe hiểu") return false;
-        return (lesson["exercises"] as List).any(
-          (ex) => ex["national"] == national,
-        );
-      }).toList();
-
-      final historyList = responseHistory.data as List<dynamic>;
-      final completedLessonIds = historyList
-          .where((h) => h["completed"] == true)
-          .map<String>((h) => h["lesson_id"] as String)
-          .toSet();
-
-      final lessons = filtered.map((json) {
-        final entity = LessionEntity.fromJson(json);
-
-        final lessonId = entity.id;
-        final prerequisite = entity.prerequisiteLessonId;
-
-        bool isCompleted = completedLessonIds.contains(lessonId);
-        bool isLocked = false;
-
-        if (prerequisite != null && prerequisite.isNotEmpty) {
-          if (!completedLessonIds.contains(prerequisite)) {
-            isLocked = true;
-          }
-        }
-
-        if (isCompleted) {
-          isLocked = false;
-        }
-
-        return entity.copyWith(isLock: isLocked);
-      }).toList();
-
-      for (var lesson in lessons) {
-        _debugValue("Lesson ${lesson.id}", lesson.toJson());
-      }
-
-      return lessons;
+    if (response.statusCode != 200) {
+      throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
     }
 
-    throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
+    final data = response.data as List<dynamic>;
+    final filtered = data.where((lesson) {
+      if (lesson["category"] == "Nghe hiểu") return false;
+      return (lesson["exercises"] as List).any(
+        (ex) => ex["national"] == national,
+      );
+    }).toList();
+
+    final historyList = responseHistory.data as List<dynamic>;
+    final completedLessonIds = historyList
+        .where((h) => h["completed"] == true)
+        .map<String>((h) => h["lesson_id"] as String)
+        .toSet();
+
+    final userLevelIdx = _levelIndex(userLevel);
+
+    final lessons = filtered.map((json) {
+      final entity = LessionEntity.fromJson(json);
+
+      final lessonId = entity.id;
+      final prerequisite = entity.prerequisiteLessonId;
+      final lessonLevelIdx = _levelIndex(entity.level);
+
+      bool isCompleted = completedLessonIds.contains(lessonId);
+      bool isLocked = false;
+
+      if (lessonLevelIdx > userLevelIdx) {
+        isLocked = true;
+      }
+      else if (lessonLevelIdx < userLevelIdx) {
+        isLocked = false;
+      }
+      else {
+        if (prerequisite != null &&
+            prerequisite.isNotEmpty &&
+            !completedLessonIds.contains(prerequisite)) {
+          isLocked = true;
+        }
+      }
+
+      if (isCompleted) {
+        isLocked = false;
+      }
+
+      return entity.copyWith(isLock: isLocked);
+    }).toList();
+
+    for (var lesson in lessons) {
+      _debugValue("Lesson ${lesson.id}", {
+        "level": lesson.level,
+        "isLock": lesson.isLock,
+      });
+    }
+
+    return lessons;
   }
 
   Future<List<LessionEntity>> loadLessionBySpeaking() async {

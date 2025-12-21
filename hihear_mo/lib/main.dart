@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/data/datasources/ai_gemini_remote_data_source.dart';
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 import 'package:hihear_mo/data/datasources/lession_remote_date_source.dart';
@@ -14,20 +16,30 @@ import 'package:hihear_mo/data/repositories/country_repository_impl.dart';
 import 'package:hihear_mo/data/repositories/lession_repository_impl.dart';
 import 'package:hihear_mo/domain/repositories/ai_chat_repository.dart';
 import 'package:hihear_mo/domain/usecases/get_ai_response.dart';
+
 import 'package:hihear_mo/presentation/blocs/Auth/auth_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/ai/ai_chat_cubit.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/blocs/save_vocab/save_vocab_bloc.dart';
+
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
-import 'core/constants/app_colors.dart';
-import 'firebase_options.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
+
+import 'firebase_options.dart';
+
+// ================= ROUTER GLOBAL =================
+final appRouter = AppRouter.createRouter();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: 'assets/config/.env', mergeWith: {});
+
+  await dotenv.load(
+    fileName: 'assets/config/.env',
+    mergeWith: {},
+  );
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -56,12 +68,13 @@ Future<void> main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => LanguageBloc()),
-         // BlocProvider(create: (_) => VocabBloc()),
-          BlocProvider(create: (context) => AuthBloc(authRepository)),
+          BlocProvider(create: (_) => AuthBloc(authRepository)),
           BlocProvider(create: (_) => CountryBloc(countryRepository)),
           BlocProvider(create: (_) => LessonBloc(repository: lessonRepository)),
           BlocProvider(create: (_) => AiChatCubit(getAiResponse)),
-          BlocProvider(create: (_) => SaveVocabBloc(repository: lessonRepository)),
+          BlocProvider(
+            create: (_) => SaveVocabBloc(repository: lessonRepository),
+          ),
         ],
         child: const HiHearApp(),
       ),
@@ -69,36 +82,36 @@ Future<void> main() async {
   );
 }
 
+// ================= APP ROOT =================
 class HiHearApp extends StatelessWidget {
   const HiHearApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LanguageBloc, LanguageState>(
-      builder: (context, state) {
-        final router = AppRouter.createRouter();
+    final locale = context.select(
+      (LanguageBloc bloc) => bloc.state.locale,
+    );
 
-        return MaterialApp.router(
-          title: 'HiHear',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            useMaterial3: true,
-            scaffoldBackgroundColor: AppColors.background,
-          ),
-          routerConfig: router,
-          locale: state.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('vi'),
-          ],
-        );
-      },
+    return MaterialApp.router(
+      title: 'HiHear',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: AppColors.background,
+      ),
+      routerConfig: appRouter,
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('vi'),
+        Locale('ko'),
+      ],
     );
   }
 }
