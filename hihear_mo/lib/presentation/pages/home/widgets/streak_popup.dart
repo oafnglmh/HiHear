@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
-import 'package:hihear_mo/core/constants/app_text_styles.dart';
 
 class StreakPopup extends StatefulWidget {
   final int streakDays;
@@ -37,6 +37,7 @@ class _StreakPopupState extends State<StreakPopup>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FadeTransition(
       opacity: _fade,
       child: ScaleTransition(
@@ -154,7 +155,7 @@ class _StreakPopupState extends State<StreakPopup>
                 const SizedBox(height: AppPadding.medium),
                 
                 Text(
-                  'Tuyệt vời! Tiếp tục phát huy nhé!',
+                  l10n.streakPopupMessage,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -195,8 +196,8 @@ class _StreakPopupState extends State<StreakPopup>
                           size: 24,
                         ),
                         const SizedBox(width: 10),
-                        const Text(
-                          'Tiếp tục học',
+                        Text(
+                          l10n.streakPopupButton,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,

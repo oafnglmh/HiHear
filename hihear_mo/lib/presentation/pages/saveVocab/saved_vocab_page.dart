@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'dart:math' as math;
 
 import 'package:hihear_mo/presentation/blocs/save_vocab/save_vocab_bloc.dart';
@@ -187,6 +188,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _floatingController,
       builder: (context, child) {
@@ -243,8 +245,8 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Từ đã lưu",
+                      Text(
+                        l10n.savedVocabTitle,
                         style: TextStyle(
                           color: Color(0xFF2D5016),
                           fontSize: 24,
@@ -254,7 +256,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "${_allVocab.length} từ vựng",
+                        l10n.savedVocabCount(_allVocab.length),
                         style: TextStyle(
                           color: const Color(0xFF2D5016).withOpacity(0.7),
                           fontSize: 15,
@@ -273,6 +275,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildSearchBar() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -293,7 +296,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            hintText: 'Tìm từ vựng...',
+            hintText: l10n.savedVocabSearchHint,
             hintStyle: TextStyle(
               color: const Color(0xFF2D5016).withOpacity(0.5),
               fontSize: 16,
@@ -346,6 +349,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildStatsBar() {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _floatingController,
       builder: (context, child) {
@@ -379,7 +383,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
               children: [
                 _buildStatItem(
                   _filteredVocab.length.toString(),
-                  "Từ hiển thị",
+                  l10n.savedVocabDisplayedLabel,
                   const Color(0xFFD4AF37),
                 ),
                 Container(
@@ -399,7 +403,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                 ),
                 _buildStatItem(
                   _allVocab.length.toString(),
-                  "Tổng số từ",
+                  l10n.savedVocabTotalLabel,
                   const Color(0xFF1B7F4E),
                 ),
               ],
@@ -436,6 +440,7 @@ class _SavedVocabPageState extends State<SavedVocabPage>
   }
 
   Widget _buildVocabGrid() {
+    final l10n = AppLocalizations.of(context)!;
     if (_filteredVocab.isEmpty) {
       return AnimatedBuilder(
         animation: _floatingController,
@@ -489,8 +494,8 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                     const SizedBox(height: 20),
                     Text(
                       _allVocab.isEmpty 
-                          ? "Chưa có từ vựng nào"
-                          : "Không tìm thấy từ nào",
+                          ? l10n.savedVocabEmptyTitle
+                          : l10n.savedVocabNoResultTitle,
                       style: const TextStyle(
                         color: Color(0xFF2D5016),
                         fontSize: 20,
@@ -501,8 +506,8 @@ class _SavedVocabPageState extends State<SavedVocabPage>
                     const SizedBox(height: 10),
                     Text(
                       _allVocab.isEmpty 
-                          ? "Hãy bắt đầu lưu từ vựng của bạn"
-                          : "Thử tìm kiếm với từ khóa khác",
+                          ? l10n.savedVocabEmptySubtitle
+                          : l10n.savedVocabNoResultSubtitle,
                       style: TextStyle(
                         color: const Color(0xFF2D5016).withOpacity(0.7),
                         fontSize: 15,

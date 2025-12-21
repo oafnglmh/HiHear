@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/core/constants/app_text_styles.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 
 class HeaderCard extends StatelessWidget {
   final AnimationController controller;
@@ -11,6 +11,7 @@ class HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FadeTransition(
       opacity: controller,
       child: Padding(
@@ -27,14 +28,14 @@ class HeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Xin chào!",
+                      l10n.homeHeaderGreeting,
                       style: AppTextStyles.header.copyWith(
                         color: const Color(0xFF2D5016),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Học tiếng Việt thôi nào!",
+                      l10n.homeHeaderSubtitle,
                       style: AppTextStyles.subHeader.copyWith(
                         color: const Color(0xFF2D5016).withOpacity(0.8),
                       ),

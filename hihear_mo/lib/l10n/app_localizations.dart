@@ -328,8 +328,8 @@ abstract class AppLocalizations {
   /// No description provided for @testPassedLevel.
   ///
   /// In en, this message translates to:
-  /// **'You have passed'**
-  String get testPassedLevel;
+  /// **'You passed level {level}'**
+  String testPassedLevel(Object level);
 
   /// No description provided for @testScore.
   ///
@@ -1183,6 +1183,12 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEnglish;
 
+  /// No description provided for @languageKorean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korea'**
+  String get languageKorean;
+
   /// No description provided for @speakPageTitle.
   ///
   /// In en, this message translates to:
@@ -1368,6 +1374,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Home'**
   String get speakingLessonCompletionHome;
+
+  /// No description provided for @dailyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Set daily goal'**
+  String get dailyGoal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

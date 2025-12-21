@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/Services/streak_popup_service.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/share/UserShare.dart';
 import 'package:lottie/lottie.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
@@ -31,7 +32,7 @@ class _VocabLessonPageState extends State<VocabLessonPage>
   late AnimationController _floatingController;
   late AnimationController _rippleController;
   List<VocabQuestion> _questions = [];
-
+  late final l10n = AppLocalizations.of(context)!;
   bool get _isCorrect =>
       _selectedAnswer == _questions[_currentQuestionIndex].correctAnswer;
 
@@ -94,11 +95,9 @@ class _VocabLessonPageState extends State<VocabLessonPage>
         explanation: _questions[_currentQuestionIndex].explanation,
         correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
         onSave: () async {
-          print("Saving vocabulary...");
           UserShare().debugPrint();
 
           await UserShare().loadUser();
-          print("AFTER loadUser()");
           UserShare().debugPrint();
 
           final question = _questions[_currentQuestionIndex];
@@ -212,9 +211,9 @@ class _VocabLessonPageState extends State<VocabLessonPage>
                   fit: StackFit.expand,
                   children: [
                     _buildLotusBackground(),
-                    const Center(
+                    Center(
                       child: Text(
-                        'Không có câu hỏi',
+                        l10n.vocabLessonEmpty,
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
@@ -352,8 +351,8 @@ class _VocabLessonPageState extends State<VocabLessonPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Từ vựng cơ bản',
+                    Text(
+                      l10n.vocabLessonTitle,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -362,7 +361,10 @@ class _VocabLessonPageState extends State<VocabLessonPage>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Câu ${_currentQuestionIndex + 1}/${_questions.length}',
+                      l10n.vocabLessonProgress(
+                        _currentQuestionIndex + 1,
+                        _questions.length,
+                      ),
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
@@ -633,6 +635,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -671,7 +674,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
           const SizedBox(height: 16),
 
           Text(
-            isCorrect ? 'Chính xác! ' : 'Sai rồi! ',
+            isCorrect ? l10n.vocabLessonFeedbackCorrect : l10n.vocabLessonFeedbackWrong,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -695,7 +698,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(
                       Icons.lightbulb_outline,
@@ -704,7 +707,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'Giải thích',
+                      l10n.vocabLessonExplanationTitle,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -761,7 +764,7 @@ class _FeedbackBottomSheet extends StatelessWidget {
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
-                            'Lưu từ',
+                            l10n.vocabLessonSaveButton,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -801,11 +804,11 @@ class _FeedbackBottomSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Tiếp tục',
+                          l10n.vocabLessonNextButton,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -845,7 +848,7 @@ class _ResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isPassed ? const Color(0xFF1B7F4E) : const Color(0xFFDA291C);
-
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -891,7 +894,7 @@ class _ResultDialog extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Text(
-                    isPassed ? 'Xuất sắc! ' : 'Cố gắng lên! ',
+                    isPassed ? l10n.vocabLessonResultPassedTitle : l10n.vocabLessonResultFailedTitle,
                     style: TextStyle(
                       color: color,
                       fontSize: 28,
@@ -902,8 +905,8 @@ class _ResultDialog extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     isPassed
-                        ? 'Bạn đã vượt qua bài kiểm tra!'
-                        : 'Hãy thử lại để đạt kết quả tốt hơn',
+                        ? l10n.vocabLessonResultPassedMessage
+                        : l10n.vocabLessonResultFailedMessage,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey[700],
@@ -955,7 +958,7 @@ class _ResultDialog extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'điểm số',
+                            l10n.vocabLessonResultScoreLabel,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -983,7 +986,7 @@ class _ResultDialog extends StatelessWidget {
                       children: [
                         _buildStatItem(
                           Icons.check_circle_rounded,
-                          'Đúng',
+                          l10n.vocabLessonResultCorrectLabel,
                           '$correctAnswers',
                           const Color(0xFF1B7F4E),
                         ),
@@ -994,7 +997,7 @@ class _ResultDialog extends StatelessWidget {
                         ),
                         _buildStatItem(
                           Icons.cancel_rounded,
-                          'Sai',
+                          l10n.vocabLessonResultWrongLabel,
                           '${totalQuestions - correctAnswers}',
                           const Color(0xFFDA291C),
                         ),
@@ -1005,7 +1008,7 @@ class _ResultDialog extends StatelessWidget {
                         ),
                         _buildStatItem(
                           Icons.format_list_numbered_rounded,
-                          'Tổng',
+                          l10n.vocabLessonResultTotalLabel,
                           '$totalQuestions',
                           const Color(0xFFD4AF37),
                         ),
@@ -1037,13 +1040,13 @@ class _ResultDialog extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.home_rounded, size: 22),
                           SizedBox(width: 8),
                           Text(
-                            'Hoàn thành',
+                            l10n.vocabLessonResultCompleteButton,
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,

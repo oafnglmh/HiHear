@@ -134,8 +134,8 @@ class _StudyTimePageState extends State<StudyTimePage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Mục tiêu học tập",
+                    Text(
+                      l10n.dailyGoalQuestion,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -144,7 +144,7 @@ class _StudyTimePageState extends State<StudyTimePage>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Đặt mục tiêu hàng ngày 🪷",
+                      l10n.dailyGoal,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.85),
                         fontSize: 14,
@@ -199,7 +199,6 @@ class _StudyTimePageState extends State<StudyTimePage>
                 
                 const SizedBox(width: 12),
                 
-                // Speech bubble
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(20),
@@ -430,8 +429,7 @@ class _StudyTimePageState extends State<StudyTimePage>
               child: ElevatedButton(
                 onPressed: isEnabled
                     ? () {
-                        // context.go('/languageCountry');
-                        context.go('${AppRoutes.home}');
+                        context.go('/languageCountry');
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

@@ -38,7 +38,7 @@
   "vietnameseLanguage": "Vietnamese",
   "testSelectAnswerWarning": "Please select an answer!",
   "testCongratulations": "Congratulations!",
-  "testPassedLevel": "You have passed",
+  "testPassedLevel": "You passed level {level}",
   "testScore": "Score",
   "testReadyNextChallenge": "Ready for the next challenge?",
   "testContinue": "Continue",
@@ -181,6 +181,7 @@
   "languageSelectNote": "Language changes will be applied immediately",
   "languageVietnamese": "Vietnamese",
   "languageEnglish": "English",
+  "languageKorean":"Korea",
   "speakPageTitle": "Pronunciation",
   "speakPageSubtitle": "Learn accurate pronunciation",
   "speakPageIntroTitle": "Let's learn Vietnamese pronunciation together!",
@@ -211,5 +212,7 @@
   "speakingLessonFeedbackContinue": "Continue",
   "speakingLessonCompletionTitle": "Completed!",
   "speakingLessonCompletionMessage": "You have completed all speaking lessons!",
-  "speakingLessonCompletionHome": "Back to Home"
+  "speakingLessonCompletionHome": "Back to Home",
+  "dailyGoal": "Set daily goal"
+
 }

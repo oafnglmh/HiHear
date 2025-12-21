@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/data/models/phoneme.dart';
 import 'package:hihear_mo/data/repositories/phoneme_repository.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/painter/ripple_painter.dart';
 import 'dart:math' as math;
 
@@ -82,6 +83,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -139,28 +141,28 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildSectionHeader(
-                            "Dấu Thanh",
+                            l10n.speakSectionTones,
                             PhonemeRepository.tones.length,
                           ),
                           const SizedBox(height: 16),
                           _buildPhonemeGrid(PhonemeRepository.tones),
                           const SizedBox(height: 32),
                           _buildSectionHeader(
-                            "Nguyên âm",
+                            l10n.speakSectionVowels,
                             PhonemeRepository.vowels.length,
                           ),
                           const SizedBox(height: 16),
                           _buildPhonemeGrid(PhonemeRepository.vowels),
                           const SizedBox(height: 32),
                           _buildSectionHeader(
-                            "Phụ âm",
+                            l10n.speakSectionConsonants,
                             PhonemeRepository.consonants.length,
                           ),
                           const SizedBox(height: 16),
                           _buildPhonemeGrid(PhonemeRepository.consonants),
                           const SizedBox(height: 32),
                           _buildSectionHeader(
-                            "Nguyên âm đôi",
+                            l10n.speakSectionDiphthongs,
                             PhonemeRepository.diphthongs.length,
                           ),
                           const SizedBox(height: 16),
@@ -180,6 +182,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
   }
 
   Widget _buildSliverHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return SliverToBoxAdapter(
       child: FadeTransition(
         opacity: _fadeController,
@@ -241,12 +244,12 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                                 ),
                               ),
                               const SizedBox(width: 18),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Phát âm",
+                                      l10n.speakPageTitle,
                                       style: TextStyle(
                                         color: Color(0xFF2D5016),
                                         fontSize: 26,
@@ -256,7 +259,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                                     ),
                                     SizedBox(height: 6),
                                     Text(
-                                      "Học phát âm chuẩn",
+                                      l10n.speakPageSubtitle,
                                       style: TextStyle(
                                         color: Color(0xFF2D5016),
                                         fontSize: 15,
@@ -281,8 +284,8 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                             ),
                             child: Column(
                               children: [
-                                const Text(
-                                  "Cùng học phát âm tiếng Việt!",
+                                Text(
+                                  l10n.speakPageIntroTitle,
                                   style: TextStyle(
                                     color: Color(0xFF2D5016),
                                     fontWeight: FontWeight.bold,
@@ -293,7 +296,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  "Tập nghe và học phát âm các âm trong tiếng Việt",
+                                  l10n.speakPageIntroDesc,
                                   style: TextStyle(
                                     color: const Color(0xFF2D5016).withOpacity(0.8),
                                     fontSize: 14,
@@ -320,6 +323,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
   }
 
   Widget _buildStartButton() {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _floatingController,
       builder: (context, child) {
@@ -359,18 +363,18 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                         foregroundColor: Colors.white,
                         elevation: 0,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.play_circle_filled_rounded,
                             color: Colors.white,
                             size: 26,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Text(
-                            "BẮT ĐẦU BÀI HỌC",
-                            style: TextStyle(
+                            l10n.speakPageStartButton,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -391,6 +395,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
   }
 
   Widget _buildSectionHeader(String title, int count) {
+    final l10n = AppLocalizations.of(context);
     return AnimatedBuilder(
       animation: _floatingController,
       builder: (context, child) {
@@ -438,7 +443,7 @@ class _SpeakPageState extends State<SpeakPage> with TickerProviderStateMixin {
                     ),
                   ),
                   child: Text(
-                    "$count âm",
+                    l10n!.speakSectionCount(count),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,

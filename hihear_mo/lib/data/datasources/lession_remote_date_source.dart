@@ -20,7 +20,7 @@ class LessionRemoteDataSource {
       throw Exception("User chưa login.");
     }
 
-    const national = "UK";
+    final national = UserShare().national;
 
     final response = await _dio.get(
       "lessons",
@@ -96,7 +96,7 @@ class LessionRemoteDataSource {
       throw Exception("User chưa login.");
     }
 
-    const national = "UK";
+    final national = UserShare().national;
     final response = await _dio.get(
       "lessons?category=Nói",
       options: Options(

@@ -123,7 +123,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get testCongratulations => 'Chúc mừng!';
 
   @override
-  String get testPassedLevel => 'Bạn đã vượt qua';
+  String testPassedLevel(Object level) {
+    return 'Bạn đã vượt qua cấp độ $level';
+  }
 
   @override
   String get testScore => 'Điểm';
@@ -564,6 +566,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get languageEnglish => 'Tiếng Anh';
 
   @override
+  String get languageKorean => 'Korea';
+
+  @override
   String get speakPageTitle => 'Phát âm';
 
   @override
@@ -663,4 +668,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get speakingLessonCompletionHome => 'Về trang chủ';
+
+  @override
+  String get dailyGoal => 'Đặt mục tiêu hằng ngày';
 }

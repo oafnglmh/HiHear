@@ -1,9 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
-import 'package:hihear_mo/core/constants/app_text_styles.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -19,7 +17,7 @@ class FloatingNavBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.navBar),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFD4AF37).withOpacity(0.5), // Gold shadow
+            color: const Color(0xFFD4AF37).withOpacity(0.5),
             blurRadius: 25,
             spreadRadius: 2,
             offset: const Offset(0, 10),
@@ -41,7 +39,7 @@ class FloatingNavBar extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(AppRadius.navBar),
               border: Border.all(
-                color: const Color(0xFFD4AF37), // Gold border
+                color: const Color(0xFFD4AF37),
                 width: 3,
               ),
             ),
@@ -73,8 +71,8 @@ class FloatingNavBar extends StatelessWidget {
           gradient: isSelected
               ? const LinearGradient(
                   colors: [
-                    Color(0xFFD4AF37), // Gold
-                    Color(0xFFB8941E), // Dark gold
+                    Color(0xFFD4AF37),
+                    Color(0xFFB8941E),
                   ],
                 )
               : null,

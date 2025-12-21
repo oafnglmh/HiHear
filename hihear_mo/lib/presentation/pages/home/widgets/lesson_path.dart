@@ -5,6 +5,7 @@ import 'package:hihear_mo/core/helper/lesson_helper.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/core/constants/category.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 
 class LessonPath extends StatelessWidget {
   final List<LessionEntity> lessons;
@@ -74,6 +75,7 @@ class _LevelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(
         left: AppPadding.large,
@@ -107,7 +109,7 @@ class _LevelHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SECTION 1, UNIT 1',
+                  l10n.lessonPathLevelHeader,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -162,7 +164,7 @@ class _LessonPathItemState extends State<_LessonPathItem>
     with SingleTickerProviderStateMixin {
   late final AnimationController _shakeController;
   late final Animation<double> _shakeAnimation;
-
+  late final l10n = AppLocalizations.of(context)!;
   @override
   void initState() {
     super.initState();
@@ -219,9 +221,9 @@ class _LessonPathItemState extends State<_LessonPathItem>
               child: const Icon(Icons.lock_rounded, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Bài học bị khóa',
+                l10n.lessonPathLockedDialogTitle,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -231,8 +233,8 @@ class _LessonPathItemState extends State<_LessonPathItem>
             ),
           ],
         ),
-        content: const Text(
-          'Bạn cần hoàn thành các bài học trước đó để mở khóa bài học này.',
+        content: Text(
+          l10n.lessonPathLockedDialogContent,
           style: TextStyle(
             fontSize: 16,
             color: Color(0xFF2D5016),
@@ -249,8 +251,8 @@ class _LessonPathItemState extends State<_LessonPathItem>
                 borderRadius: BorderRadius.circular(AppRadius.medium),
               ),
             ),
-            child: const Text(
-              'Đã hiểu',
+            child: Text(
+              l10n.lessonPathLockedDialogButton,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,

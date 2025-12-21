@@ -30,15 +30,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    _logoCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
-    _buttonsCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    _lotusCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 4000))..repeat(reverse: true);
+    _logoCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _buttonsCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _lotusCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat(reverse: true);
 
-    _logoScale = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _logoCtrl, curve: Curves.elasticOut));
-    _logoOpacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _logoCtrl, curve: const Interval(0.0, 0.5)));
+    _logoScale = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _logoCtrl, curve: Curves.elasticOut));
+    _logoOpacity = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoCtrl, curve: const Interval(0.0, 0.5)),
+    );
     _buttonsSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeOutCubic));
-    _buttonsOpacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeIn));
+        .animate(
+          CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeOutCubic),
+        );
+    _buttonsOpacity = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _buttonsCtrl, curve: Curves.easeIn));
 
     _logoCtrl.forward();
     Future.delayed(const Duration(milliseconds: 500), _buttonsCtrl.forward);
@@ -60,20 +79,26 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       listener: (context, state) {
         state.whenOrNull(
           authenticated: (user) {
-            context.go(user.national == null ? '/goalSelector' : '/goalSelector');
+            context.go(user.national != null ? '/home' : '/goalSelector');
           },
+
           error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(msg),
               backgroundColor: const Color(0xFFDA251C),
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         );
       },
       builder: (context, state) {
-        final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
+        final isLoading = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
 
         return Scaffold(
           body: Stack(
@@ -83,7 +108,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               AnimatedBuilder(
                 animation: _lotusCtrl,
                 builder: (_, __) => CustomPaint(
-                  painter: LotusPatternPainter(animationValue: _lotusCtrl.value),
+                  painter: LotusPatternPainter(
+                    animationValue: _lotusCtrl.value,
+                  ),
                 ),
               ),
               SafeArea(
@@ -93,7 +120,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   child: Column(
                     children: [
                       const SizedBox(height: 60),
-                      LogoSection(logoScale: _logoScale, logoOpacity: _logoOpacity, l10n: l10n),
+                      LogoSection(
+                        logoScale: _logoScale,
+                        logoOpacity: _logoOpacity,
+                        l10n: l10n,
+                      ),
                       const SizedBox(height: 60),
                       LoginButtons(
                         slide: _buttonsSlide,
@@ -123,11 +154,7 @@ class _LoginBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF0A5C36),
-            Color(0xFF1B7F4E),
-            Color(0xFF0D4D2D),
-          ],
+          colors: [Color(0xFF0A5C36), Color(0xFF1B7F4E), Color(0xFF0D4D2D)],
         ),
       ),
     );

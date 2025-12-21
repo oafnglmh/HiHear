@@ -15,7 +15,7 @@ class LanguageSettingPage extends StatefulWidget {
   State<LanguageSettingPage> createState() => _LanguageSettingPageState();
 }
 
-class _LanguageSettingPageState extends State<LanguageSettingPage> 
+class _LanguageSettingPageState extends State<LanguageSettingPage>
     with TickerProviderStateMixin {
   late AnimationController _bambooController;
   late AnimationController _fadeController;
@@ -23,7 +23,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
   @override
   void initState() {
     super.initState();
-    
+
     _bambooController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
@@ -58,6 +58,11 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
         'emoji': '🇬🇧',
         'nativeName': 'English',
       },
+      LanguageType.korean: {
+        'name': loc.languageKorean,
+        'nativeName': 'Korean',
+        'emoji': '🇰🇷',
+      },
     };
 
     return Scaffold(
@@ -81,9 +86,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
             animation: _bambooController,
             builder: (context, child) {
               return CustomPaint(
-                painter: BambooPainter(
-                  animationValue: _bambooController.value,
-                ),
+                painter: BambooPainter(animationValue: _bambooController.value),
                 size: Size.infinite,
               );
             },
@@ -102,7 +105,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                       child: Column(
                         children: [
                           const SizedBox(height: 20),
-                          
+
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
@@ -122,32 +125,37 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                             ),
                             child: Column(
                               children: [
-                                const Text('🌍', style: TextStyle(fontSize: 48)),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'Chọn ngôn ngữ',
-                                  style: TextStyle(
-                                    color: const Color(0xFF2D5016),
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
+                                // const Text(
+                                //   '🌍',
+                                //   style: TextStyle(fontSize: 48),
+                                // ),
+                                // const SizedBox(height: 12),
+                                // Text(
+                                //   'Chọn ngôn ngữ',
+                                //   style: TextStyle(
+                                //     color: const Color(0xFF2D5016),
+                                //     fontSize: 22,
+                                //     fontWeight: FontWeight.bold,
+                                //   ),
+                                // ),
+                                // const SizedBox(height: 6),
                                 Text(
                                   'Select your language',
                                   style: TextStyle(
-                                    color: const Color(0xFF2D5016).withOpacity(0.6),
+                                    color: const Color(
+                                      0xFF2D5016,
+                                    ).withOpacity(0.6),
                                     fontSize: 14,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          
+
                           const SizedBox(height: 32),
-                          
+
                           ...LanguageType.values.map((lang) {
-                            final isSelected = 
+                            final isSelected =
                                 currentLocale.languageCode == lang.code;
                             final langData = languages[lang]!;
 
@@ -177,9 +185,9 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                               },
                             );
                           }).toList(),
-                          
+
                           const Spacer(),
-                          
+
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -192,13 +200,18 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                             ),
                             child: Row(
                               children: [
-                                const Text('💡', style: TextStyle(fontSize: 24)),
+                                const Text(
+                                  '💡',
+                                  style: TextStyle(fontSize: 24),
+                                ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     'Thay đổi ngôn ngữ sẽ được áp dụng ngay lập tức',
                                     style: TextStyle(
-                                      color: const Color(0xFF2D5016).withOpacity(0.8),
+                                      color: const Color(
+                                        0xFF2D5016,
+                                      ).withOpacity(0.8),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -206,7 +219,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                               ],
                             ),
                           ),
-                          
+
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -288,10 +301,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
         decoration: BoxDecoration(
           gradient: isSelected
               ? const LinearGradient(
-                  colors: [
-                    Color(0xFFD4AF37),
-                    Color(0xFFB8941E),
-                  ],
+                  colors: [Color(0xFFD4AF37), Color(0xFFB8941E)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
@@ -330,14 +340,11 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                     : const Color(0xFFD4AF37).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Text(
-                emoji,
-                style: const TextStyle(fontSize: 40),
-              ),
+              child: Text(emoji, style: const TextStyle(fontSize: 40)),
             ),
-            
+
             const SizedBox(width: 20),
-            
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,7 +352,9 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                   Text(
                     nativeName,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF2D5016),
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF2D5016),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -354,7 +363,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                   Text(
                     name,
                     style: TextStyle(
-                      color: isSelected 
+                      color: isSelected
                           ? Colors.white.withOpacity(0.9)
                           : const Color(0xFF2D5016).withOpacity(0.6),
                       fontSize: 14,
@@ -363,7 +372,7 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
                 ],
               ),
             ),
-            
+
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: 40,
@@ -376,10 +385,8 @@ class _LanguageSettingPageState extends State<LanguageSettingPage>
               ),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, anim) => ScaleTransition(
-                  scale: anim,
-                  child: child,
-                ),
+                transitionBuilder: (child, anim) =>
+                    ScaleTransition(scale: anim, child: child),
                 child: isSelected
                     ? const Icon(
                         Icons.check_circle_rounded,

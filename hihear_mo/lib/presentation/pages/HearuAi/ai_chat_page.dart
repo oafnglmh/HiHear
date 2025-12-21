@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hihear_mo/domain/entities/ai/chat_message.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/ai/ai_chat_cubit.dart';
 import 'package:hihear_mo/presentation/pages/home/home_page.dart';
 import 'package:hihear_mo/presentation/painter/lotus_pattern_painter.dart';
@@ -29,13 +30,13 @@ class AiChatPage extends StatefulWidget {
 class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
   late stt.SpeechToText _speech;
   late FlutterTts _flutterTts;
+
+  late final l10n = AppLocalizations.of(context)!;
   
-  // Animation controllers cho background effects
   late AnimationController _lotusController;
   late AnimationController _rippleController;
   late AnimationController _floatingController;
   
-  // Animation controllers cho robot states
   late AnimationController _idleController;
   late AnimationController _listeningController;
   late AnimationController _thinkingController;
@@ -191,7 +192,7 @@ class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
           _isListening = false;
           _robotState = RobotState.idle;
         });
-        _showError('Lỗi nhận diện giọng nói');
+        _showError(l10n.aiChatErrorSpeechRecognition);
       },
     );
 
@@ -209,7 +210,7 @@ class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
         localeId: 'vi_VN',
       );
     } else {
-      _showError('Không thể khởi động nhận diện giọng nói');
+      _showError(l10n.aiChatErrorSpeechNotAvailable);
     }
   }
 
@@ -560,19 +561,19 @@ class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
     
     switch (_robotState) {
       case RobotState.idle:
-        statusText = 'Sẵn sàng trò chuyện';
+        statusText = l10n.aiChatReadyToChat;
         badgeColor = const Color(0xFFD4AF37);
         break;
       case RobotState.listening:
-        statusText = 'Đang lắng nghe...';
+        statusText = l10n.aiChatListening;
         badgeColor = AppColors.vietnamRed;
         break;
       case RobotState.thinking:
-        statusText = 'Đang suy nghĩ...';
+        statusText = l10n.aiChatThinking;
         badgeColor = Colors.orange;
         break;
       case RobotState.speaking:
-        statusText = 'Đang trả lời...';
+        statusText = l10n.aiChatSpeaking;
         badgeColor = AppColors.bamboo1;
         break;
     }
@@ -659,7 +660,7 @@ class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
                 ),
               if (_isListening) const SizedBox(width: 12),
               Text(
-                _isListening ? 'Đang nghe...' : 'Đã nhận',
+                _isListening ? l10n.aiChatListeningNow : l10n.aiChatRecognized,
                 style: const TextStyle(
                   color: AppColors.vietnamRed,
                   fontSize: 14,
@@ -670,7 +671,7 @@ class _AiChatPageState extends State<AiChatPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 12),
           Text(
-            _userText.isEmpty ? 'Hãy nói điều gì đó...' : _userText,
+            _userText.isEmpty ? l10n.aiChatSaySomething : _userText,
             style: TextStyle(
               color: _userText.isEmpty
                   ? const Color(0xFF2D5016).withOpacity(0.5)

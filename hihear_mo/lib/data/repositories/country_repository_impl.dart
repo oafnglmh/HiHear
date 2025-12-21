@@ -8,8 +8,8 @@ import 'package:hihear_mo/domain/repositories/country_repository.dart';
 
 class CountryRepositoryImpl implements CountryRepository {
   final List<CountryModel> _countries = [
-    CountryModel(name: 'United Kingdom', code: 'gb', flag: '🇬🇧', api: 'UNITEDKINGDOM'),
-    CountryModel(name: 'Korea', code: 'ko', flag: '🇰🇷', api: 'KOREAN'),
+    CountryModel(name: 'United Kingdom', code: 'UK', flag: '🇬🇧', api: 'UNITEDKINGDOM'),
+    CountryModel(name: 'Korea', code: 'Korea', flag: '🇰🇷', api: 'KOREAN'),
   ];
 
   final AuthRemoteDataSource dataSource;

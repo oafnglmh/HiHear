@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/domain/entities/country/country_entity.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/country/country_bloc.dart';
+import 'package:hihear_mo/presentation/blocs/language/language_bloc.dart';
 
-import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
+import 'package:hihear_mo/core/enums/language_type.dart';
 
 import '../../painter/lotus_pattern_painter.dart';
 
@@ -65,7 +67,12 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
         listener: (context, state) {
           state.whenOrNull(
             success: () {
-              context.go('/start');
+              if (_selectedCountry != null) {
+                final language = _selectedCountry!.toLanguageType();
+                context.read<LanguageBloc>().add(ChangeLanguageEvent(language));
+              }
+
+              context.go('/chooseLanguageTest');
             },
           );
         },
@@ -114,6 +121,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return FadeTransition(
       opacity: _fadeController,
       child: Container(
@@ -145,8 +153,8 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Chọn quốc gia",
+                  Text(
+                    l10n.countrySelectionTitle,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -155,7 +163,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "🇻🇳 Bạn đến từ đâu?",
+                    l10n.countrySelectionSubtitle,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.85),
                       fontSize: 14,
@@ -171,6 +179,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<CountryBloc, CountryState>(
       builder: (context, state) {
         return state.when(
@@ -184,7 +193,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Đang tải...",
+                  l10n.loadingText,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 14,
@@ -218,6 +227,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
   }
 
   Widget _buildCountryList(List<CountryEntity> countries) {
+    final l10n = AppLocalizations.of(context)!;
     if (countries.isEmpty) {
       return Center(
         child: Container(
@@ -237,9 +247,9 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
                 color: Colors.white.withOpacity(0.5),
               ),
               const SizedBox(height: 16),
-              const Text(
-                "Không tìm thấy quốc gia",
-                style: TextStyle(
+              Text(
+                l10n.noCountryFound,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -348,6 +358,7 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
   }
 
   Widget _buildConfirmButton() {
+    final l10n = AppLocalizations.of(context)!;
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 400),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -380,11 +391,11 @@ class _CountrySelectionPageState extends State<CountrySelectionPage>
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Xác nhận",
+                        l10n.confirmButton,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

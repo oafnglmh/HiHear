@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/pages/Goal/goal_selector_page.dart';
 import 'package:hihear_mo/presentation/painter/simple_lotus_painter.dart';
 import 'package:hihear_mo/presentation/routes/app_routes.dart';
@@ -109,6 +110,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return FadeTransition(
       opacity: _headerController,
       child: Column(
@@ -135,8 +137,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "Kiểm tra trình độ",
+          Text(
+            l10n.levelCheckTitle,
             style: TextStyle(
               color: Colors.white,
               fontSize: 28,
@@ -146,7 +148,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            "Chọn ngôn ngữ bài kiểm tra 🪷",
+            l10n.levelCheckSubtitle,
             style: TextStyle(
               color: Colors.white.withOpacity(0.85),
               fontSize: 16,
@@ -219,6 +221,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
   }
 
   Widget _buildQuestionBubble() {
+    final l10n = AppLocalizations.of(context)!;
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 800),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -259,7 +262,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      'Hãy chọn ngôn ngữ để bắt đầu bài kiểm tra trình độ tiếng Việt của bạn!',
+                      l10n.levelCheckQuestion,
                       speed: const Duration(milliseconds: 60),
                     ),
                   ],
@@ -361,7 +364,6 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
         ),
         child: Row(
           children: [
-            // Flag container
             Container(
               width: 70,
               height: 70,
@@ -388,7 +390,6 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
             
             const SizedBox(width: 20),
             
-            // Text content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,7 +415,6 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen>
               ),
             ),
             
-            // Arrow icon
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(

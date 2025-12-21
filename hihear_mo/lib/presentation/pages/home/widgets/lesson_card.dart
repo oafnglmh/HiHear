@@ -78,9 +78,9 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
               child: const Icon(Icons.lock_rounded, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Bài học bị khóa',
+                l10n.lessonPathLockedDialogTitle,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -90,8 +90,8 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
             ),
           ],
         ),
-        content: const Text(
-          'Bạn cần hoàn thành các bài học trước đó để mở khóa bài học này.',
+        content: Text(
+          l10n.lessonPathLockedDialogContent,
           style: TextStyle(
             fontSize: 16,
             color: Color(0xFF2D5016),
@@ -108,8 +108,8 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
                 borderRadius: BorderRadius.circular(AppRadius.medium),
               ),
             ),
-            child: const Text(
-              'Đã hiểu',
+            child: Text(
+              l10n.lessonPathLockedDialogButton,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -160,14 +160,14 @@ class _LessonCardState extends State<LessonCard> with SingleTickerProviderStateM
                             ),
                             const Spacer(),
                             _LessonBadge(
-                              title: widget.lesson.category ?? 'Bài học',
+                              title: widget.lesson.category ?? l10n.grammarLessonDefaultTitle,
                               color: isLocked ? Colors.grey : colors[0],
                             ),
                           ],
                         ),
                         const Spacer(),
                         Text(
-                          widget.lesson.title ?? 'Bài học',
+                          widget.lesson.title ?? l10n.grammarLessonDefaultTitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.cardTitle.copyWith(

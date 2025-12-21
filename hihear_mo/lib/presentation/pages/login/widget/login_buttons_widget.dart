@@ -53,7 +53,7 @@ class LoginButtons extends StatelessWidget {
               textColor: Colors.white,
             ),
             const SizedBox(height: 24),
-            const _DividerWithText(text: "hoặc"),
+            _DividerWithText(text: l10n.loginDividerOr),
             const SizedBox(height: 24),
             const GuestButton(),
             if (isLoading) ...[

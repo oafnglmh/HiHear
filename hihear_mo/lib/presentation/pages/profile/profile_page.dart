@@ -229,7 +229,7 @@ class _ProfileViewState extends State<_ProfileView> {
                             Text(
                               user.name?.trim().isNotEmpty == true 
                                   ? user.name! 
-                                  : "Người dùng",
+                                  : l10n.profileDefaultName,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -243,7 +243,7 @@ class _ProfileViewState extends State<_ProfileView> {
                             Text(
                               user.email?.trim().isNotEmpty == true 
                                   ? user.email! 
-                                  : "No email",
+                                  : l10n.profileNoEmail,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.white.withOpacity(0.85),
@@ -270,7 +270,7 @@ class _ProfileViewState extends State<_ProfileView> {
                             color: Colors.white,
                             size: 22,
                           ),
-                          tooltip: 'Đăng xuất',
+                          tooltip: l10n.profileLogoutTooltip,
                         ),
                       ),
                     ],
@@ -283,7 +283,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          "Chuỗi ngày",
+                          l10n.profileStreakTitle,
                           UserShare().dailyStreak ?? "0",
                           Icons.local_fire_department_rounded,
                           const Color(0xFFFF6B35),
@@ -292,8 +292,8 @@ class _ProfileViewState extends State<_ProfileView> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
-                          "Bài học",
-                          "24",
+                          l10n.profileLessonsTitle,
+                          "2",
                           Icons.school_rounded,
                           const Color(0xFF1B7F4E),
                         ),
@@ -301,7 +301,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
-                          "Điểm số",
+                          l10n.profilePointsTitle,
                           "1.2K",
                           Icons.star_rounded,
                           const Color(0xFFFFC107),
@@ -321,7 +321,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       Padding(
                         padding: const EdgeInsets.only(left: 4, bottom: 12),
                         child: Text(
-                          "Cài đặt & Tùy chọn",
+                          l10n.profileSettingsSection,
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -331,13 +331,13 @@ class _ProfileViewState extends State<_ProfileView> {
                       ),
                       
                       _buildMenuItem(
-                        title: "Chỉnh sửa hồ sơ",
+                        title: l10n.profileEditProfile,
                         icon: Icons.person_rounded,
                         onTap: () {},
                         color: const Color(0xFF1B7F4E),
                       ),
                       _buildMenuItem(
-                        title: "Thông báo",
+                        title: l10n.profileNotifications,
                         icon: Icons.notifications_rounded,
                         onTap: () {},
                         color: const Color(0xFFFF6B35),
@@ -348,25 +348,25 @@ class _ProfileViewState extends State<_ProfileView> {
                         ),
                       ),
                       _buildMenuItem(
-                        title: "Ngôn ngữ",
+                        title: l10n.profileLanguage,
                         icon: Icons.language_rounded,
                         onTap: () => context.go('/language'),
                         color: const Color(0xFF4A90E2),
                       ),
                       _buildMenuItem(
-                        title: "Quyền riêng tư & Bảo mật",
+                        title: l10n.profilePrivacy,
                         icon: Icons.shield_rounded,
                         onTap: () {},
                         color: const Color(0xFF9B59B6),
                       ),
                       _buildMenuItem(
-                        title: "Trợ giúp & Hỗ trợ",
+                        title: l10n.profileHelp,
                         icon: Icons.help_rounded,
                         onTap: () => context.go('/help'),
                         color: const Color(0xFFE74C3C),
                       ),
                       _buildMenuItem(
-                        title: "Về ứng dụng",
+                        title: l10n.profileAbout,
                         icon: Icons.info_rounded,
                         onTap: () => context.go('/about'),
                         color: const Color(0xFF16A085),

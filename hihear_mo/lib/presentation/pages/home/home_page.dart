@@ -1,17 +1,11 @@
-import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/Services/streak_popup_service.dart';
 import 'package:hihear_mo/core/constants/app_constants.dart';
 import 'package:hihear_mo/presentation/painter/lotus_pattern_painter.dart';
 import 'package:hihear_mo/presentation/painter/ripple_painter.dart';
 import 'package:hihear_mo/share/UserShare.dart';
-import 'package:lottie/lottie.dart';
-
-import 'package:hihear_mo/core/constants/app_assets.dart';
-import 'package:hihear_mo/core/constants/app_colors.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/pages/home/widgets/floating_nav_bar.dart';
 import 'package:hihear_mo/presentation/pages/home/widgets/streak_popup.dart';

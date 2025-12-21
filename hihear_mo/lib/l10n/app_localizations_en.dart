@@ -123,7 +123,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get testCongratulations => 'Congratulations!';
 
   @override
-  String get testPassedLevel => 'You have passed';
+  String testPassedLevel(Object level) {
+    return 'You passed level $level';
+  }
 
   @override
   String get testScore => 'Score';
@@ -564,6 +566,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get languageKorean => 'Korea';
+
+  @override
   String get speakPageTitle => 'Pronunciation';
 
   @override
@@ -663,4 +668,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get speakingLessonCompletionHome => 'Back to Home';
+
+  @override
+  String get dailyGoal => 'Set daily goal';
 }

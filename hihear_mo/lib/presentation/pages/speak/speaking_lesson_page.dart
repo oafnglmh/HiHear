@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/share/UserShare.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
@@ -25,7 +26,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
   List<SpeakingResult> _results = [];
   bool _showFeedback = false;
   double _accuracy = 0.0;
-
+  late final l10n = AppLocalizations.of(context)!;
   @override
   void initState() {
     super.initState();
@@ -77,7 +78,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
   void _analyzeSpeech(String targetText) {
     if (_recognizedText.isEmpty) {
-      _showErrorDialog('Không nhận được giọng nói. Vui lòng thử lại!');
+      _showErrorDialog(l10n.speakingLessonErrorNoSpeech);
       return;
     }
     final accuracy = _calculateAccuracy(_recognizedText, targetText);
@@ -200,15 +201,15 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Hoàn thành!'),
-        content: const Text('Bạn đã hoàn thành tất cả bài học nói!'),
+        title: Text(l10n.speakingLessonCompletionTitle),
+        content: Text(l10n.speakingLessonCompletionMessage),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               context.go('/home');
             },
-            child: const Text('Về trang chủ'),
+            child: Text(l10n.speakingLessonCompletionMessage),
           ),
         ],
       ),
@@ -217,6 +218,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -226,8 +228,8 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
           onPressed: () => context.go('/home'),
           icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
-        title: const Text(
-          'Luyện phát âm',
+        title: Text(
+          l10n.speakingLessonTitle,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -275,7 +277,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
       body: BlocBuilder<LessonBloc, LessonState>(
         builder: (context, state) {
           return state.when(
-            initial: () => const Center(child: Text('Khởi tạo...')),
+            initial: () => Center(child: Text(l10n.speakingLessonInitial)),
             loading: () => const Center(
               child: CircularProgressIndicator(color: Color(0xFF1B7F4E)),
             ),
@@ -294,14 +296,14 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                     onPressed: () => context.read<LessonBloc>().add(
                       const LessonEvent.loadLessonBySpeak(),
                     ),
-                    child: const Text('Thử lại'),
+                    child: Text(l10n.speakingLessonErrorRetry),
                   ),
                 ],
               ),
             ),
             data: (lessons) {
               if (lessons.isEmpty) {
-                return const Center(child: Text('Không có bài học nào'));
+                return Center(child: Text(l10n.speakingLessonNoLesson));
               }
 
               final lesson = lessons[_currentLessonIndex];
@@ -309,7 +311,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               final speakings = exercise.speakings ?? [];
 
               if (speakings.isEmpty) {
-                return const Center(child: Text('Bài học không có nội dung'));
+                return Center(child: Text(l10n.speakingLessonNoContent));
               }
 
               final speaking = speakings.first;
@@ -317,7 +319,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
               if (sentences.isEmpty ||
                   _currentSentenceIndex >= sentences.length) {
-                return const Center(child: Text('Không có câu để đọc'));
+                return Center(child: Text(l10n.speakingLessonNoSentence));
               }
 
               final currentSentence = sentences[_currentSentenceIndex];
@@ -383,7 +385,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Câu ${_currentSentenceIndex + 1}/$totalSentences',
+                l10n.speakingLessonProgress(_currentSentenceIndex + 1,totalSentences),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -462,7 +464,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Ngôn ngữ: ${exercise.national ?? "Unknown"}',
+                  l10n.speakingLessonLanguage(exercise.national),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
@@ -499,8 +501,8 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             size: 40,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Hãy đọc câu sau:',
+          Text(
+            l10n.speakingLessonReadPrompt,
             style: TextStyle(
               fontSize: 16,
               color: Color(0xFF718096),
@@ -539,7 +541,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               Icon(Icons.hearing, color: Colors.blue[700]),
               const SizedBox(width: 8),
               Text(
-                'Bạn đã nói:',
+                l10n.speakingLessonYouSaid,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -647,7 +649,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               const SizedBox(height: 8),
 
               Text(
-                isPassed ? 'Tuyệt vời!' : 'Cần cải thiện',
+                isPassed ? l10n.speakingLessonFeedbackExcellent : l10n.speakingLessonFeedbackImprove,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -659,7 +661,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
 
               if (_results.isNotEmpty && _results.last.mistakes.isNotEmpty) ...[
                 Text(
-                  'Từ cần lưu ý:',
+                  l10n.speakingLessonFeedbackMistakes,
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
@@ -701,7 +703,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                         });
                       },
                       icon: const Icon(Icons.replay),
-                      label: const Text('Thử lại'),
+                      label: Text(l10n.speakingLessonFeedbackRetry),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF1B7F4E),
                         side: const BorderSide(
@@ -721,7 +723,7 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                       child: ElevatedButton.icon(
                         onPressed: () => _nextSentence(lesson),
                         icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Tiếp tục'),
+                        label: Text(l10n.speakingLessonFeedbackContinue),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1B7F4E),
                           foregroundColor: Colors.white,

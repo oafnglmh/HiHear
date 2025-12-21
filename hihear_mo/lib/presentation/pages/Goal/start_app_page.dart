@@ -155,6 +155,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
   }
 
   Widget _buildLanguageBadge() {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _floatingController,
       builder: (context, child) {
@@ -190,8 +191,8 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                   style: TextStyle(fontSize: 28),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Tiếng Việt',
+                Text(
+                  l10n.vietnameseLanguage,
                   style: TextStyle(
                     fontSize: 22,
                     color: Colors.white,

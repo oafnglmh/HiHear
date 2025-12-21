@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/Services/streak_popup_service.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/painter/ripple_painter.dart';
 import 'package:hihear_mo/share/UserShare.dart';
@@ -31,6 +32,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
   late AnimationController _floatingController;
   late AnimationController _rippleController;
   late AnimationController _fadeController;
+  late final l10n = AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -244,7 +246,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 ],
               ),
               child: IconButton(
-                onPressed: ()async  {
+                onPressed: () async {
                   final userId = UserShare().id;
                   if (userId != null && userId.isNotEmpty) {
                     await StreakPopupService().markLessonCompleted(userId);
@@ -330,7 +332,10 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Câu ${_currentGrammarIndex + 1}/$total',
+                      l10n.grammarLessonProgressSentence(
+                        _currentGrammarIndex + 1,
+                        total,
+                      ),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -446,7 +451,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                         ],
                       ),
                       child: Text(
-                        lesson.level ?? 'Dễ',
+                        lesson.level ?? l10n.grammarLessonLevelEasy,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -468,7 +473,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                         ),
                       ),
                       child: Text(
-                        lesson.category ?? 'Ngữ pháp',
+                        lesson.category ?? l10n.grammarLessonCategoryGrammar,
                         style: const TextStyle(
                           color: Color(0xFF2D5016),
                           fontSize: 12,
@@ -480,7 +485,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  lesson.title ?? 'Bài học',
+                  lesson.title ?? l10n.grammarLessonDefaultTitle,
                   style: const TextStyle(
                     color: Color(0xFF0D4D2D),
                     fontSize: 24,
@@ -581,8 +586,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Quy tắc ngữ pháp',
+                          Text(
+                            l10n.grammarLessonGrammarRuleTitle,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -617,7 +622,6 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   ),
                 ),
 
-                // Example Section
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
@@ -648,8 +652,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Ví dụ',
+                          Text(
+                            l10n.grammarLessonExampleTitle,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -660,7 +664,6 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                       ),
                       const SizedBox(height: 16),
 
-                      // Vietnamese Example
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
@@ -743,7 +746,6 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
 
                       const SizedBox(height: 16),
 
-                      // English Translation
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -792,7 +794,7 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                                       ),
                                       const SizedBox(width: 12),
                                       Text(
-                                        'Dịch nghĩa',
+                                        l10n.grammarLessonTranslationTitle,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -886,8 +888,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   ),
                 ),
                 icon: const Icon(Icons.arrow_back, size: 20),
-                label: const Text(
-                  'Trước',
+                label: Text(
+                  l10n.grammarLessonPreviousButton,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -942,8 +944,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 children: [
                   Text(
                     _currentGrammarIndex < total - 1
-                        ? 'Tiếp theo'
-                        : 'Hoàn thành',
+                        ? l10n.grammarLessonNextButton
+                        : l10n.grammarLessonCompleteButton,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1004,8 +1006,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Không có nội dung ngữ pháp',
+            Text(
+              l10n.grammarLessonEmptyTitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -1057,8 +1059,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Đã có lỗi xảy ra',
+            Text(
+              l10n.grammarLessonErrorTitle,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -1101,8 +1103,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                   ),
                 ),
                 icon: const Icon(Icons.refresh, size: 20),
-                label: const Text(
-                  'Thử lại',
+                label: Text(
+                  l10n.grammarLessonErrorRetryButton,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -1174,8 +1176,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 repeat: false,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Chúc mừng!',
+              Text(
+                l10n.grammarLessonCompletionTitle,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -1183,8 +1185,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Bạn đã hoàn thành bài học ngữ pháp này.',
+              Text(
+                l10n.grammarLessonCompletionMessage,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -1219,8 +1221,8 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                     ),
                   ),
                   icon: const Icon(Icons.home, size: 22),
-                  label: const Text(
-                    'Quay về trang chủ',
+                  label: Text(
+                    l10n.grammarLessonCompletionHomeButton,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
