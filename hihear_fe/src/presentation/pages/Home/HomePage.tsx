@@ -26,7 +26,10 @@ import {
   Home,
   ChevronRight,
   Apple,
-  Volume, VolumeX
+  Volume,
+  VolumeX,
+  Map,
+  Video,
 } from "lucide-react";
 import "./css/home.css";
 import { AppAssets } from "../../../Core/constant/AppAssets";
@@ -270,6 +273,7 @@ const App = () => {
   return (
     <div className="app-container">
       <Header />
+
       <section id="home" className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
@@ -300,22 +304,63 @@ const App = () => {
               <span>Văn hóa Việt Nam</span>
             </div>
           </div>
-
           <button
             className="btn-start"
-            onClick={() => setShowDownloadPage(true)}
+            onClick={() => setShowDownloadPage(false)}
           >
             <Download size={22} />
             Bắt đầu học ngay
           </button>
+          <div className="download-buttons">
+            <div className="store-buttons">
+              <a
+                href="https://apps.apple.com/app/your-app-id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="store-button app-store"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width="24"
+                  height="24"
+                >
+                  <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" />
+                </svg>
+                <div className="store-text">
+                  <span className="store-label">Tải trên</span>
+                  <span className="store-name">App Store</span>
+                </div>
+              </a>
+
+              <a
+                href="https://play.google.com/store/apps/details?id=your.package.name"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="store-button google-play"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width="24"
+                  height="24"
+                >
+                  <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+                </svg>
+                <div className="store-text">
+                  <span className="store-label">Tải trên</span>
+                  <span className="store-name">Google Play</span>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
 
         <div className="hero-image">
-          <img
-            src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800"
-            alt="Vietnamese bamboo"
-          />
-          <div className="floating-badge"><img src={AppAssets.hearuHi}></img></div>
+          <img src={AppAssets.hand} alt="Vietnamese bamboo" />
+          <div className="floating-badge">
+            <img src={AppAssets.hearuHi}></img>
+          </div>
         </div>
       </section>
       <section id="culture" className="culture-section">
@@ -330,7 +375,7 @@ const App = () => {
 
           <div className="culture-grid">
             <div className="culture-card">
-              <span className="culture-icon">🎋</span>
+              <div className="card-image bamboo"></div>
               <h3>Tre Việt Nam</h3>
               <p>
                 Cây tre là biểu tượng của sự kiên cường và linh hoạt trong văn
@@ -340,7 +385,7 @@ const App = () => {
             </div>
 
             <div className="culture-card">
-              <span className="culture-icon">🍜</span>
+              <div className="card-image cuisine"></div>
               <h3>Ẩm thực Việt</h3>
               <p>
                 Khám phá từ vựng về món ăn Việt Nam từ phở, bánh mì đến cà phê.
@@ -349,7 +394,7 @@ const App = () => {
             </div>
 
             <div className="culture-card">
-              <span className="culture-icon">🏮</span>
+              <div className="card-image festival"></div>
               <h3>Lễ hội truyền thống</h3>
               <p>
                 Tìm hiểu về Tết Nguyên Đán, Trung thu và các lễ hội đặc sắc. Nắm
@@ -359,117 +404,164 @@ const App = () => {
           </div>
         </div>
       </section>
-      {/* Stats */}
-      <section id="features" className="stats-section">
-        <div className="stats-grid">
-          <div className="stat-card">
-            <BookOpen className="stat-icon" size={60} color="#1a5f3f" />
-            <h3 className="stat-number" style={{ color: "#1a5f3f" }}>
-              5.000+
-            </h3>
-            <p className="stat-label">Bài học phong phú</p>
-          </div>
-          <div className="stat-card">
-            <Star className="stat-icon" size={60} color="#fbbf24" />
-            <h3 className="stat-number" style={{ color: "#fbbf24" }}>
-              15.000+
-            </h3>
-            <p className="stat-label">Từ vựng thực tế</p>
-          </div>
-          <div className="stat-card">
-            <Users className="stat-icon" size={60} color="#f43f5e" />
-            <h3 className="stat-number" style={{ color: "#f43f5e" }}>
-              10.000+
-            </h3>
-            <p className="stat-label">Học viên quốc tế</p>
-          </div>
-        </div>
-      </section>
-      {/* Rewards */}
-      <section id="rewards" className="rewards-section">
-        <div className="section-header">
-          <span className="section-badge">🌟 HỆ THỐNG HỌC TẬP THÔNG MINH</span>
-          <h2 className="section-title">
-            Học tiếng Việt chưa bao giờ
-            <br />
-            dễ dàng và thú vị đến thế
-          </h2>
-          <p className="section-desc">
-            Theo dõi tiến độ, nhận phần thưởng và khám phá văn hóa Việt Nam —
-            mỗi bài học đều mang đến trải nghiệm học tập đáng nhớ.
-          </p>
-        </div>
-
-        <div className="rewards-content">
-          <div className="reward-cards">
-            <RewardCard
-              icon={ClipboardList}
-              title="Lộ trình cá nhân hóa"
-              desc="Hệ thống gợi ý bài học phù hợp với trình độ và mục tiêu của bạn."
-              percent={95}
-              color="blue"
-            />
-            <RewardCard
-              icon={Award}
-              title="Huy hiệu & phần thưởng"
-              desc="Nhận huy hiệu đặc biệt khi hoàn thành các cột mốc quan trọng."
-              percent={88}
-              color="yellow"
-            />
-            <RewardCard
-              icon={BarChart3}
-              title="Theo dõi tiến độ"
-              desc="Xem biểu đồ chi tiết về sự tiến bộ của bạn mỗi ngày."
-              percent={92}
-              color="pink"
-            />
+      <section id="features" className="app-showcase-section">
+        <div className="showcase-container">
+          <div className="section-header">
+            <h2 className="section-title">
+              Ứng dụng học tiếng Việt
+              <br />
+              toàn diện cho người nước ngoài
+            </h2>
+            <p className="section-desc">
+              Được thiết kế đặc biệt để giúp bạn học tiếng Việt một cách hiệu
+              quả, từ phát âm cơ bản đến giao tiếp thành thạo.
+            </p>
           </div>
 
-          <div className="rewards-sidebar">
-            <div className="rating-card">
-              <div className="rating-circle">
-                <Star size={45} />
-                <div className="rating-number">4.9</div>
+          <div className="showcase-content">
+            {/* Features List */}
+            <div className="features-list">
+              <div className="feature-item">
+                <div className="feature-icon-wrapper green">
+                  <MessageCircle size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Trò chuyện với AI</h3>
+                  <p>
+                    Luyện tập hội thoại thực tế với trợ lý AI thông minh, phản
+                    hồi tức thì
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-icon-wrapper blue">
+                  <Map size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Lộ trình rõ ràng</h3>
+                  <p>
+                    Học theo từng cấp độ từ A1 đến C2 với lộ trình được thiết kế
+                    khoa học
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-icon-wrapper orange">
+                  <Video size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Học qua video</h3>
+                  <p>
+                    Bài giảng video sinh động với phụ đề song ngữ và bài tập
+                    tương tác
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-icon-wrapper purple">
+                  <Headphones size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Luyện phát âm</h3>
+                  <p>
+                    Công nghệ nhận diện giọng nói giúp bạn nói tiếng Việt chuẩn
+                    như người bản địa
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-icon-wrapper yellow">
+                  <Star size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Bài tập đa dạng</h3>
+                  <p>
+                    Trắc nghiệm, điền từ, nghe viết và nhiều dạng bài tập thú vị
+                    khác
+                  </p>
+                </div>
+              </div>
+
+              <div className="feature-item">
+                <div className="feature-icon-wrapper pink">
+                  <Award size={28} />
+                </div>
+                <div className="feature-text">
+                  <h3>Theo dõi tiến độ</h3>
+                  <p>
+                    Thống kê chi tiết về quá trình học và nhận huy hiệu khi đạt
+                    mục tiêu
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="mini-stats">
-              <div className="mini-stat">
-                <div>
-                  <div
-                    className="mini-stat-number"
-                    style={{ color: "#1a5f3f" }}
-                  >
-                    5.000+
+            <div className="app-preview">
+              <div className="phone-mockup">
+                <div className="phone-frame">
+                  <div className="phone-notch"></div>
+                  <div className="phone-screen">
+                    <img
+                      src={AppAssets.ai}
+                      alt="App Screenshot"
+                    />
+                    <div className="screen-overlay">
+                      <div className="overlay-badge">
+                        <Star size={16} />
+                        <span>4.9/5</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mini-stat-label">Bài học được tạo</div>
                 </div>
-                <CheckCircle size={35} color="#1a5f3f" />
-              </div>
-              <div className="mini-stat">
-                <div>
-                  <div
-                    className="mini-stat-number"
-                    style={{ color: "#f43f5e" }}
-                  >
-                    12.000+
-                  </div>
-                  <div className="mini-stat-label">Bài học hoàn thành</div>
+
+                <div className="floating-card card-1">
+                  <MessageCircle size={20} color="#1a5f3f" />
+                  <span>AI Chat</span>
                 </div>
-                <Star size={35} color="#fbbf24" />
-              </div>
-              <div className="mini-stat">
-                <div>
-                  <div
-                    className="mini-stat-number"
-                    style={{ color: "#3b82f6" }}
-                  >
-                    10.000+
-                  </div>
-                  <div className="mini-stat-label">Học viên hoạt động</div>
+                <div className="floating-card card-2">
+                  <Video size={20} color="#f59e0b" />
+                  <span>Video Lessons</span>
                 </div>
-                <Users size={35} color="#3b82f6" />
+                <div className="floating-card card-3">
+                  <Award size={20} color="#f43f5e" />
+                  <span>Achievements</span>
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="app-stats">
+            <div className="stat-item">
+              <h3 className="stat-number" style={{ color: "#1a5f3f" }}>
+                5.000+
+              </h3>
+              <p className="stat-label">Bài học</p>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <h3 className="stat-number" style={{ color: "#f59e0b" }}>
+                15.000+
+              </h3>
+              <p className="stat-label">Từ vựng</p>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <h3 className="stat-number" style={{ color: "#f43f5e" }}>
+                10.000+
+              </h3>
+              <p className="stat-label">Học viên</p>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <h3 className="stat-number" style={{ color: "#3b82f6" }}>
+                4.9/5
+              </h3>
+              <p className="stat-label">Đánh giá</p>
             </div>
           </div>
         </div>
@@ -524,46 +616,46 @@ const App = () => {
         </div>
       </section>
       <section
-      style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <video
-        ref={videoRef}
-        src={AppAssets.video01}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
-
-      <button
-        onClick={toggleSound}
         style={{
-          position: "absolute",
-          top: 20,
-          left: 20,
-          background: "rgba(0,0,0,0.5)",
-          border: "none",
-          borderRadius: "50%",
-          padding: 10,
-          cursor: "pointer",
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
+          position: "relative",
         }}
       >
-        {isMuted ? (
-          <VolumeX size={50} color="white" />
-        ) : (
-          <Volume size={50} color="white" />
-        )}
-      </button>
-    </section>
+        <video
+          ref={videoRef}
+          src={AppAssets.video01}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+
+        <button
+          onClick={toggleSound}
+          style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            background: "rgba(0,0,0,0.5)",
+            border: "none",
+            borderRadius: "50%",
+            padding: 10,
+            cursor: "pointer",
+          }}
+        >
+          {isMuted ? (
+            <VolumeX size={50} color="white" />
+          ) : (
+            <Volume size={50} color="white" />
+          )}
+        </button>
+      </section>
 
       <footer id="contact" className="footer">
         <div className="footer-content">

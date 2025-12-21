@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../auth/hooks/useAuth";
+import { AppAssets } from "../../../Core/constant/AppAssets";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -70,9 +71,9 @@ export default function Header() {
           <a href="/" className="flex items-center gap-3 group">
             <div className="relative">
               <img
-                src="https://cdn-icons-png.flaticon.com/512/3898/3898082.png"
+                src={AppAssets.logo}
                 alt="HiHear Logo"
-                className="w-10 h-10 transition-transform duration-300 group-hover:scale-110"
+                className="w-20 h-15 transition-transform duration-300 group-hover:scale-110"
               />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

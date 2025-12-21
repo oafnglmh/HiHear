@@ -6,4 +6,6 @@ export const AppAssets = {
   korea:"/assets/korea.png",
   vietnam:"/assets/vietnam.png",
   uk:"/assets/uk.png",
+  hand:"/assets/hand.png",
+  ai:"/assets/ai.jpg"
 };
