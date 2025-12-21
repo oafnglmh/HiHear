@@ -28,7 +28,7 @@ export class UserProfileDto {
   @ApiProperty()
   streakDays: number | null;
 
-  @ApiProperty({ enum: Language, example: Language.ENGLISH })
+  @ApiProperty({ enum: Language, example: Language.UK })
   language: Language;
 
   @ApiProperty({

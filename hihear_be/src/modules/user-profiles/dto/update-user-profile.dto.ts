@@ -34,7 +34,7 @@ export class UserProfileUpdateDto {
   @IsInt()
   streakDays?: number;
 
-  @ApiProperty({ enum: Language, example: Language.ENGLISH })
+  @ApiProperty({ enum: Language, example: Language.UK })
   @IsOptional()
   @IsEnum(Language)
   language?: Language;
