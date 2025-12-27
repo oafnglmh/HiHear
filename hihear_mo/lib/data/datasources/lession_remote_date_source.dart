@@ -22,11 +22,13 @@ class LessionRemoteDataSource {
 
     final national = UserShare().national;
     final userLevel = UserShare().level;
+
     int _levelIndex(String? level) {
       if (level == null) return -1;
       return _levelOrder.indexOf(level);
     }
 
+    // ================= API =================
     final response = await _dio.get(
       "lessons",
       options: Options(
@@ -51,6 +53,7 @@ class LessionRemoteDataSource {
       throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
     }
 
+    // ================= FILTER LESSON =================
     final data = response.data as List<dynamic>;
     final filtered = data.where((lesson) {
       if (lesson["category"] == "Nghe hiểu") return false;
@@ -59,31 +62,63 @@ class LessionRemoteDataSource {
       );
     }).toList();
 
+    // ================= USER HISTORY =================
     final historyList = responseHistory.data as List<dynamic>;
     final completedLessonIds = historyList
         .where((h) => h["completed"] == true)
         .map<String>((h) => h["lesson_id"] as String)
         .toSet();
 
-    final userLevelIdx = _levelIndex(userLevel);
+    // ================= PHASE 1: MAP ENTITY (NO LOCK) =================
+    final lessons = filtered
+        .map((json) => LessionEntity.fromJson(json))
+        .toList();
 
-    final lessons = filtered.map((json) {
-      final entity = LessionEntity.fromJson(json);
+    // =========================================================
+    // ============ PHASE 2: CHECK LAST LESSON & LEVEL UP =======
+    // =========================================================
 
-      final lessonId = entity.id;
-      final prerequisite = entity.prerequisiteLessonId;
+    String? effectiveUserLevel = userLevel;
+
+    final currentLevelLessons = lessons
+        .where((l) => l.level == effectiveUserLevel)
+        .toList();
+
+    if (currentLevelLessons.isNotEmpty) {
+      currentLevelLessons.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+      final lastLessonOfLevel = currentLevelLessons.last;
+      final isFinishedLastLesson = completedLessonIds.contains(
+        lastLessonOfLevel.id,
+      );
+
+      if (isFinishedLastLesson) {
+        final nextLevel = _getNextLevel(effectiveUserLevel);
+
+        if (nextLevel != null) {
+          await UserShare().updateLevel(nextLevel);
+
+          effectiveUserLevel = nextLevel;
+        }
+      }
+    }
+
+    // =========================================================
+    // ============ PHASE 3: CALCULATE LOCK =====================
+    // =========================================================
+
+    final effectiveLevelIdx = _levelIndex(effectiveUserLevel);
+
+    final finalLessons = lessons.map((entity) {
       final lessonLevelIdx = _levelIndex(entity.level);
+      final prerequisite = entity.prerequisiteLessonId;
 
-      bool isCompleted = completedLessonIds.contains(lessonId);
+      bool isCompleted = completedLessonIds.contains(entity.id);
       bool isLocked = false;
 
-      if (lessonLevelIdx > userLevelIdx) {
+      if (lessonLevelIdx > effectiveLevelIdx) {
         isLocked = true;
-      }
-      else if (lessonLevelIdx < userLevelIdx) {
-        isLocked = false;
-      }
-      else {
+      } else if (lessonLevelIdx == effectiveLevelIdx) {
         if (prerequisite != null &&
             prerequisite.isNotEmpty &&
             !completedLessonIds.contains(prerequisite)) {
@@ -98,14 +133,176 @@ class LessionRemoteDataSource {
       return entity.copyWith(isLock: isLocked);
     }).toList();
 
-    for (var lesson in lessons) {
+    // ================= DEBUG =================
+    for (var lesson in finalLessons) {
       _debugValue("Lesson ${lesson.id}", {
         "level": lesson.level,
+        "createdAt": lesson.createdAt.toIso8601String(),
         "isLock": lesson.isLock,
       });
     }
 
-    return lessons;
+    return finalLessons;
+  }
+
+  String? _getNextLevel(String? currentLevel) {
+    if (currentLevel == null) return null;
+    final idx = _levelOrder.indexOf(currentLevel);
+    if (idx == -1 || idx == _levelOrder.length - 1) return null;
+    return _levelOrder[idx + 1];
+  }
+
+  Future<LessionEntity?> loadNextLesson() async {
+    _debugHeader("LOAD NEXT LESSON");
+
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception("User chưa login.");
+    }
+
+    final national = UserShare().national;
+    String? userLevel = UserShare().level;
+
+    int _levelIndex(String? level) {
+      if (level == null) return -1;
+      return _levelOrder.indexOf(level);
+    }
+
+    // ================= API =================
+    final response = await _dio.get(
+      "lessons",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    final responseHistory = await _dio.get(
+      "user-progress/${UserShare().id}",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Lấy dữ liệu thất bại: ${response.statusCode}");
+    }
+
+    // ================= FILTER LESSON =================
+    final data = response.data as List<dynamic>;
+    final filtered = data.where((lesson) {
+      if (lesson["category"] == "Nghe hiểu") return false;
+      return (lesson["exercises"] as List).any(
+        (ex) => ex["national"] == national,
+      );
+    }).toList();
+
+    // ================= USER HISTORY =================
+    final historyList = responseHistory.data as List<dynamic>;
+    final completedLessonIds = historyList
+        .where((h) => h["completed"] == true)
+        .map<String>((h) => h["lesson_id"] as String)
+        .toSet();
+
+    // ================= PHASE 1: MAP ENTITY (NO LOCK) =================
+    final lessons = filtered
+        .map((json) => LessionEntity.fromJson(json))
+        .toList();
+
+    // =========================================================
+    // ============ PHASE 2: CHECK LAST LESSON & LEVEL UP =======
+    // =========================================================
+
+    String? effectiveUserLevel = userLevel;
+
+    final currentLevelLessons = lessons
+        .where((l) => l.level == effectiveUserLevel)
+        .toList();
+
+    if (currentLevelLessons.isNotEmpty) {
+      currentLevelLessons.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+      final lastLessonOfLevel = currentLevelLessons.last;
+      final isFinishedLastLesson = completedLessonIds.contains(
+        lastLessonOfLevel.id,
+      );
+
+      if (isFinishedLastLesson) {
+        final nextLevel = _getNextLevel(effectiveUserLevel);
+
+        if (nextLevel != null) {
+
+          await UserShare().updateLevel(nextLevel);
+          effectiveUserLevel = nextLevel;
+        }
+      }
+    }
+
+    // =========================================================
+    // ============ PHASE 3: CALCULATE LOCK =====================
+    // =========================================================
+
+    final effectiveLevelIdx = _levelIndex(effectiveUserLevel);
+
+    final finalLessons = lessons.map((entity) {
+      final lessonLevelIdx = _levelIndex(entity.level);
+      final prerequisite = entity.prerequisiteLessonId;
+
+      bool isCompleted = completedLessonIds.contains(entity.id);
+      bool isLocked = false;
+
+      // lock theo level
+      if (lessonLevelIdx > effectiveLevelIdx) {
+        isLocked = true;
+      } else if (lessonLevelIdx == effectiveLevelIdx) {
+        if (prerequisite != null &&
+            prerequisite.isNotEmpty &&
+            !completedLessonIds.contains(prerequisite)) {
+          isLocked = true;
+        }
+      }
+
+      if (isCompleted) {
+        isLocked = false;
+      }
+
+      return entity.copyWith(isLock: isLocked);
+    }).toList();
+
+    // =========================================================
+    // ============ PHASE 4: PICK NEXT LESSON ===================
+    // =========================================================
+
+    final availableLessons = finalLessons.where((lesson) {
+      return !completedLessonIds.contains(lesson.id) && lesson.isLock == false;
+    }).toList();
+
+    _debugValue(
+      "Available lessons (not completed & unlocked)",
+      availableLessons.length,
+    );
+
+    if (availableLessons.isEmpty) {
+      _debugValue("Result", "No available lessons to learn");
+      return null;
+    }
+    availableLessons.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    final nextLesson = availableLessons.first;
+
+    _debugValue("NextLesson Selected", {
+      "id": nextLesson.id,
+      "level": nextLesson.level,
+      "category": nextLesson.category,
+      "createdAt": nextLesson.createdAt.toIso8601String(),
+    });
+
+    return nextLesson;
   }
 
   Future<List<LessionEntity>> loadLessionBySpeaking() async {

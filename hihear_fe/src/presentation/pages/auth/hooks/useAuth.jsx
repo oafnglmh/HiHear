@@ -34,7 +34,7 @@ export const useAuth = () => {
 
       toast.success("Đăng nhập Google thành công!");
       console.log("adbc", res.user);
-      if (res.user.role === "USER") {
+      if (res.user.role === "ADMIN") {
         navigate("/admin/dashboard");
       } else {
         navigate("/404");

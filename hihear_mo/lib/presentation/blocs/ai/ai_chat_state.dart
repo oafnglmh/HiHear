@@ -17,7 +17,19 @@ class AiChatLoaded extends AiChatState {
   AiChatLoaded({required List<ChatMessage> messages}) : super(messages: messages);
 }
 
+class AiChatLoadedWithAction extends AiChatState {
+  final AiActionType actionType;
+  final Map<String, dynamic>? actionData;
+  
+  AiChatLoadedWithAction({
+    required List<ChatMessage> messages,
+    required this.actionType,
+    this.actionData,
+  }) : super(messages: messages);
+}
+
 class AiChatError extends AiChatState {
   final String error;
-  AiChatError({required List<ChatMessage> messages, required this.error}) : super(messages: messages);
+  AiChatError({required List<ChatMessage> messages, required this.error}) 
+      : super(messages: messages);
 }

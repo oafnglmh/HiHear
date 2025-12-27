@@ -1,7 +1,7 @@
 class ApiClient {
 
   // --------------------baseUrl----------------------------
-  static const String base_url = "http://192.168.1.5:3000/api/v1";
+  static const String base_url = "http://172.26.27.76:3000/api/v1";
 
   // --------------------api_auth----------------------------
   static const String auth_url = "${base_url}/auths";

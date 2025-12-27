@@ -100,16 +100,19 @@ class AuthRemoteDataSource {
 
       final user = UserEntity.fromJson(response.data);
 
-      await UserShare().saveUser(
-        id: user.id ?? '',
-        name: user.name ?? '',
-        email: user.email ?? '',
-        photoUrl: user.photoUrl ?? '',
-        national: country.code,
-        level: user.level,
-        dailyStreak: user.streakDays?.toString() ?? '0',
+      // await UserShare().saveUser(
+      //   id: user.id ?? '',
+      //   name: user.name ?? '',
+      //   email: user.email ?? '',
+      //   photoUrl: user.photoUrl ?? '',
+      //   national: country.code,
+      //   level: user.level,
+      //   dailyStreak: user.streakDays?.toString() ?? '0',
+      // );
+      print(country.code);
+      await UserShare().updateNational(
+        country.code,
       );
-    
       UserShare().debugPrint();
 
       return user;
@@ -143,6 +146,11 @@ class AuthRemoteDataSource {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('Backend trả về lỗi: ${response.statusCode}');
       }
+      await UserShare().updateLevel(
+        level,
+      );
+    
+      UserShare().debugPrint();
 
       return UserEntity.fromJson(response.data);
     } catch (e) {

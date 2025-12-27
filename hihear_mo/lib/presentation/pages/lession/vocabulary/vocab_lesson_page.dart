@@ -256,6 +256,9 @@ class _VocabLessonPageState extends State<VocabLessonPage>
               ],
             ),
           ),
+          nextLessonLoaded: (LessionEntity lesson) {
+            return SizedBox.shrink();
+          },
         );
       },
     );
@@ -674,7 +677,9 @@ class _FeedbackBottomSheet extends StatelessWidget {
           const SizedBox(height: 16),
 
           Text(
-            isCorrect ? l10n.vocabLessonFeedbackCorrect : l10n.vocabLessonFeedbackWrong,
+            isCorrect
+                ? l10n.vocabLessonFeedbackCorrect
+                : l10n.vocabLessonFeedbackWrong,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -894,7 +899,9 @@ class _ResultDialog extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Text(
-                    isPassed ? l10n.vocabLessonResultPassedTitle : l10n.vocabLessonResultFailedTitle,
+                    isPassed
+                        ? l10n.vocabLessonResultPassedTitle
+                        : l10n.vocabLessonResultFailedTitle,
                     style: TextStyle(
                       color: color,
                       fontSize: 28,

@@ -32,22 +32,39 @@ class AiChatCubit extends Cubit<AiChatState> {
 
     try {
       developer.log('Bắt đầu gọi GetAiResponse...', name: 'AI_CHAT');
-      final aiText = await getAiResponse(trimmedMessage, currentMessages);
+      
+      final aiResponse = await getAiResponse(trimmedMessage, currentMessages);
 
-      developer.log('Nhận phản hồi từ AI thành công (độ dài: ${aiText.length} ký tự)', name: 'AI_CHAT');
-      if (aiText.trim().isEmpty) {
+      developer.log('Nhận phản hồi từ AI: ${aiResponse.text}', name: 'AI_CHAT');
+      
+      if (aiResponse.hasAction) {
+        developer.log('Phát hiện action: ${aiResponse.actionType}', name: 'AI_CHAT');
+        developer.log('Action data: ${aiResponse.actionData}', name: 'AI_CHAT');
+      }
+
+      if (aiResponse.text.trim().isEmpty) {
         throw Exception('Phản hồi từ Gemini rỗng');
       }
 
       final updatedMessages = List<ChatMessage>.from(currentMessages)
         ..add(ChatMessage(
-          text: aiText,
+          text: aiResponse.text,
           isUser: false,
           timestamp: DateTime.now(),
+          actionResponse: aiResponse,
         ));
 
       developer.log('Emit AiChatLoaded với ${updatedMessages.length} tin nhắn', name: 'AI_CHAT');
-      emit(AiChatLoaded(messages: updatedMessages));
+      
+      if (aiResponse.hasAction) {
+        emit(AiChatLoadedWithAction(
+          messages: updatedMessages,
+          actionType: aiResponse.actionType,
+          actionData: aiResponse.actionData,
+        ));
+      } else {
+        emit(AiChatLoaded(messages: updatedMessages));
+      }
     } catch (e, stackTrace) {
       developer.log(
         'LỖI khi gọi Gemini API: $e',
@@ -61,6 +78,7 @@ class AiChatCubit extends Cubit<AiChatState> {
       ));
     }
   }
+
   String _formatErrorMessage(dynamic error) {
     if (error.toString().contains('403')) {
       return 'Lỗi quyền truy cập API (403). Có thể API key bị vô hiệu hóa hoặc bị giới hạn.';
@@ -87,11 +105,5 @@ class AiChatCubit extends Cubit<AiChatState> {
       'State change: ${change.currentState.runtimeType} → ${change.nextState.runtimeType}',
       name: 'AI_CHAT',
     );
-  }
-
-  @override
-  void onError(Object error, StackTrace stackTrace) {
-    super.onError(error, stackTrace);
-    developer.log('Cubit error: $error', name: 'AI_CHAT', error: error, stackTrace: stackTrace);
   }
 }

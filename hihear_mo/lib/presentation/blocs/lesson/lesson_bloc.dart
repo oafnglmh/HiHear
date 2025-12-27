@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/domain/repositories/lession_repository.dart';
-import 'package:hihear_mo/core/error/failures.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'lesson_bloc.freezed.dart';
@@ -17,6 +16,8 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
     on<_SaveVocabulary>(_onSaveVocabulary);
     on<_SaveCompleteLesson>(_onSaveCompleteLesson);
     on<_LoadLessonBySpeak>(_onLoadLessonBySpeak);
+    on<_LoadNextLesson>(_onLoadNextLesson);
+
   }
 
   Future<void> _onLoadLesson(
@@ -40,6 +41,24 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
       emit(LessonState.error('Load lessons failed: $e'));
       addError(e, s);
     }
+  }
+
+  Future<void> _onLoadNextLesson(
+    _LoadNextLesson event,
+    Emitter<LessonState> emit,
+  ) async {
+    emit(const LessonState.loading());
+
+    final result = await repository.loadNextLesson();
+
+    result.fold(
+      (failure) {
+        emit(LessonState.error(failure.message));
+      },
+      (lesson) {
+        emit(LessonState.nextLessonLoaded(lesson));
+      },
+    );
   }
 
   Future<void> _onLoadLessonBySpeak(

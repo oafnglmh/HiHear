@@ -359,6 +359,9 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
                 ],
               );
             },
+            nextLessonLoaded: (LessionEntity lesson) {
+              return SizedBox.shrink();
+            },
           );
         },
       ),
@@ -385,7 +388,10 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                l10n.speakingLessonProgress(_currentSentenceIndex + 1,totalSentences),
+                l10n.speakingLessonProgress(
+                  _currentSentenceIndex + 1,
+                  totalSentences,
+                ),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -649,7 +655,9 @@ class _SpeakingLessonPageState extends State<SpeakingLessonPage>
               const SizedBox(height: 8),
 
               Text(
-                isPassed ? l10n.speakingLessonFeedbackExcellent : l10n.speakingLessonFeedbackImprove,
+                isPassed
+                    ? l10n.speakingLessonFeedbackExcellent
+                    : l10n.speakingLessonFeedbackImprove,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

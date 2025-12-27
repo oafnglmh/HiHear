@@ -8,7 +8,7 @@ class GetAiResponse {
 
   GetAiResponse(this.repository);
 
-  Future<String> call(String message, List<ChatMessage> history) async {
+  Future<AiActionResponse> call(String message, List<ChatMessage> history) async {
     return await repository.getAiResponse(message, history);
   }
 }

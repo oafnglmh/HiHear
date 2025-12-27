@@ -77,6 +77,19 @@ class UserShare {
     dailyStreak = null;
   }
 
+  Future<void> updateLevel(String newLevel) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    level = newLevel;
+    await prefs.setString("level", newLevel);
+  }
+
+  Future<void> updateNational(String national) async {
+    final prefs = await SharedPreferences.getInstance();
+    this.national = national;
+    await prefs.setString("national", national);
+  }
+
   void debugPrint() {
     print("========== USER SHARE DEBUG ==========");
     print("ID       : $id");

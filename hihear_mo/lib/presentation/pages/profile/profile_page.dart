@@ -7,7 +7,7 @@ import 'package:hihear_mo/presentation/blocs/auth/auth_bloc.dart';
 import 'package:hihear_mo/data/repositories/auth_repository_impl.dart';
 import 'package:hihear_mo/data/datasources/auth_remote_data_source.dart';
 import 'package:hihear_mo/share/UserShare.dart';
-    
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -36,7 +36,12 @@ class _ProfileViewState extends State<_ProfileView> {
     context.read<AuthBloc>().add(const AuthEvent.loadUser());
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       decoration: BoxDecoration(
@@ -92,7 +97,7 @@ class _ProfileViewState extends State<_ProfileView> {
     Widget? trailing,
   }) {
     final itemColor = color ?? const Color(0xFF1B7F4E);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -125,12 +130,13 @@ class _ProfileViewState extends State<_ProfileView> {
             color: Color(0xFF2D3748),
           ),
         ),
-        trailing: trailing ??
-          Icon(
-            Icons.chevron_right_rounded,
-            color: Colors.grey[400],
-            size: 24,
-          ),
+        trailing:
+            trailing ??
+            Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.grey[400],
+              size: 24,
+            ),
       ),
     );
   }
@@ -157,22 +163,20 @@ class _ProfileViewState extends State<_ProfileView> {
       },
       builder: (context, state) {
         final user = state.maybeWhen(
-          authenticated: (user) => user, 
+          authenticated: (user) => user,
           orElse: () => null,
         );
 
         if (user == null) {
           return const Scaffold(
             backgroundColor: Color(0xFF1B7F4E),
-            body: Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
+            body: Center(child: CircularProgressIndicator(color: Colors.white)),
           );
         }
 
         return Scaffold(
           backgroundColor: const Color(0xFFF8F9FA),
-          
+
           body: SingleChildScrollView(
             child: Column(
               children: [
@@ -183,10 +187,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF1B7F4E),
-                        Color(0xFF0D6B3D),
-                      ],
+                      colors: [Color(0xFF1B7F4E), Color(0xFF0D6B3D)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
@@ -202,10 +203,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 3,
-                          ),
+                          border: Border.all(color: Colors.white, width: 3),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
@@ -227,9 +225,10 @@ class _ProfileViewState extends State<_ProfileView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.name?.trim().isNotEmpty == true 
-                                  ? user.name! 
+                              UserShare().name?.trim().isNotEmpty == true
+                                  ? UserShare().name!
                                   : l10n.profileDefaultName,
+
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -241,8 +240,8 @@ class _ProfileViewState extends State<_ProfileView> {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              user.email?.trim().isNotEmpty == true 
-                                  ? user.email! 
+                              user.email?.trim().isNotEmpty == true
+                                  ? user.email!
                                   : l10n.profileNoEmail,
                               style: TextStyle(
                                 fontSize: 13,
@@ -329,7 +328,7 @@ class _ProfileViewState extends State<_ProfileView> {
                           ),
                         ),
                       ),
-                      
+
                       _buildMenuItem(
                         title: l10n.profileEditProfile,
                         icon: Icons.person_rounded,

@@ -76,12 +76,27 @@ class LessionRepositoryImpl implements LessonRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<LessionEntity>>> loadLessionsBySpeak() async {
     try {
       final lessons = await dataSource.loadLessionBySpeaking();
       return Right(lessons);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, LessionEntity>> loadNextLesson() async {
+    try {
+      final lesson = await dataSource.loadNextLesson();
+
+      if (lesson == null) {
+        return Left(ServerFailure('No next lesson available'));
+      }
+
+      return Right(lesson);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

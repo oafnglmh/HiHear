@@ -281,7 +281,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 20),
               Text(
-                passed ? '🎉 Xuất sắc!' : '💪 Cố gắng lên!',
+                passed ? 'Xuất sắc!' : 'Cố gắng lên!',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
@@ -473,7 +473,7 @@ class _TestScreenState extends State<TestScreen> with TickerProviderStateMixin {
           error: (msg) {},
           authenticated: (user) async {
             await Future.delayed(const Duration(seconds: 2));
-            context.go("/home");
+            context.go("/start");
           },
         );
       },

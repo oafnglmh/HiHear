@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hihear_mo/Services/streak_popup_service.dart';
 import 'package:hihear_mo/core/constants/app_assets.dart';
+import 'package:hihear_mo/domain/entities/lesson/lession_entity.dart';
 import 'package:hihear_mo/l10n/app_localizations.dart';
 import 'package:hihear_mo/presentation/blocs/lesson/lesson_bloc.dart';
 import 'package:hihear_mo/presentation/painter/ripple_painter.dart';
@@ -209,6 +210,9 @@ class _GrammarLessonPageState extends State<GrammarLessonPage>
                     );
                   },
                   error: (message) => _buildErrorState(message),
+                  nextLessonLoaded: (LessionEntity lesson) {
+                    return SizedBox.shrink();
+                  },
                 );
               },
             ),
